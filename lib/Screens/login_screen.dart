@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
 
           children: [
-            SizedBox(height: 120),
+            SizedBox(height: 115),
 
             Container(
               width: 400,

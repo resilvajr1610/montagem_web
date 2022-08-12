@@ -12,7 +12,7 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
 
 
-  final listRoutes = [HomeScreen(),HistoryScreen(),AssemblyScreen(),PendenciesScreen(),];
+  final listRoutes = [HomeScreen(),AssemblyScreen(),HistoryScreen(),PendenciesScreen(),];
   var currentIndex = 0;
   @override
   Widget build(BuildContext context) {
