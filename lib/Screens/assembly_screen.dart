@@ -1,3 +1,5 @@
+
+
 import '../Utils/exports.dart';
 
 class AssemblyScreen extends StatefulWidget {
@@ -8,6 +10,25 @@ class AssemblyScreen extends StatefulWidget {
 }
 
 class _AssemblyScreenState extends State<AssemblyScreen> {
+  final list = [
+    '000000000',
+    'SE41-A',
+    '3',
+    'D6N',
+    'Motor -> Bomba Principal'
+        'R2-12',
+    '0,54',
+    'PP',
+    'FSP-12-12',
+    'FSP-12-12',
+    'CP2-12',
+    ' ',
+    ' ',
+    ' ',
+    'X',
+    ''
+  ];
+
   var _controllerDate = TextEditingController();
   var _controllerClient = TextEditingController();
   var _controllerClientName = TextEditingController();
@@ -19,10 +40,10 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     final heigth = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 50.0),
+      padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 25.0),
       child: Container(
-        width: 1000,
-        height: 600,
+        width: 2200,
+        height: 800,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           color: PaletteColors.white,
@@ -54,7 +75,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   ),
                 ),
               ],
-            ),//Titulo
+            ), //Titulo
             SizedBox(height: 4),
             Row(
               children: [
@@ -82,10 +103,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   fontFamily: 'Nunito',
                   fontWeight: FontWeight.normal,
                 ),
-
-
               ],
-            ),//Textos
+            ), //Textos
             Row(
               children: [
                 SizedBox(width: 20),
@@ -137,7 +156,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   background: PaletteColors.inputGrey,
                 ),
               ],
-            ),//Inputs
+            ), //Inputs
             SizedBox(height: 16),
             Row(
               children: [
@@ -149,7 +168,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   fontFamily: 'Nunito',
                   fontWeight: FontWeight.bold,
                 ),
-                SizedBox(width: 30),
+                SizedBox(width: 20),
                 TextCustom(
                   text: 'Referencia',
                   size: 14.0,
@@ -157,7 +176,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   fontFamily: 'Nunito',
                   fontWeight: FontWeight.bold,
                 ),
-                SizedBox(width: 25),
+                SizedBox(width: 20),
                 TextCustom(
                   text: 'Qtd',
                   size: 14.0,
@@ -181,11 +200,190 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   fontFamily: 'Nunito',
                   fontWeight: FontWeight.bold,
                 ),
-
-
-
+                SizedBox(width: 100),
+                TextCustom(
+                  text: 'Tipo Mang',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 10),
+                TextCustom(
+                  text: 'Compri',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 10),
+                TextCustom(
+                  text: 'T',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'Term. 1',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 22),
+                TextCustom(
+                  text: 'Term. 2',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 20),
+                TextCustom(
+                  text: 'Capa',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'Pos.',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'Adap. 1',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'Adap. 2',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'AN',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 12),
+                TextCustom(
+                  text: 'MO',
+                  size: 14.0,
+                  color: PaletteColors.primaryColor,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.bold,
+                ),
+                SizedBox(width: 14),
               ],
-            )//Tags da tabela
+            ),
+            /*ListTileHover(
+              cod: '0000000',
+              ref: 'SE41-A',
+              qtd: '3',
+              machine: 'D6N',
+              aplication: 'Motor -> Bomba Principal',
+              type: 'R2-12',
+              lenght: '0,54',
+              t: 'PP',
+              term1: 'FSP-12-12',
+              term2: 'FSP-12-12',
+              cape: 'CP2-12',
+              pos: '',
+              adap1: '',
+              adap2: '',
+              an: 'X',
+              mo: '',
+
+            ),
+*/
+            ListTileHover(
+              cod:
+                  '0000000     SE41-A               3           D6N                Motor -> Bomba Principal        R2-12               0,54        PP  FSP-12-12     FSP-12-12  CP2-12                                                      X  ',
+              ref: '',
+              qtd: '',
+              machine: '',
+              aplication: '',
+              type: '',
+              lenght: '',
+              t: '',
+              term1: '',
+              term2: '',
+              cape: '',
+              pos: '',
+              adap1: '',
+              adap2: '',
+              an: '',
+              mo: '',
+            ),
+            ListTileHover(
+              cod:
+                  '0000000     SE41-A               3           D6N                Motor -> Bomba Principal        R2-12               0,54        PP  FSP-12-12     FSP-12-12  CP2-12                                                      X  ',
+              ref: '',
+              qtd: '',
+              machine: '',
+              aplication: '',
+              type: '',
+              lenght: '',
+              t: '',
+              term1: '',
+              term2: '',
+              cape: '',
+              pos: '',
+              adap1: '',
+              adap2: '',
+              an: '',
+              mo: '',
+            ),
+            ListTileHover(
+              cod:
+                  '0000000     SE41-A               3           D6N                Motor -> Bomba Principal        R2-12               0,54        PP  FSP-12-12     FSP-12-12  CP2-12                                                      X  ',
+              ref: '',
+              qtd: '',
+              machine: '',
+              aplication: '',
+              type: '',
+              lenght: '',
+              t: '',
+              term1: '',
+              term2: '',
+              cape: '',
+              pos: '',
+              adap1: '',
+              adap2: '',
+              an: '',
+              mo: '',
+            ),
+            Row(
+              children: [
+                SizedBox(width: 10),
+                Ink(
+                  decoration: ShapeDecoration(
+                    color: PaletteColors.primaryColor,
+                    shape: CircleBorder(),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.add, color: PaletteColors.white),
+                    onPressed: () {},
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
           ],
         ),
       ),
