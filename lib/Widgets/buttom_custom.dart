@@ -9,9 +9,11 @@ class ButtonCustom extends StatelessWidget{
   final Color colorBorder;
   final widthCustom;
   final heightCustom;
+  final font;
 
   const ButtonCustom(
   {Key? key,
+    required this.font,
     required this.onPressed,
     required this.text,
     required this.size,
@@ -36,7 +38,7 @@ class ButtonCustom extends StatelessWidget{
       ),
       onPressed: onPressed,
       child: Text(text,
-        style: TextStyle(fontFamily: 'Secular One', color: colorText,
+        style: TextStyle(fontFamily: font, color: colorText,
         fontSize: size,fontWeight: FontWeight.bold
         ),
 

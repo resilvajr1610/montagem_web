@@ -43,6 +43,7 @@ class InputPassword extends StatelessWidget {
     return Container(
       alignment: Alignment.topCenter,
       width: width,
+      height: 47,
       padding: EdgeInsets.symmetric(horizontal: 8),
       margin: EdgeInsets.symmetric(horizontal: 10,vertical: 6),
       decoration: BoxDecoration(
