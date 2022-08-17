@@ -13,6 +13,9 @@ export '../Screens/home_screen.dart';
 export '../Utils/routes.dart';
 export '../Utils/colors.dart';
 
+export '../Models/list_buttom_model.dart';
+export '../Models/list_icon_model.dart';
+
 export '../Widgets/text_custom.dart';
 export '../Widgets/buttom_custom.dart';
 export '../Widgets/inputPassword.dart';

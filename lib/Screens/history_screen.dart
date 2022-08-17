@@ -8,6 +8,14 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+
+  int selectedText= 0;
+
+  bool selectedValue= false;
+
+
+
+
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
   var _controllerNumberOp = TextEditingController();
@@ -226,8 +234,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       colorText: PaletteColors.white,
                       colorButton: PaletteColors.primaryColor,
                       colorBorder: PaletteColors.primaryColor,
-                      onPressed: () =>
-                          Navigator.popAndPushNamed(context, '/home'),
+                      onPressed: () =>Navigator.popAndPushNamed(context, '/home'),
                       font: 'Nunito',
                     ),
                   ),
@@ -315,15 +322,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           DataRow(
                             onSelectChanged: (value){
 
+
                             },
                             cells: <DataCell>[
-                              DataCell(Text(
+                              DataCell(
+                                  Text(
                                 '00/00/0000',
                                 style: TextStyle(
                                     color: PaletteColors.grey,
                                     fontFamily: 'Nunito',
                                     fontSize: 12),
-                              )),
+                              ),
+                              ),
+
                               DataCell(Text(
                                 '000000',
                                 style: TextStyle(
@@ -397,9 +408,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ],
                           ),
                           DataRow(
-                            onSelectChanged: (value){
+                            onSelectChanged: (newValue) {
 
                             },
+
+
+
+
                             cells: <DataCell>[
                               DataCell(Text(
                                 '00/00/0000',

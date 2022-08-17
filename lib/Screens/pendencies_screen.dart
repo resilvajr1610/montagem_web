@@ -13,6 +13,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
     final width = MediaQuery.of(context).size.width;
     final heigth = MediaQuery.of(context).size.height;
     int selectedText = 0;
+    bool _isShow = false;
 
 
     return Padding(
@@ -152,21 +153,30 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                               setState(() {
                                 if(selectedText==0){
                                   selectedText= selectedText+1 ;
-                                  ButtonCustom(
-                                    widthCustom: 0.20,
-                                    heightCustom: 0.07,
-                                    text: "Iniciar Produção",
-                                    size: 14.0,
-                                    colorText: PaletteColors.white,
-                                    colorButton: PaletteColors.primaryColor,
-                                    colorBorder: PaletteColors.primaryColor,
-                                    onPressed: () =>
-                                        Navigator.popAndPushNamed(context, '/home'),
-                                    font: 'Nunito',
+                                  _isShow = true;
+                                  Visibility(
+                                    visible: _isShow,
+                                    maintainSize: true,
+                                    maintainAnimation: true,
+                                    maintainState: true,
+                                    maintainInteractivity: true,
+                                    child: ButtonCustom(
+                                      widthCustom: 0.20,
+                                      heightCustom: 0.07,
+                                      text: "Iniciar Produção",
+                                      size: 14.0,
+                                      colorText: PaletteColors.white,
+                                      colorButton: PaletteColors.primaryColor,
+                                      colorBorder: PaletteColors.primaryColor,
+                                      onPressed: () =>
+                                          Navigator.popAndPushNamed(context, '/home'),
+                                      font: 'Nunito',
+                                    ),
                                   );
                                 }
                                 else{
                                   selectedText= selectedText-1;
+                                  _isShow = false;
                                   
                                 }
                               });

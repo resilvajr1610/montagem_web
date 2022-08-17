@@ -1,4 +1,6 @@
 
+import 'package:montagem_web/Screens/price_screen.dart';
+
 import '../Utils/exports.dart';
 
 
@@ -18,6 +20,10 @@ class Routes {
       case "/home":
         return MaterialPageRoute(
             builder: (_) => NavigationScreen(index: 0)
+        );
+      case "/price":
+        return MaterialPageRoute(
+            builder: (_) => PriceScreen(index: 4)
         );
 
 

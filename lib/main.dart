@@ -1,6 +1,8 @@
 
 
 
+import 'Screens/price_screen.dart';
+
 import 'Utils/exports.dart';
 
 void main ()async{
@@ -8,7 +10,7 @@ void main ()async{
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    //home: HistoryScreen (),
+    //home: DataTable2SimpleDemo(),
     initialRoute:route,
     onGenerateRoute: Routes.generateRoute,
 
