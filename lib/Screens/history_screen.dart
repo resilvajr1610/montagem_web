@@ -8,13 +8,20 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  int selectedText = 0;
+  List<ListIconModel> items = [
+    ListIconModel(date: '00/00/0000',assembly: '000000',
+        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
+        number: '00000000', winthor: '000000000', iconShow: false),
+    ListIconModel(date: '00/00/0000',assembly: '000000',
+        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
+        number: '00000000', winthor: '000000000', iconShow: false),
+    ListIconModel(date: '00/00/0000',assembly: '000000',
+        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
+        number: '00000000', winthor: '000000000', iconShow: false),
 
-  int selectedText= 0;
-
-  bool selectedValue= false;
-
-
-
+  ];
+  bool selectedValue = false;
 
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
@@ -234,7 +241,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       colorText: PaletteColors.white,
                       colorButton: PaletteColors.primaryColor,
                       colorBorder: PaletteColors.primaryColor,
-                      onPressed: () =>Navigator.popAndPushNamed(context, '/home'),
+                      onPressed: () =>
+                          Navigator.popAndPushNamed(context, '/home'),
                       font: 'Nunito',
                     ),
                   ),
@@ -253,211 +261,119 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
+              SizedBox(height: 15),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 1.0, horizontal: 7.0),
-                    child: Theme(
-                      data: Theme.of(context)
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: DataTable(
-                        showCheckboxColumn: false,
-                        dividerThickness: 0.0,
-                        columnSpacing: 40.0,
-                        dataRowHeight: 30.0,
-                        columns:  <DataColumn>[
-                          DataColumn(
-                            label: Text(
-                              'Data',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Nº da montagem',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Cliente',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Nº OP',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Orçamento Whinthor',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                        rows: <DataRow>[
-                          DataRow(
-                            onSelectChanged: (value){
-
-
-                            },
-                            cells: <DataCell>[
-                              DataCell(
-                                  Text(
-                                '00/00/0000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              ),
-                              ),
-
-                              DataCell(Text(
-                                '000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '000000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                          DataRow(
-                            onSelectChanged: (value){
-
-                            },
-                            cells: <DataCell>[
-                              DataCell(Text(
-                                '00/00/0000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '000000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                          DataRow(
-                            onSelectChanged: (newValue) {
-
-                            },
-
-
-
-
-                            cells: <DataCell>[
-                              DataCell(Text(
-                                '00/00/0000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '000000000',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  SizedBox(width: 30),
+                  TextCustom(
+                    text: 'Data',
+                    size: 14.0,
+                    color: PaletteColors.primaryColor,
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.normal,
+                    textAlign: TextAlign.center,
                   ),
+                  SizedBox(width: 70),
+                  TextCustom(
+                    text: 'N° da montagem',
+                    size: 14.0,
+                    color: PaletteColors.primaryColor,
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.normal,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(width: 45),
+                  TextCustom(
+                    text: 'Cliente',
+                    size: 14.0,
+                    color: PaletteColors.primaryColor,
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.normal,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(width: 275),
+                  TextCustom(
+                    text: 'N° OP',
+                    size: 14.0,
+                    color: PaletteColors.primaryColor,
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.normal,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(width: 50),
+                  TextCustom(
+                    text: 'Orçamento Winthor',
+                    size: 14.0,
+                    color: PaletteColors.primaryColor,
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.normal,
+                    textAlign: TextAlign.center,
+                  ),
+
                 ],
+              ),
+              ListTileCustom(
+                date: items[0].date,
+                assembly: items[0].assembly,
+                client: items[0].client,
+                number: items[0].number,
+                winthor: items[0].winthor,
+
+                showIcons: items[0].iconShow,
+                onTap: () {
+                  setState(() {
+                    if (selectedText == 0) {
+                      selectedText = selectedText + 1;
+                      items[0].iconShow = true;
+                    } else {
+                      selectedText = selectedText - 1;
+                      items[0].iconShow = false;
+                    }
+                  });
+                },
+                hovercolor: PaletteColors.white,
+              ),
+              ListTileCustom(
+                date: items[1].date,
+                assembly: items[1].assembly,
+                client: items[1].client,
+                number: items[1].number,
+                winthor: items[1].winthor,
+
+                showIcons: items[1].iconShow,
+                onTap: () {
+                  setState(() {
+                    if (selectedText == 0) {
+                      selectedText = selectedText + 1;
+                      items[1].iconShow = true;
+                    } else {
+                      selectedText = selectedText - 1;
+                      items[1].iconShow = false;
+                    }
+                  });
+                },
+                hovercolor: PaletteColors.white,
+              ),
+              ListTileCustom(
+                date: items[2].date,
+                assembly: items[2].assembly,
+                client: items[2].client,
+                number: items[2].number,
+                winthor: items[2].winthor,
+
+                showIcons: items[2].iconShow,
+                onTap: () {
+                  setState(() {
+                    if (selectedText == 0) {
+                      selectedText = selectedText + 1;
+                      items[2].iconShow = true;
+                    } else {
+                      selectedText = selectedText - 1;
+                      items[2].iconShow = false;
+                    }
+                  });
+                },
+                hovercolor: PaletteColors.white,
               ),
               SizedBox(height: 40),
               Divider(),

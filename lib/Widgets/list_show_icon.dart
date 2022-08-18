@@ -2,22 +2,35 @@
 
 import '../Utils/exports.dart';
 
-class ListTileCustom extends StatelessWidget {
+class ListTileCustom extends StatefulWidget {
   final onTap;
+  final date;
+  final assembly;
+  final client;
+  final number;
+  final winthor;
+  Color hovercolor;
   bool showIcons;
-  final text;
 
 
   ListTileCustom({
-    required this.text,
+    required this.hovercolor,
+    required this.date,
+    required this.assembly,
+    required this.client,
+    required this.number,
+    required this.winthor,
     required this.onTap,
     this.showIcons = false,
 
 
   });
 
+  @override
+  State<ListTileCustom> createState() => _ListTileCustomState();
+}
 
-
+class _ListTileCustomState extends State<ListTileCustom> {
   @override
   Widget build(BuildContext context) {
 
@@ -25,115 +38,168 @@ class ListTileCustom extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
 
 
-    return Center(
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: onTap,
-              child: ListTile(
-                title: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15 ),
-                          child: TextCustom(
-                            text: text,
-                            size: 14.0,
-                            color: PaletteColors.grey,
-                            fontFamily: 'Nunito',
-                            fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+    return MouseRegion(
+      onEnter: (event)=>  setState(() => widget.hovercolor = PaletteColors.selectedColor),
+      onExit: (event) => setState(() => widget.hovercolor = PaletteColors.white),
+      child: Container(
+        color: widget.hovercolor,
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: widget.onTap,
+                child: ListTile(
+                  title: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15 ),
+                            child: TextCustom(
+                              text: widget.date,
+                              size: 14.0,
+                              color: PaletteColors.grey,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 25),
+                            child: TextCustom(
+                              text: widget.assembly,
+                              size: 14.0,
+                              color: PaletteColors.grey,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 100),
+                            child: TextCustom(
+                              text: widget.client,
+                              size: 14.0,
+                              color: PaletteColors.grey,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 55 ),
+                            child: TextCustom(
+                              text: widget.number,
+                              size: 14.0,
+                              color: PaletteColors.grey,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20 ),
+                            child: TextCustom(
+                              text: widget.winthor,
+                              size: 14.0,
+                              color: PaletteColors.grey,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(width: 55),
+                          widget.showIcons==true?Row(
+                            children: [
+                              SizedBox(width: 25),
+                              Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                    color:  PaletteColors.primaryColor,
+                                    shape: CircleBorder(),
 
-                      ],
-                    ),
-                  ],
+
+                                  ),
+                                  child: IconButton(icon: Icon(
+                                    Icons.remove_red_eye,
+                                    color: PaletteColors.white,
+                                  ),
+                                    constraints: BoxConstraints(minHeight: 30,
+                                        minWidth: 30,
+                                        maxHeight: 30,
+                                        maxWidth: 30),
+                                    iconSize: 14.0,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 25.0),
+                              Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                    color:  PaletteColors.primaryColor,
+                                    shape: CircleBorder(),
+
+
+                                  ),
+                                  child: IconButton(icon: Icon(
+                                    Icons.edit,
+                                    color: PaletteColors.white,
+                                  ),
+                                    constraints: BoxConstraints(minHeight: 30,
+                                        minWidth: 30,
+                                        maxHeight: 30,
+                                        maxWidth: 30),
+                                    iconSize: 14.0,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 25.0),
+                              Material(
+                                color: Colors.transparent,
+                                child: Ink(
+                                  decoration: ShapeDecoration(
+                                    color:  PaletteColors.grey,
+                                    shape: CircleBorder(),
+
+
+                                  ),
+                                  child: IconButton(icon: Icon(
+                                    Icons.control_point_duplicate,
+                                    color: PaletteColors.white,
+                                  ),
+                                    constraints: BoxConstraints(minHeight: 30,
+                                        minWidth: 30,
+                                        maxHeight: 30,
+                                        maxWidth: 30),
+                                    iconSize: 14.0,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {},
+                                  ),
+                                ),
+                              ),
+
+
+
+                            ],
+
+                          ):SizedBox(height: 0)
+
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            showIcons==true?Padding(
-              padding: const EdgeInsets.all(10.0),
 
-              child: Row(
-                children: [
-                  SizedBox(width: 10),
-                  Ink(
-                    decoration: ShapeDecoration(
-                      color:  PaletteColors.primaryColor,
-                      shape: CircleBorder(),
+            ],
 
-
-                    ),
-                    child: IconButton(icon: Icon(
-                      Icons.remove_red_eye,
-                      color: PaletteColors.white,
-                    ),
-                      constraints: BoxConstraints(minHeight: 46,
-                          minWidth: 46,
-                          maxHeight: 46,
-                          maxWidth: 46),
-                      iconSize: 32.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Ink(
-                    decoration: ShapeDecoration(
-                      color:  PaletteColors.primaryColor,
-                      shape: CircleBorder(),
-
-
-                    ),
-                    child: IconButton(icon: Icon(
-                      Icons.edit,
-                      color: PaletteColors.white,
-                    ),
-                      constraints: BoxConstraints(minHeight: 46,
-                          minWidth: 46,
-                          maxHeight: 46,
-                          maxWidth: 46),
-                      iconSize: 32.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Ink(
-                    decoration: ShapeDecoration(
-                      color:  PaletteColors.grey,
-                      shape: CircleBorder(),
-
-
-                    ),
-                    child: IconButton(icon: Icon(
-                      Icons.control_point_duplicate,
-                      color: PaletteColors.white,
-                    ),
-                      constraints: BoxConstraints(minHeight: 46,
-                          minWidth: 46,
-                          maxHeight: 46,
-                          maxWidth: 46),
-                      iconSize: 32.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                    ),
-                  ),
-
-
-
-                ],
-
-              ),
-
-
-
-            ):SizedBox(height: 0)
-          ],
-
-        )
+          )
+      ),
     );
   }
 }
