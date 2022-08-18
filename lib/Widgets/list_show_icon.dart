@@ -103,35 +103,14 @@ class ListTileCustom extends StatelessWidget {
                   SizedBox(width: 10),
                   Ink(
                     decoration: ShapeDecoration(
-                      color:  PaletteColors.primaryColor,
+                      color:  PaletteColors.grey,
                       shape: CircleBorder(),
 
 
                     ),
                     child: IconButton(icon: Icon(
-                      Icons.shortcut_rounded,
-                      color: PaletteColors.primaryColor,
-                    ),
-                      constraints: BoxConstraints(minHeight: 46,
-                          minWidth: 46,
-                          maxHeight: 46,
-                          maxWidth: 46),
-                      iconSize: 32.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {},
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Ink(
-                    decoration: ShapeDecoration(
-                      color:  PaletteColors.primaryColor,
-                      shape: CircleBorder(),
-
-
-                    ),
-                    child: IconButton(icon: Icon(
-                      Icons.delete_forever,
-                      color: PaletteColors.grey,
+                      Icons.control_point_duplicate,
+                      color: PaletteColors.white,
                     ),
                       constraints: BoxConstraints(minHeight: 46,
                           minWidth: 46,
@@ -151,7 +130,7 @@ class ListTileCustom extends StatelessWidget {
 
 
 
-            ):Divider(thickness: 1),
+            ):SizedBox(height: 0)
           ],
 
         )

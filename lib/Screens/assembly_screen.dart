@@ -699,7 +699,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                           maxHeight: 20,
                         ),
                         padding: EdgeInsets.zero,
-                        onPressed: () {},
+                          onPressed: ()=> Navigator.popAndPushNamed(context, '/price'),
                       ),
                     ),
                   ),
@@ -724,7 +724,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                           maxHeight: 20,
                         ),
                         padding: EdgeInsets.zero,
-                        onPressed: ()=> Navigator.popAndPushNamed(context, '/price'),
+                        onPressed: () {
+                        },
                       ),
                     ),
                   )
