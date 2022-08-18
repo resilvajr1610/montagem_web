@@ -11,9 +11,9 @@ void main ()async{
 
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: ProductionScreen(),
-    //initialRoute:route,
-    //onGenerateRoute: Routes.generateRoute,
+    //home: ProductionScreen(),
+    initialRoute:route,
+    onGenerateRoute: Routes.generateRoute,
 
   ));
 

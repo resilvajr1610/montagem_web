@@ -22,6 +22,8 @@ export '../Widgets/inputPassword.dart';
 export '../Widgets/inputRegister.dart';
 export '../Widgets/title_menu.dart';
 export '../Widgets/menu.dart';
+export '../Widgets/list_show_buttom.dart';
+export '../Widgets/list_show_icon.dart';
 
 export 'package:auto_size_text/auto_size_text.dart';
 export 'package:page_transition/page_transition.dart';
