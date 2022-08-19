@@ -40,16 +40,20 @@ class InputPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
     return Container(
       alignment: Alignment.topCenter,
       width: width,
-      height: 47,
+      height: 40,
       padding: EdgeInsets.symmetric(horizontal: 8),
       margin: EdgeInsets.symmetric(horizontal: 10,vertical: 6),
       decoration: BoxDecoration(
 
           color: background,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(color: colorBorder)
       ),
       child: Row(

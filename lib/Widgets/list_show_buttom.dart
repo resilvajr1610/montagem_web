@@ -64,19 +64,20 @@ class _ListTileButtomState extends State<ListTileButtom> {
                   children: [
                     Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15 ),
+                        SizedBox(width: 15),
+                        Container(
+                          width: width * 0.12,
                           child: TextCustom(
                             text: widget.order,
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+                            
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 90 ),
+                        Container(
+                          width: width * 0.10,
                           child: TextCustom(
                             text:
                             widget.whintor,
@@ -88,51 +89,52 @@ class _ListTileButtomState extends State<ListTileButtom> {
                             textAlign: TextAlign.start,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 60 ),
+                        Container(
+                          width: width * 0.12,
                           child: TextCustom(
                             text: widget.date,
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+                            
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20 ),
+                        Container(
+                          width: width * 0.22,
                           child: TextCustom(
                             text: widget.client,
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+                            
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20),
+                        Container(
+                          width: width* 0.09,
                           child: TextCustom(
                             text: widget.priority,
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+                            
                           ),
                         ),
-                        Spacer(flex: 1),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 100),
+                        Container(
+                          width: width * 0.1,
                           child: TextCustom(
+
                             text: widget.status,
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-                            textAlign: TextAlign.center,
+                            
                           ),
                         ),
+                        
                       ],
                     ),
                     widget.showButtom==true?Row(

@@ -15,6 +15,7 @@ export '../Utils/colors.dart';
 
 export '../Models/list_buttom_model.dart';
 export '../Models/list_icon_model.dart';
+export '../Models/list_assemble_hoses_model.dart';
 
 export '../Widgets/text_custom.dart';
 export '../Widgets/buttom_custom.dart';
@@ -24,6 +25,7 @@ export '../Widgets/title_menu.dart';
 export '../Widgets/menu.dart';
 export '../Widgets/list_show_buttom.dart';
 export '../Widgets/list_show_icon.dart';
+export '../Widgets/list_assemble.dart';
 
 export 'package:auto_size_text/auto_size_text.dart';
 export 'package:page_transition/page_transition.dart';

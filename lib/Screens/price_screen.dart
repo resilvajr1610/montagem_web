@@ -1,3 +1,6 @@
+import 'package:montagem_web/Widgets/list_client.dart';
+import 'package:montagem_web/Widgets/list_material.dart';
+
 import '../Utils/exports.dart';
 
 class PriceScreen extends StatefulWidget {
@@ -77,36 +80,60 @@ class _PriceScreenState extends State<PriceScreen> {
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Nº de montagem',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+
+                      width: width* 0.12,
+                      child: TextCustom(
+                        text: 'Nº de montagem',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 75),
-                    TextCustom(
-                      text: 'Orçamento Whintor',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+
+                      width: width* 0.13,
+                      child: TextCustom(
+                        text: 'Orçamento Whintor',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 75),
-                    TextCustom(
-                      text: 'Prioridade',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+
+                      width: width* 0.10,
+                      child: TextCustom(
+                        text: 'Prioridade',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 308),
-                    TextCustom(
-                      text: 'Desconto geral',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+
+                      width: width* 0.13,
+                      child: TextCustom(
+                        text: '',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+
+                      width: width* 0.07,
+                      child: TextCustom(
+                        text: 'Desconto geral',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                   ],
                 ),
@@ -114,41 +141,45 @@ class _PriceScreenState extends State<PriceScreen> {
                 Row(
                   children: [
                     SizedBox(width: 20),
-                    InputRegister(
-                      controller: _controllerNumberAssembly,
-                      hint: '0000000',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.09,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.12,
+                      child: InputRegister(
+                        controller: _controllerNumberAssembly,
+                        hint: '0000000',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.08,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 22),
-                    InputRegister(
-                      controller: _controllerWhintor,
-                      hint: '00000000',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.1,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.13,
+                      child: InputRegister(
+                        controller: _controllerWhintor,
+                        hint: '00000000',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.08,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 35),
-                    SizedBox(
-                      height: 45,
-                      width: 170,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: PaletteColors.inputGrey),
+                    Container(
+                      width: width * 0.10,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: PaletteColors.inputGrey),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            iconSize: 40.0,
+                            iconSize: 30.0,
                             items: priority
                                 .map((priority) => DropdownMenuItem<String>(
                                     value: priority,
@@ -165,19 +196,31 @@ class _PriceScreenState extends State<PriceScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 195),
-                    InputRegister(
-                      controller: _controllerDiscount,
-                      hint: '00%',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.04,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+
+                      width: width* 0.13,
+                      child: TextCustom(
+                        text: '',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 10),
+                    Container(
+                      width: width * 0.07,
+                      child: InputRegister(
+                        controller: _controllerDiscount,
+                        hint: '00%',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.text,
+                        width: width * 0.04,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
+                    ),
                     ButtonCustom(
                       widthCustom: 0.07,
                       heightCustom: 0.065,
@@ -205,351 +248,125 @@ class _PriceScreenState extends State<PriceScreen> {
                     ),
                   ],
                 ),
+                SizedBox(height: 20),
                 Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 1.0, horizontal: 7.0),
-                      child: Theme(
-                        data: Theme.of(context)
-                            .copyWith(dividerColor: Colors.transparent),
-                        child: DataTable(
-                          showCheckboxColumn: false,
-                          dividerThickness: 0.0,
-                          columnSpacing: 70.0,
-                          dataRowHeight: 26.0,
-                          columns: <DataColumn>[
-                            DataColumn(
-                              label: Text(
-                                'Código',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Referência',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Quantidade',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Fabricante',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Valor Tabela',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Desconto',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Valor Unitário',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Total',
-                                style: TextStyle(
-                                    color: PaletteColors.primaryColor,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                          rows: <DataRow>[
-                            DataRow(
-                              onSelectChanged: (value) {},
-                              cells: <DataCell>[
-                                DataCell(Text(
-                                  '00000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '000000000000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'NAC',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '5%',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                              ],
-                            ),
-                            DataRow(
-                              onSelectChanged: (value) {},
-                              cells: <DataCell>[
-                                DataCell(Text(
-                                  '00000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '000000000000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'NAC',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '5%',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                              ],
-                            ),
-                            DataRow(
-                              onSelectChanged: (value) {},
-                              cells: <DataCell>[
-                                DataCell(Text(
-                                  '00000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '000000000000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'NAC',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '5%',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                              ],
-                            ),
-                            DataRow(
-                              onSelectChanged: (value) {},
-                              cells: <DataCell>[
-                                DataCell(Text(
-                                  '00000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '000000000000',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'NAC',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  '5%',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                                DataCell(Text(
-                                  'R\$ 000,00',
-                                  style: TextStyle(
-                                      color: PaletteColors.grey,
-                                      fontFamily: 'Nunito',
-                                      fontSize: 12),
-                                )),
-                              ],
-                            ),
-                          ],
-                        ),
+                    SizedBox(width: 30),
+                    Container(
+                      width: width * 0.09,
+                      child: TextCustom(
+                        text: 'Código',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
+                    Container(
+                      width: width * 0.11,
+                      child: TextCustom(
+                        text: 'Rêferencia',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Quantidade',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Fabricante',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.08,
+                      child: TextCustom(
+                        text: 'Valor Tabela',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Desconto',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Valor Unitario',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Total',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+
                   ],
+                ),
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: 'R\$ 000.00',
+                  discount: '5%',
+                  value: 'R\$ 000.00',
+                  total:'R\$ 000.00' ,
+                ),
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: 'R\$ 000.00',
+                  discount: '5%',
+                  value: 'R\$ 000.00',
+                  total:'R\$ 000.00' ,
+                ),
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: 'R\$ 000.00',
+                  discount: '5%',
+                  value: 'R\$ 000.00',
+                  total:'R\$ 000.00' ,
                 ),
                 SizedBox(height: 10),
                 Row(
@@ -588,16 +405,20 @@ class _PriceScreenState extends State<PriceScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TextCustom(
-                          text: '   Observação',
-                          size: 14.0,
-                          color: PaletteColors.primaryColor,
-                          fontFamily: 'Nunito',
-                          fontWeight: FontWeight.bold,
-                          textAlign: TextAlign.center,
+                        Container(
+                          width: width * 0.5,
+                          child: TextCustom(
+                            text: '   Observação',
+                            size: 14.0,
+                            color: PaletteColors.primaryColor,
+                            fontFamily: 'Nunito',
+                            fontWeight: FontWeight.bold,
+
+                          ),
                         ),
-                        SizedBox(
+                       Container(
                           height: 75,
+                         width: width * 0.5,
                           child: InputRegister(
                             controller: _controllerDiscount,
                             hint: 'aaaabbbbbcccddddeeee',
@@ -671,7 +492,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                       color: PaletteColors.grey,
                                       fontFamily: 'Nunito',
                                       fontWeight: FontWeight.normal,
-                                      textAlign: TextAlign.center,
+                                      
                                     ),
                                     TextCustom(
                                       text: 'R\$ 000,00',
@@ -679,7 +500,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                       color: PaletteColors.grey,
                                       fontFamily: 'Nunito',
                                       fontWeight: FontWeight.normal,
-                                      textAlign: TextAlign.center,
+                                      
                                     ),
                                     TextCustom(
                                       text: 'R\$ 000,00',
@@ -687,7 +508,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                       color: PaletteColors.grey,
                                       fontFamily: 'Nunito',
                                       fontWeight: FontWeight.normal,
-                                      textAlign: TextAlign.center,
+                                      
                                     ),
                                     TextCustom(
                                       text: 'R\$ 000,00',
@@ -695,7 +516,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                       color: PaletteColors.grey,
                                       fontFamily: 'Nunito',
                                       fontWeight: FontWeight.bold,
-                                      textAlign: TextAlign.center,
+                                      
                                     ),
                                   ],
                                 ),
@@ -787,7 +608,7 @@ class _PriceScreenState extends State<PriceScreen> {
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.bold,
-                      textAlign: TextAlign.center,
+                      
                     ),
                     SizedBox(width: 20),
                     TextCustom(
@@ -796,7 +617,7 @@ class _PriceScreenState extends State<PriceScreen> {
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ],
                 ),
@@ -804,138 +625,84 @@ class _PriceScreenState extends State<PriceScreen> {
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Qtd',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.07,
+
+                      child: TextCustom(
+                        text: 'Qtd',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
-                    SizedBox(width: 25),
-                    TextCustom(
-                      text: 'Descrição',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.27 ,
+                      child: TextCustom(
+                        text: 'Descrição',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
-                    SizedBox(width: 360),
-                    TextCustom(
-                      text: 'Valor Tabela',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.08 ,
+                      child: TextCustom(
+                        text: 'Valor Tabela',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
-                    SizedBox(width: 35),
-                    TextCustom(
-                      text: 'Desconto',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Desconto',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
-                    SizedBox(width: 35),
-                    TextCustom(
-                      text: 'Valor Unitário',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.09 ,
+                      child: TextCustom(
+                        text: 'Valor Unitário',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
-                    SizedBox(width: 35),
-                    TextCustom(
-                      text: 'Total',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.08 ,
+                      child: TextCustom(
+                        text: 'Total',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                        
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(height: 8),
-                Row(
-                  children: [
-                    Container(
-                      height: 65,
-                      width: 1336,
-                      decoration: BoxDecoration(
-                        color: PaletteColors.lightGrey,
-                      ),
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '1',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 35),
-                              TextCustom(
-                                text:
-                                    '\nMang(ND12) 3/4 3120PS1 Fem GIR 0° / Macho 0° 1800mm\nAplic: D6N - Motor -> Bomba Principal',
-                                maxLines: 4,
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 46),
-                              TextCustom(
-                                text: 'R\$ 000,00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 50),
-                              TextCustom(
-                                text: '5%',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 72),
-                              TextCustom(
-                                text: 'R\$ 000,00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 60),
-                              TextCustom(
-                                text: 'R\$ 000,00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                ListClient(
+                  hovercolor: Colors.white,
+                  qtd: '00',
+                  description: '\nMang.(ND12) 3/4 3120PSI Fem GIR 0º / Macho 0º * 1800mm\nAplic: D6N - Motor -> Bomba Principal',
+                  valuetable: 'R\$ 000.00',
+                  discount: '5%',
+                  value: 'R\$ 000.00',
+                  total:'R\$ 000.00' ,
                 ),
                 SizedBox(height: 4),
                 Padding(
@@ -997,7 +764,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                         color: PaletteColors.grey,
                                         fontFamily: 'Nunito',
                                         fontWeight: FontWeight.normal,
-                                        textAlign: TextAlign.center,
+                                        
                                       ),
                                       TextCustom(
                                         text: 'R\$ 000,00',
@@ -1005,7 +772,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                         color: PaletteColors.grey,
                                         fontFamily: 'Nunito',
                                         fontWeight: FontWeight.normal,
-                                        textAlign: TextAlign.center,
+                                        
                                       ),
                                       TextCustom(
                                         text: 'R\$ 000,00',
@@ -1013,7 +780,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                         color: PaletteColors.grey,
                                         fontFamily: 'Nunito',
                                         fontWeight: FontWeight.bold,
-                                        textAlign: TextAlign.center,
+                                        
                                       ),
                                     ],
                                   ),

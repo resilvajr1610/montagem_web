@@ -73,7 +73,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
     final heigth = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
@@ -90,9 +90,6 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
         child: SingleChildScrollView(
           physics: NeverScrollableScrollPhysics(),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
@@ -125,20 +122,23 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
               SizedBox(height: 35),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 30),
+                  SizedBox(width: 30),
+                  Container(
+                    width: width * 0.12,
+
                     child: TextCustom(
                       text: 'Ordem de Produção',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25),
+                  Container(
+                    width: width * 0.10,
                     child: TextCustom(
+
                       text: 'Orçamento Whintor',
                       maxLines: 4,
                       size: 14.0,
@@ -148,48 +148,48 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       textAlign: TextAlign.start,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 25),
+                  Container(
+                    width: width * 0.12,
                     child: TextCustom(
                       text: 'Data/ Hora',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 70),
+                  Container(
+                    width: width * 0.22,
                     child: TextCustom(
                       text: 'Cliente',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 297),
+                  Container(
+                    width: width * 0.09,
                     child: TextCustom(
                       text: 'Prioridade',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 80),
+                  Container(
+                    width: width * 0.1,
                     child: TextCustom(
                       text: 'Status',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                      
                     ),
                   ),
                 ],

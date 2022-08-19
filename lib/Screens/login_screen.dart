@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SizedBox(height: 207),
               Container(
-                width: 400,
+                width: 500,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(20.0),
@@ -54,69 +54,97 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: height * 0.06),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(width: 78),
-                        TextCustom(
-                          text: "E-Mail",
-                          color: PaletteColors.primaryColor,
-                          size: 14.0,
-                          fontFamily: 'Nunito',
-                          textAlign: TextAlign.center,
+                        SizedBox(width: 20),
+                        Container(
+                          width: width * 0.18,
+                          child: TextCustom(
+                            text: "E-Mail",
+                            color: PaletteColors.primaryColor,
+                            size: 14.0,
+                            fontFamily: 'Nunito',
+                            textAlign: TextAlign.start,
+                          ),
                         ),
                       ],
                     ),
-                    InputRegister(
-                      controller: _controllerEmail,
-                      hint: 'E-mail',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.16,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.white,
-                      background: PaletteColors.white,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: width * 0.18,
+                          child: InputRegister(
+                            controller: _controllerEmail,
+                            hint: 'E-mail',
+                            fonts: 14.0,
+                            keyboardType: TextInputType.text,
+                            width: width * 0.18,
+                            sizeIcon: 0.01,
+                            icons: Icons.height,
+                            colorBorder: PaletteColors.white,
+                            background: PaletteColors.white,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: height * 0.02),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(width: 78),
-                        TextCustom(
-                          text: "Senha",
-                          color: PaletteColors.primaryColor,
-                          size: 14.0,
-                          fontFamily: 'Nunito',
-                          textAlign: TextAlign.center,
-                        ),
+                        SizedBox(width: 20),
+                        Container(
+                          width: width * 0.18,
+                          child: TextCustom(
+                            text: "Senha",
+                            color: PaletteColors.primaryColor,
+                            size: 14.0,
+                            fontFamily: 'Nunito',
+                            textAlign: TextAlign.start,
+                          ),
+                        )
                       ],
                     ),
-                    InputPassword(
-                      controller: _controllerPassword,
-                      hint: '********',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.visiblePassword,
-                      obscure: visiblePassword,
-                      width: width * 0.16,
-                      colorIcon: PaletteColors.primaryColor,
-                      colorBorder: PaletteColors.white,
-                      background: PaletteColors.white,
-                      iconbackground: PaletteColors.white,
-                      icons: Icons.height,
-                      showPassword: visiblePassword,
-                      onPressed: () {
-                        setState(() {
-                          if (visiblePassword == false) {
-                            visiblePassword = true;
-                          } else {
-                            visiblePassword = false;
-                          }
-                        });
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: width * 0.18,
+                          child: InputPassword(
+                            controller: _controllerPassword,
+                            hint: '********',
+                            fonts: 14.0,
+                            keyboardType: TextInputType.visiblePassword,
+                            obscure: visiblePassword,
+                            width: width * 0.18,
+                            colorIcon: PaletteColors.primaryColor,
+                            colorBorder: PaletteColors.white,
+                            background: PaletteColors.white,
+                            iconbackground: PaletteColors.white,
+                            icons: Icons.height,
+                            showPassword: visiblePassword,
+                            onPressed: () {
+                              setState(() {
+                                if (visiblePassword == false) {
+                                  visiblePassword = true;
+                                } else {
+                                  visiblePassword = false;
+                                }
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: height * 0.05),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ButtonCustom(
-                        widthCustom: 0.20,
+                        widthCustom: 0.17,
                         heightCustom: 0.07,
                         text: "Entrar",
                         size: 14.0,

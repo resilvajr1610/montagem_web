@@ -1,4 +1,7 @@
+import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
+
 import '../Utils/exports.dart';
+import '../Widgets/list_material.dart';
 
 class ProductionScreen extends StatefulWidget {
 
@@ -36,7 +39,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
 
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 100.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 60.0),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -77,37 +80,45 @@ class _ProductionScreenState extends State<ProductionScreen> {
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Data',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+                      width: width * 0.11,
+                      child: TextCustom(
+                        text: 'Data',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-
-                    SizedBox(width: 150),
-                    TextCustom(
-                      text: 'Orçamento Whintor',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+                      width: width * 0.12,
+                      child: TextCustom(
+                        text: 'Orçamento Whintor',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 50),
-                    TextCustom(
-                      text: 'Ordem de Produção',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+                      width: width * 0.1,
+                      child: TextCustom(
+                        text: 'Ordem de Produção',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 50),
-                    TextCustom(
-                      text: 'Prioridade',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
+                    Container(
+                      width: width * 0.10,
+                      child: TextCustom(
+                        text: 'Prioridade',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
 
 
@@ -117,53 +128,59 @@ class _ProductionScreenState extends State<ProductionScreen> {
                 Row(
                   children: [
                     SizedBox(width: 20),
-                    InputRegister(
-                      controller: _controllerNumberAssembly,
-                      hint: '00/00/0000 00:00',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.09,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.11,
+                      child: InputRegister(
+                        controller: _controllerNumberAssembly,
+                        hint: '00/00/0000 00:00',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.09,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 22),
-                    InputRegister(
-                      controller: _controllerWhintor,
-                      hint: '00000000000000',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.09,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.12,
+                      child: InputRegister(
+                        controller: _controllerWhintor,
+                        hint: '00000000000000',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.09,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 20),
-                    InputRegister(
-                      controller: _controllerWhintor,
-                      hint: '00000000',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.08,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.1,
+                      child: InputRegister(
+                        controller: _controllerWhintor,
+                        hint: '00000000',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.08,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 40),
-                    SizedBox(
-                      height: 45,
-                      width: 175,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: PaletteColors.inputGrey),
+                    Container(
+                      width: width * 0.10,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: PaletteColors.inputGrey),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            iconSize: 40.0,
+                            iconSize: 30.0,
                             items: priority
                                 .map((priority) => DropdownMenuItem<String>(
                                 value: priority,
@@ -180,7 +197,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 360),
+                    Spacer(),
                     ButtonCustom(
                       widthCustom: 0.1,
                       heightCustom: 0.065,
@@ -193,36 +210,43 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Navigator.popAndPushNamed(context, '/home'),
                       font: 'Nunito',
                     ),
+                    SizedBox(width: width *0.06)
                   ],
                 ),
                 SizedBox(height: 2),
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Obs Vendedor',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.bold,
+                    Container(
+                      width: width * 0.46,
+                      child: TextCustom(
+                        text: 'Obs Vendedor',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 Row(
                   children: [
                     SizedBox(width: 20),
-                    InputRegister(
-                      controller: _controllerNumberAssembly,
-                      hint: 'aaaaabbbbbbbccccccdddddd',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.46,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.47,
+                      child: InputRegister(
+                        controller: _controllerNumberAssembly,
+                        hint: 'aaaaabbbbbbbccccccdddddd',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.46,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 350),
+                    Spacer(),
                     ButtonCustom(
                       widthCustom: 0.1,
                       heightCustom: 0.065,
@@ -235,36 +259,43 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Navigator.popAndPushNamed(context, '/home'),
                       font: 'Nunito',
                     ),
+                    SizedBox(width: width *0.06)
                   ],
                 ),
                 SizedBox(height: 2),
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Obs sobra a Produção',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.bold,
+                    Container(
+                      width: width * 0.47,
+                      child: TextCustom(
+                        text: 'Obs sobra a Produção',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 Row(
                   children: [
                     SizedBox(width: 20),
-                    InputRegister(
-                      controller: _controllerNumberAssembly,
-                      hint: 'aaaaabbbbbbbccccccdddddd',
-                      fonts: 14.0,
-                      keyboardType: TextInputType.number,
-                      width: width * 0.46,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
+                    Container(
+                      width: width * 0.47,
+                      child: InputRegister(
+                        controller: _controllerNumberAssembly,
+                        hint: 'aaaaabbbbbbbccccccdddddd',
+                        fonts: 14.0,
+                        keyboardType: TextInputType.number,
+                        width: width * 0.46,
+                        sizeIcon: 0.01,
+                        icons: Icons.height,
+                        colorBorder: PaletteColors.inputGrey,
+                        background: PaletteColors.inputGrey,
+                      ),
                     ),
-                    SizedBox(width: 350),
+                    Spacer(),
                     ButtonCustom(
                       widthCustom: 0.1,
                       heightCustom: 0.065,
@@ -277,6 +308,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Navigator.popAndPushNamed(context, '/home'),
                       font: 'Nunito',
                     ),
+                    SizedBox(width: width *0.06)
                   ],
                 ),
                 SizedBox(height: 8),
@@ -296,443 +328,93 @@ class _ProductionScreenState extends State<ProductionScreen> {
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Código',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.09,
+                      child: TextCustom(
+                        text: 'Código',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 45),
-                    TextCustom(
-                      text: 'Referência',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.11,
+                      child: TextCustom(
+                        text: 'Rêferencia',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 100),
-                    TextCustom(
-                      text: 'Quantidade',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Quantidade',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                    SizedBox(width: 70),
-                    TextCustom(
-                      text: 'Fabricante',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
+                    Container(
+                      width: width * 0.07,
+                      child: TextCustom(
+                        text: 'Fabricante',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-
                   ],
                 ),
+
                 SizedBox(height: 8),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: '',
+                  discount: '',
+                  value: '',
+                  total:'' ,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: '',
+                  discount: '',
+                  value: '',
+                  total:'' ,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: '',
+                  discount: '',
+                  value: '',
+                  total:'' ,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 15),
-                              TextCustom(
-                                text: '00000',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text:'00000000000',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 75),
-                              TextCustom(
-                                text: '00',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 125),
-                              TextCustom(
-                                text: 'NAC',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+                ListMaterial(
+                  hovercolor: Colors.white,
+                  cod: '00000',
+                  ref: '00000000000',
+                  qtd: '00',
+                  manufacturer: 'NAC',
+                  valuetable: '',
+                  discount: '',
+                  value: '',
+                  total:'' ,
                 ),
                 SizedBox(height: 20),
                 Row(
@@ -751,429 +433,182 @@ class _ProductionScreenState extends State<ProductionScreen> {
                 Row(
                   children: [
                     SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Nº',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Cod. Único',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Qtd',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Tipo Mang',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 15),
-                    TextCustom(
-                      text: 'Compri',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'T',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Term. 1',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 50),
-                    TextCustom(
-                      text: 'Term. 2',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 50),
-                    TextCustom(
-                      text: 'Capa',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Pos.',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Adap. 1',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'Adap. 2',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'AN',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(width: 30),
-                    TextCustom(
-                      text: 'MO',
-                      size: 14.0,
-                      color: PaletteColors.primaryColor,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-                      textAlign: TextAlign.center,
-                    ),
-
-                  ],
-                ),
-                Row(
-                  children: [
                     Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 10),
-                              TextCustom(
-                                text: '1',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text:'SE41-A',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 47),
-                              TextCustom(
-                                text: '3',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text: 'R2-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 42),
-                              TextCustom(
-                                text: '0,54',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 42),
-                              TextCustom(
-                                text: 'PP',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 28),
-                              TextCustom(
-                                text: 'FSP-12-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 28),
-                              TextCustom(
-                                text: 'FSP-12-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 26),
-                              TextCustom(
-                                text: 'CP2-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 96),
-                              TextCustom(
-                                text: ' X ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
+                      width: width * 0.05,
+                      child: TextCustom(
+                        text: 'N°',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
                       ),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
+                    ),
                     Container(
-                      height: 27,
-                      width: 1336,
-
-                      child: ListTile(
-                        onTap: () {},
-                        title: Padding(
-                          padding: EdgeInsets.all(2.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 10),
-                              TextCustom(
-                                text: '1',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text:'SE41-A',
-
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(width: 47),
-                              TextCustom(
-                                text: '3',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 45),
-                              TextCustom(
-                                text: 'R2-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 42),
-                              TextCustom(
-                                text: '0,54',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 42),
-                              TextCustom(
-                                text: 'PP',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 28),
-                              TextCustom(
-                                text: 'FSP-12-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 28),
-                              TextCustom(
-                                text: 'FSP-12-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 26),
-                              TextCustom(
-                                text: 'CP2-12',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 96),
-                              TextCustom(
-                                text: ' X ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(width: 40),
-                              TextCustom(
-                                text: ' ',
-                                size: 14.0,
-                                color: PaletteColors.grey,
-                                fontFamily: 'Nunito',
-                                fontWeight: FontWeight.normal,
-                                textAlign: TextAlign.center,
-                              ),
-
-                            ],
-                          ),
-                        ),
+                      width: width * 0.06,
+                      child: TextCustom(
+                        text: 'Cod. Único',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
                       ),
-                    )
+                    ),
+                    Container(
+                      width: width * 0.03,
+                      child: TextCustom(
+                        text: 'Qtd',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.05,
+                      child: TextCustom(
+                        text: 'Tipo Mang',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.04,
+                      child: TextCustom(
+                        text: 'Compri',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.02,
+                      child: TextCustom(
+                        text: 'T',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.055,
+                      child: TextCustom(
+                        text: 'Term.1',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.055,
+                      child: TextCustom(
+                        text: 'Term.2',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.04,
+                      child: TextCustom(
+                        text: 'Capa',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.04,
+                      child: TextCustom(
+                        text: 'Pos.',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.04,
+                      child: TextCustom(
+                        text: 'Adap.1',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.04,
+                      child: TextCustom(
+                        text: 'Adap.2',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.02,
+                      child: TextCustom(
+                        text: 'AN',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.02,
+                      child: TextCustom(
+                        text: 'MO',
+                        size: 14.0,
+                        color: PaletteColors.primaryColor,
+                        fontFamily: 'Nunito',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(height: 100)
+                ListHosesAssemble(
+                  hovercolor: PaletteColors.white,
+                  cod: 'SE41-A',
+                  qtd: '3',
+                  number: '1',
+                  type: 'R2-12',
+                  lenght: '0,54',
+                  t: 'PP',
+                  term1: 'FSP-12-12',
+                  term2: 'FSP-12-12',
+                  cape: 'CP2-12',
+                  pos: '',
+                  adap1: '',
+                  adap2: '',
+                  an: 'X',
+                  mo: '',),
+                ListHosesAssemble(
+                  hovercolor: PaletteColors.white,
+                  cod: 'SE41-A',
+                  qtd: '3',
+                  number: '2',
+                  type: 'R2-12',
+                  lenght: '0,54',
+                  t: 'PP',
+                  term1: 'FSP-12-12',
+                  term2: 'FSP-12-12',
+                  cape: 'CP2-12',
+                  pos: '',
+                  adap1: '',
+                  adap2: '',
+                  an: 'X',
+                  mo: '',)
+
+
 
               ],
             ),

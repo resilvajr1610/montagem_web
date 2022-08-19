@@ -1,3 +1,5 @@
+import 'package:montagem_web/Widgets/list_hoses_resume.dart';
+
 import '../Utils/exports.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -38,10 +40,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final heigth = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 100.0),
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(20),
           color: PaletteColors.white,
           boxShadow: [
             BoxShadow(
@@ -78,88 +80,109 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Row(
                 children: [
                   SizedBox(width: 30),
-                  TextCustom(
-                    text: 'Nº de montagem',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width * 0.11,
+                    child: TextCustom(
+                      text: 'Nº de montagem',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  SizedBox(width: 57),
-                  TextCustom(
-                    text: 'Orçamento Whintor',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width * 0.12,
+                    child: TextCustom(
+                      text: 'Orçamento Whintor',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  SizedBox(width: 54),
-                  TextCustom(
-                    text: 'Número OP',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width* 0.07,
+                    child: TextCustom(
+                      text: 'Número OP',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  SizedBox(width: 39),
-                  TextCustom(
-                    text: 'Cliente',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width *0.26,
+
+                    child: TextCustom(
+                      text: 'Cliente',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ],
               ), //Textos
               Row(
                 children: [
                   SizedBox(width: 20),
-                  InputRegister(
-                    controller: _controllerNumberAssembly,
-                    hint: '0000000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.number,
-                    width: width * 0.09,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width* 0.11,
+
+                    child: InputRegister(
+                      controller: _controllerNumberAssembly,
+                      hint: '0000000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.number,
+                      width: width * 0.09,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
-                  SizedBox(width: 5),
-                  InputRegister(
-                    controller: _controllerWhintor,
-                    hint: '00000000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.number,
-                    width: width * 0.1,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width* 0.12,
+
+                    child: InputRegister(
+                      controller: _controllerWhintor,
+                      hint: '00000000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.number,
+                      width: width * 0.1,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
-                  SizedBox(width: 5),
-                  InputRegister(
-                    controller: _controllerNumberOp,
-                    hint: '000000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.number,
-                    width: width * 0.06,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width * 0.07,
+                    child: InputRegister(
+                      controller: _controllerNumberOp,
+                      hint: '000000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.number,
+                      width: width * 0.06,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
-                  SizedBox(width: 5),
-                  InputRegister(
-                    controller: _controllerClient,
-                    hint: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.text,
-                    width: width * 0.25,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width * 0.22,
+                    child: InputRegister(
+                      controller: _controllerClient,
+                      hint: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.text,
+                      width: width * 0.25,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
                 ],
               ),
@@ -167,68 +190,82 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Row(
                 children: [
                   SizedBox(width: 30),
-                  TextCustom(
-                    text: 'Referência',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width *0.11,
+                    child: TextCustom(
+                      text: 'Referência',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  SizedBox(width: 98),
-                  TextCustom(
-                    text: 'Data inicial',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width:  width * 0.12,
+                    child: TextCustom(
+                      text: 'Data inicial',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                  SizedBox(width: 90),
-                  TextCustom(
-                    text: 'Data final',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: width * 0.12,
+                    child: TextCustom(
+                      text: 'Data final',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ],
               ), //Textos
               Row(
                 children: [
                   SizedBox(width: 20),
-                  InputRegister(
-                    controller: _controllerReference,
-                    hint: '0000000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.number,
-                    width: width * 0.09,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width* 0.11,
+                    child: InputRegister(
+                      controller: _controllerReference,
+                      hint: '0000000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.number,
+                      width: width * 0.09,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
-                  SizedBox(width: 5),
-                  InputRegister(
-                    controller: _controllerInitialDate,
-                    hint: '00/00/0000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.datetime,
-                    width: width * 0.09,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width * 0.12,
+                    child: InputRegister(
+                      controller: _controllerInitialDate,
+                      hint: '00/00/0000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.datetime,
+                      width: width * 0.09,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
-                  SizedBox(width: 5),
-                  InputRegister(
-                    controller: _controllerFinalDate,
-                    hint: '00/00/0000',
-                    fonts: 14.0,
-                    keyboardType: TextInputType.datetime,
-                    width: width * 0.08,
-                    sizeIcon: 0.01,
-                    icons: Icons.height,
-                    colorBorder: PaletteColors.inputGrey,
-                    background: PaletteColors.inputGrey,
+                  Container(
+                    width: width * 0.12,
+                    child: InputRegister(
+                      controller: _controllerFinalDate,
+                      hint: '00/00/0000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.datetime,
+                      width: width * 0.08,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                    ),
                   ),
                   SizedBox(width: 10),
                   Padding(
@@ -375,7 +412,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 },
                 hovercolor: PaletteColors.white,
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 20),
               Divider(),
               Row(
                 children: [
@@ -389,474 +426,209 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
+              SizedBox(height: 20),
               Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 1.0, horizontal: 7.0),
-                    child: Theme(
-                      data: Theme.of(context)
-                          .copyWith(dividerColor: Colors.transparent),
-                      child: DataTable(
-                        dividerThickness: 0.0,
-                        columnSpacing: 12.0,
-                        dataRowHeight: 30.0,
-                        columns: const <DataColumn>[
-                          DataColumn(
-                            label: Text(
-                              'Qtd',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Máquina',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Aplicação',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Tipo Mang',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Compri',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'T',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Term. 1',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Term. 2',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Capa',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Pos.',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Adap. 1',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'Adap. 2',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'AN',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'MO',
-                              style: TextStyle(
-                                  color: PaletteColors.primaryColor,
-                                  fontFamily: 'Nunito',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                        rows: const <DataRow>[
-                          DataRow(
-                            cells: <DataCell>[
-                              DataCell(Text(
-                                '3',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'D6N',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'Motor-> Bomba Principal',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'R2012',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0,54',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'PP',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'CP2-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'X',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                          DataRow(
-                            cells: <DataCell>[
-                              DataCell(Text(
-                                '3',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'D6N',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'Motor-> Bomba Principal',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'R2012',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0,54',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'PP',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'CP2-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'X',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                          DataRow(
-                            cells: <DataCell>[
-                              DataCell(Text(
-                                '3',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'D6N',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'Motor-> Bomba Principal',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'R2012',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '0,54',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'PP',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'FSP-12-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'CP2-12',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                'X',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                              DataCell(Text(
-                                '',
-                                style: TextStyle(
-                                    color: PaletteColors.grey,
-                                    fontFamily: 'Nunito',
-                                    fontSize: 12),
-                              )),
-                            ],
-                          ),
-                        ],
-                      ),
+                  SizedBox(width: 30),
+                  Container(
+                    width: width * 0.03,
+                    child: TextCustom(
+                      text: 'Qtd',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.05,
+                    child: TextCustom(
+                      text: 'Máquina',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.12,
+                    child: TextCustom(
+                      text: 'Aplicação',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.05,
+                    child: TextCustom(
+                      text: 'Tipo Mang',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.04,
+                    child: TextCustom(
+                      text: 'Compri',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.02,
+                    child: TextCustom(
+                      text: 'T',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.055,
+                    child: TextCustom(
+                      text: 'Term.1',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.055,
+                    child: TextCustom(
+                      text: 'Term.2',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.04,
+                    child: TextCustom(
+                      text: 'Capa',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.04,
+                    child: TextCustom(
+                      text: 'Pos.',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.04,
+                    child: TextCustom(
+                      text: 'Adap.1',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.04,
+                    child: TextCustom(
+                      text: 'Adap.2',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.02,
+                    child: TextCustom(
+                      text: 'AN',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width * 0.02,
+                    child: TextCustom(
+                      text: 'MO',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 800)
+              ListHosesResume(
+                hovercolor: Colors.white,
+                qtd: '3',
+                machine: 'D6N',
+                application: 'Motor -> Bomba Principal',
+                type: 'R2-12',
+                lenght: '0,54',
+                t: 'PP',
+                term1: 'FSP-12-12',
+                term2: 'FSP-12-12',
+                cape: 'CP2-12',
+                pos: '',
+                adap1: '',
+                adap2: '',
+                an: 'X',
+                mo: '',
+
+              ),
+              ListHosesResume(
+                hovercolor: Colors.white,
+                qtd: '3',
+                machine: 'D6N',
+                application: 'Motor -> Bomba Principal',
+                type: 'R2-12',
+                lenght: '0,54',
+                t: 'PP',
+                term1: 'FSP-12-12',
+                term2: 'FSP-12-12',
+                cape: 'CP2-12',
+                pos: '',
+                adap1: '',
+                adap2: '',
+                an: 'X',
+                mo: '',
+
+              ),
+              ListHosesResume(
+                hovercolor: Colors.white,
+                qtd: '3',
+                machine: 'D6N',
+                application: 'Motor -> Bomba Principal',
+                type: 'R2-12',
+                lenght: '0,54',
+                t: 'PP',
+                term1: 'FSP-12-12',
+                term2: 'FSP-12-12',
+                cape: 'CP2-12',
+                pos: '',
+                adap1: '',
+                adap2: '',
+                an: 'X',
+                mo: '',
+
+              ),
+              SizedBox(height: 40),
+
+
             ],
           ),
         ),
