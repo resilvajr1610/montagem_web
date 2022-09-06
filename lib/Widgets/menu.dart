@@ -1,5 +1,7 @@
 
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../Utils/exports.dart';
 
 class Menu extends StatelessWidget {
@@ -77,7 +79,7 @@ class Menu extends StatelessWidget {
                   padding: const EdgeInsets.all(24.0),
                   child: IconButton(
                       icon: Icon(Icons.logout,color: Colors.white,size: 30),
-                    onPressed: () {  },
+                    onPressed: ()=>FirebaseAuth.instance.signOut().then((value) => Navigator.pushReplacementNamed(context, '/login'))
                   ),
                 )
               ],
