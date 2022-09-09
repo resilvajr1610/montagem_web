@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Utils/exports.dart';
 
@@ -17,9 +18,13 @@ void main ()async{
 
   String route = '/login';
 
+  if(FirebaseAuth.instance.currentUser!=null){
+    route = '/home';
+  }
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    //home: ProductionScreen(),
+    // home: HomeScreen(),
     initialRoute:route,
     onGenerateRoute: Routes.generateRoute,
   ));

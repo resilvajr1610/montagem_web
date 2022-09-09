@@ -13,13 +13,13 @@ class ButtonCustom extends StatelessWidget{
 
   const ButtonCustom(
   {Key? key,
-    required this.font,
+    this.font = 'Nunito',
     required this.onPressed,
     required this.text,
-    required this.size,
-    required this.colorButton,
-    required this.colorText,
-    required this.colorBorder,
+    this.size = 20.0,
+    this.colorButton = PaletteColors.primaryColor,
+    this.colorText = PaletteColors.white,
+    this.colorBorder = PaletteColors.primaryColor,
     this.widthCustom = 1.0,
     this.heightCustom = 1.0
 }) : super(key: key);
@@ -33,18 +33,13 @@ class ButtonCustom extends StatelessWidget{
         primary: colorButton,
         minimumSize: Size(width*widthCustom! , height*heightCustom!),
         side:  BorderSide(width: 2,color : colorBorder,),
-
-
       ),
       onPressed: onPressed,
       child: Text(text,
         style: TextStyle(fontFamily: font, color: colorText,
         fontSize: size,fontWeight: FontWeight.bold
         ),
-
-
       ) ,
     );
   }
-
 }
