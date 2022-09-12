@@ -122,6 +122,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     icons: Icons.height,
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
+                    onChanged: (){},
                   ),
                 ),
                 Container(
@@ -136,6 +137,9 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     icons: Icons.height,
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
+                    onChanged: (){
+
+                    },
                   ),
                 ),
                 Container(
@@ -150,6 +154,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     icons: Icons.height,
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
+                    onChanged: (){},
                   ),
                 ),
                 Container(
@@ -164,6 +169,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     icons: Icons.height,
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
+                    onChanged: (){},
                   ),
                 ),
               ],

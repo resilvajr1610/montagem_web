@@ -14,6 +14,7 @@ class InputRegister extends StatelessWidget {
   final colorBorder;
   final background;
   int? maxline = 1;
+  var onChanged;
 
   InputRegister({
     required this.controller,
@@ -27,6 +28,7 @@ class InputRegister extends StatelessWidget {
     required this.icons,
     required this.colorBorder,
     required this.background,
+    required this.onChanged
   });
 
   @override
@@ -48,6 +50,7 @@ class InputRegister extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
+              onChanged: onChanged,
               controller: this.controller,
               textAlign: TextAlign.start,
               keyboardType: this.keyboardType,

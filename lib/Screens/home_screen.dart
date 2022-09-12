@@ -24,8 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool type = true;
   var time = 0;
   final cors = 'https://cors-anywhere.herokuapp.com/';
-  // final url = 'https://mauricio-produto.herokuapp.com/api/produto';
-  // final url = 'https://mauricio-produto.herokuapp.com/api/produto/status';
   final urlProdutos = 'http://206.84.60.186:8088/api/produto/passwd/P4\$\$';
   final urlClientes = 'http://206.84.60.186:8087/api/cliente/passwd/P4\$\$';
   // final url = 'https://jsonplaceholder.typicode.com/posts';

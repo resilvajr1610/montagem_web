@@ -153,6 +153,7 @@ class _PriceScreenState extends State<PriceScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Container(
@@ -167,6 +168,7 @@ class _PriceScreenState extends State<PriceScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Container(
@@ -219,6 +221,7 @@ class _PriceScreenState extends State<PriceScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     ButtonCustom(
@@ -429,6 +432,7 @@ class _PriceScreenState extends State<PriceScreen> {
                             icons: Icons.height,
                             colorBorder: PaletteColors.inputGrey,
                             background: PaletteColors.inputGrey,
+                            onChanged: (){},
                           ),
                         ),
                       ],

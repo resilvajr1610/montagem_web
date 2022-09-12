@@ -133,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           icons: Icons.height,
                           colorBorder: PaletteColors.white,
                           background: PaletteColors.white,
+                          onChanged: (){},
                         ),
                       ),
                     ],

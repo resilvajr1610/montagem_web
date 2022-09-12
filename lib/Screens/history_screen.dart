@@ -139,6 +139,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   Container(
@@ -154,6 +155,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   Container(
@@ -168,6 +170,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   Container(
@@ -182,6 +185,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                 ],
@@ -237,6 +241,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   Container(
@@ -251,6 +256,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   Container(
@@ -265,6 +271,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      onChanged: (){},
                     ),
                   ),
                   SizedBox(width: 10),

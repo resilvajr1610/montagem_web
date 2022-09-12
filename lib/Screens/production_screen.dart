@@ -140,6 +140,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Container(
@@ -154,6 +155,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Container(
@@ -168,6 +170,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Container(
@@ -244,6 +247,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Spacer(),
@@ -293,6 +297,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                         icons: Icons.height,
                         colorBorder: PaletteColors.inputGrey,
                         background: PaletteColors.inputGrey,
+                        onChanged: (){},
                       ),
                     ),
                     Spacer(),
