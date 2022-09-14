@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Utils/exports.dart';
 import 'package:http/http.dart' as http;
@@ -157,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(70.0),
       child: Container(
         alignment: Alignment.topLeft,
-
           child: Column(
             children: [
               TextCustom(
@@ -178,6 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ButtonCustom(
                 onPressed: ()=>apiCorsClientes(),
                 text: 'Sincronizar dados Clientes  ',
+                heightCustom: 0.05,
+                widthCustom: 0.1,
+              ),
+              SizedBox(height: 15),
+              ButtonCustom(
+                onPressed: ()=>launchUrl(Uri.parse(cors)),
+                text: 'Habilitar api',
                 heightCustom: 0.05,
                 widthCustom: 0.1,
               ),

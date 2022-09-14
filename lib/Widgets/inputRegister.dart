@@ -15,6 +15,7 @@ class InputRegister extends StatelessWidget {
   final background;
   int? maxline = 1;
   var onChanged;
+  bool enable;
 
   InputRegister({
     required this.controller,
@@ -28,7 +29,8 @@ class InputRegister extends StatelessWidget {
     required this.icons,
     required this.colorBorder,
     required this.background,
-    required this.onChanged
+    required this.onChanged,
+    this.enable = true
   });
 
   @override
@@ -45,11 +47,13 @@ class InputRegister extends StatelessWidget {
       decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: colorBorder)),
+          border: Border.all(color: colorBorder)
+      ),
       child: Row(
         children: [
           Expanded(
             child: TextFormField(
+              enabled: enable,
               onChanged: onChanged,
               controller: this.controller,
               textAlign: TextAlign.start,

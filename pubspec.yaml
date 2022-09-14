@@ -18,6 +18,8 @@ dependencies:
   cloud_firestore: ^2.4.0
   intl: ^0.17.0
   http:
+  url_launcher:
+  brasil_fields:
 
 dev_dependencies:
   flutter_test:

@@ -15,7 +15,6 @@ export '../Utils/colors.dart';
 
 export '../Models/list_buttom_model.dart';
 export '../Models/list_icon_model.dart';
-export '../Models/list_assemble_hoses_model.dart';
 
 export '../Widgets/text_custom.dart';
 export '../Widgets/buttom_custom.dart';

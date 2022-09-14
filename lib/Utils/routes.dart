@@ -3,17 +3,11 @@ import 'package:montagem_web/Screens/price_screen.dart';
 import 'package:montagem_web/Screens/production_screen.dart';
 
 import '../Utils/exports.dart';
-
-
-
-
 class Routes {
   static Route<dynamic>? generateRoute(RouteSettings settings){
     final args = settings.arguments;
 
     switch(settings.name){
-
-
       case "/login":
         return MaterialPageRoute(
             builder: (_) =>const LoginScreen()
@@ -30,8 +24,6 @@ class Routes {
         return MaterialPageRoute(
             builder: (_) => ProductionScreen(),
         );
-
-
 
       default :
         _erroRota();
