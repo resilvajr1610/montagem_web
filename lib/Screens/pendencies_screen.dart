@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../Utils/exports.dart';
 
 class PendenciesScreen extends StatefulWidget {
@@ -9,65 +11,27 @@ class PendenciesScreen extends StatefulWidget {
 
 class _PendenciesScreenState extends State<PendenciesScreen> {
 
-  int selectedText = 0;
-  List<ListButtomModel> row1 = [
-    ListButtomModel(
-        order: '0000000',
-        whintor: '00000000000',
-        date: '00/00/0000 00:00',
-        client: '29225 - IPIRANGA COMERCIO E SERVIÇOS LTDA ',
-        priority: 'Cliente Balcão',
-        status: 'Aguardando montador',
-        ButtomShow: false),
-  ];
-  List<ListButtomModel> row2 = [
-    ListButtomModel(
-        order: '0000000',
-        whintor: '00000000000',
-        date: '00/00/0000 00:00',
-        client: '29225 - IPIRANGA COMERCIO E SERVIÇOS LTDA ',
-        priority: 'Alta',
-        status: 'Aguardando montador',
-        ButtomShow: false),
-  ];
-  List<ListButtomModel> row3 = [
-    ListButtomModel(
-        order: '0000000',
-        whintor: '00000000000',
-        date: '00/00/0000 00:00',
-        client: '29225 - IPIRANGA COMERCIO E SERVIÇOS LTDA ',
-        priority: 'Média',
-        status: 'Aguardando montador',
-        ButtomShow: false),
-  ];
-  List<ListButtomModel> row4 = [
-    ListButtomModel(
-        order: '0000000',
-        whintor: '00000000000',
-        date: '00/00/0000 00:00',
-        client: '29225 - IPIRANGA COMERCIO E SERVIÇOS LTDA ',
-        priority: 'Baixa',
-        status: 'Aguardando montador',
-        ButtomShow: false),
-  ];
-  List<ListButtomModel> row5 = [
-    ListButtomModel(
-        order: '0000000',
-        whintor: '00000000000',
-        date: '00/00/0000 00:00',
-        client: '29225 - IPIRANGA COMERCIO E SERVIÇOS LTDA ',
-        priority: 'Baixa',
-        status: 'Aguardando montador',
-        ButtomShow: false),
-  ];
+  var _controllerItems = StreamController<QuerySnapshot>.broadcast();
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  List _allResult = [];
+  List <ListIconModel> listModel =[];
+  
+  _dataGet()async{
+    var data = await db.collection("assembly").get();
+    setState(() {
+      _allResult = data.docs;
+    });
+    return "complete";
+  }
 
-
+  @override
+  void initState() {
+    super.initState();
+    _dataGet();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
-
 
     final width = MediaQuery.of(context).size.width;
     final heigth = MediaQuery.of(context).size.height;
@@ -125,20 +89,17 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                   SizedBox(width: 30),
                   Container(
                     width: width * 0.12,
-
                     child: TextCustom(
                       text: 'Ordem de Produção',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      
                     ),
                   ),
                   Container(
                     width: width * 0.10,
                     child: TextCustom(
-
                       text: 'Orçamento Whintor',
                       maxLines: 4,
                       size: 14.0,
@@ -156,7 +117,6 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      
                     ),
                   ),
                   Container(
@@ -167,7 +127,6 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      
                     ),
                   ),
                   Container(
@@ -178,7 +137,6 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      
                     ),
                   ),
                   Container(
@@ -189,119 +147,62 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-                      
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 10),
+              Container(
+                height: heigth*0.8,
+                child: StreamBuilder(
+                  stream: _controllerItems.stream,
+                  builder: (context, snapshot) {
 
-              ListTileButtom(
-                order: row1[0].order,
-                whintor: row1[0].whintor,
-                date: row1[0].date,
-                client: row1[0].client,
-                priority: row1[0].priority,
-                status: row1[0].status,
-                showButtom: row1[0].ButtomShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      row1[0].ButtomShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      row1[0].ButtomShow = false;
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                      case ConnectionState.active:
+                      case ConnectionState.done:
+                        if(_allResult.length == 0){
+                          return Center(
+                              child: Text('Sem histórico',
+                                style: TextStyle(fontSize: 20,),)
+                          );
+                        }else {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                                itemCount: _allResult.length,
+                                itemBuilder: (BuildContext context, index) {
+                                  DocumentSnapshot item = _allResult[index];
+
+                                  listModel.add(
+                                      ListIconModel(date: item['data'], assembly: 'falta adicionar', client: '${item['codcli']} - ${item['cliente']}', number: 'falta adicionar', winthor: item['whinthor'])
+                                  );
+
+                                  return ListTileButtom(
+                                    order: 'falta adicionar',
+                                    whintor: item['whinthor'],
+                                    date: item['data'],
+                                    client: '${item['codcli']} - ${item['cliente']}',
+                                    priority: item['priority'],
+                                    status: 'definir os status',
+                                    showButtom: listModel[index].iconShow,
+                                    onTap: () {
+                                      setState(() {
+                                        listModel[index].iconShow==false?listModel[index].iconShow=true:listModel[index].iconShow=false;
+                                      });
+                                    },
+                                    hovercolor: Colors.white,
+                                  );
+                                }
+                            ),
+                          );
+                        }
                     }
-                  });
-                },
-                hovercolor: Colors.white,
+                  },
+                ),
               ),
-              ListTileButtom(
-                order: (row2[0].order),
-                whintor: (row2[0].whintor),
-                date: (row2[0].date),
-                client: (row2[0].client),
-                priority: (row2[0].priority),
-                status: (row2[0].status),
-                showButtom: row2[0].ButtomShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      row2[0].ButtomShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      row2[0].ButtomShow = false;
-                    }
-                  });
-                },
-                hovercolor: Colors.white,
-              ),
-              ListTileButtom(
-                order: (row3[0].order),
-                whintor: (row3[0].whintor),
-                date: (row3[0].date),
-                client: (row3[0].client),
-                priority: (row3[0].priority),
-                status: (row3[0].status),
-                showButtom: row3[0].ButtomShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      row3[0].ButtomShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      row3[0].ButtomShow = false;
-                    }
-                  });
-                },
-                hovercolor: Colors.white,
-              ),
-              ListTileButtom(
-                order: (row4[0].order),
-                whintor: (row4[0].whintor),
-                date: (row4[0].date),
-                client: (row4[0].client),
-                priority: (row4[0].priority),
-                status: (row4[0].status),
-                showButtom: row4[0].ButtomShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      row4[0].ButtomShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      row4[0].ButtomShow = false;
-                    }
-                  });
-                },
-                hovercolor: Colors.white,
-              ),
-              ListTileButtom(
-                order: (row5[0].order),
-                whintor: (row5[0].whintor),
-                date: (row5[0].date),
-                client: (row5[0].client),
-                priority: (row5[0].priority),
-                status: (row5[0].status),
-                showButtom: row5[0].ButtomShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      row5[0].ButtomShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      row5[0].ButtomShow = false;
-                    }
-                  });
-                },
-                hovercolor: Colors.white,
-              ),
-              SizedBox(height: 800),
             ],
           ),
         ),

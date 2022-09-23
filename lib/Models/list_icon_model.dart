@@ -5,9 +5,7 @@ class ListIconModel{
   final client;
   final number;
   final winthor;
-  bool iconShow ;
-
-
+  bool iconShow;
 
   ListIconModel({
     required this.date,
@@ -15,10 +13,6 @@ class ListIconModel{
     required this.client,
     required this.number,
     required this.winthor,
-    required this.iconShow,
-
-
-
+    this.iconShow = false,
   });
-
 }
