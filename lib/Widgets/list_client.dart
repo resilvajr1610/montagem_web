@@ -2,28 +2,24 @@ import '../Utils/exports.dart';
 
 class ListClient extends StatefulWidget {
 
-
- 
   final qtd;
   final description;
   final valuetable;
   final discount;
   final value;
   final total;
-
-
-
+  final onTap;
   Color hovercolor;
 
   ListClient({
     required this.hovercolor,
     this.qtd,
-
     this.description,
     this.valuetable,
     this.discount,
     this.value,
     this.total,
+    this.onTap
   });
 
   @override
@@ -44,13 +40,12 @@ class _ListClientState extends State<ListClient> {
       child: Container(
         color: widget.hovercolor,
         child: ListTile(
+          onTap: widget.onTap,
           title: Column(
             children: [
               Row(
-
                 children: [
                   SizedBox(width: 15),
-
                   Container(
                     width: width*0.07,
                     child: TextCustom(
@@ -59,7 +54,6 @@ class _ListClientState extends State<ListClient> {
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-
                     ),
                   ),
                   Container(

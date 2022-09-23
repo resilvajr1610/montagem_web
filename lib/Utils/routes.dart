@@ -1,4 +1,5 @@
 
+import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
 import 'package:montagem_web/Screens/production_screen.dart';
 
@@ -16,13 +17,13 @@ class Routes {
         return MaterialPageRoute(
             builder: (_) => NavigationScreen(index: 0)
         );
-      case "/price":
-        return MaterialPageRoute(
-            builder: (_) => PriceScreen(index: 4)
-        );
       case "/prod":
         return MaterialPageRoute(
             builder: (_) => ProductionScreen(),
+        );
+      case "/assembly":
+        return MaterialPageRoute(
+          builder: (_) => AssemblyScreen(),
         );
 
       default :

@@ -1,8 +1,12 @@
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:montagem_web/Models/save_list_model.dart';
+import 'package:montagem_web/Models/save_list_product.dart';
+import 'package:montagem_web/Models/search_numoriginal_model.dart';
 import 'package:montagem_web/Models/search_product_model.dart';
+import 'package:montagem_web/Screens/price_screen.dart';
 import '../Models/search_client_model.dart';
 import '../Utils/exports.dart';
 
@@ -20,7 +24,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   var _controllerDate = TextEditingController();
   var _controllerClientCod = TextEditingController();
   var _controllerClientName = TextEditingController();
-  var _controllerAffiliation = TextEditingController();
+  var _controllerAffiliation = TextEditingController(text: 'Belmap');
   var _controllerCodProduct = TextEditingController();
   var _controllerRef = TextEditingController();
   var _controllerQtd = TextEditingController();
@@ -39,14 +43,31 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   var _controllerMO = TextEditingController();
   List _allResultsClient = [];
   List _allResultsProd = [];
+  List _allResultsNumOriginal = [];
   List _resultsClient = [];
   List _resultsProd = [];
+  List _resultsNumOriginal = [];
   List <SaveListModel> _listSave = [];
+  List <SaveListProduct> listProduct = [];
   String valueClient='';
   String valueProd='';
+  String valueNumOriginal='';
   String id='';
+  String typePrice='';
+  String typeMarca='';
+  String term1Price='';
+  String term1Marca='';
+  String term2Price='';
+  String term2Marca='';
+  String case1Price='';
+  String case1Marca='';
+  String adap1Price='';
+  String adap1Marca='';
+  String adap2Price='';
+  String adap2Marca='';
 
   _dataClient(String codcli) async {
+
     DocumentSnapshot snapshot = await db.collection("clientes").doc(codcli).get();
     Map<String, dynamic>? dataMap = snapshot.data() as Map<String, dynamic>?;
     setState(() {
@@ -57,8 +78,10 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     var data = await db.collection("produtos").limit(100).get();
     setState(() {
       _allResultsProd = data.docs;
+      _allResultsNumOriginal = data.docs;
     });
     resultSearchListClient();
+    _searchNumOriginal();
     return "complete";
   }
 
@@ -77,6 +100,9 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   }
   _searchProd() {
     resultSearchListProd('');
+  }
+  _searchNumOriginal() {
+    resultSearchListNumOriginal();
   }
   resultSearchListClient() {
     var showResults = [];
@@ -145,7 +171,21 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     }
     setState(() {
       _resultsProd = showResults;
-      print(_resultsProd.length);
+    });
+  }
+
+  resultSearchListNumOriginal() {
+    var showResults = [];
+
+      for (var items in _allResultsNumOriginal) {
+        var item = SearchNumOriginalModel.fromSnapshot(items).name.toLowerCase();
+
+        if (item.contains(_controllerType.text.toLowerCase())) {
+          showResults.add(items);
+        }
+      }
+    setState(() {
+      _resultsNumOriginal = showResults;
     });
   }
 
@@ -153,6 +193,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     CollectionReference create = db.collection("assembly");
     setState(() {
       id = create.doc().id;
+      _controllerDate = TextEditingController(text: DateFormat('dd/MM/yyyy').format(DateTime.now()));
     });
   }
 
@@ -168,6 +209,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     _controllerCase.addListener(_searchProd);
     _controllerAdap1.addListener(_searchProd);
     _controllerAdap2.addListener(_searchProd);
+    _controllerType.addListener(_searchNumOriginal);
   }
 
   @override
@@ -270,6 +312,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                 Container(
                   width: width * 0.12,
                   child: InputRegister(
+                    enable: false,
                     controller: _controllerDate,
                     hint: '00/00/0000',
                     fonts: 14.0,
@@ -299,7 +342,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
                     onChanged: (value){
-                      print(value);
                       setState(() {
                         if(value != ''){
                           _dataClient(value.toString());
@@ -628,7 +670,17 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
-                      onChanged: (value){},
+                      onChanged: (value){
+                        setState(() {
+                          if(value != ''){
+                            valueNumOriginal =value.toString();
+                            resultSearchListNumOriginal();
+                          }else{
+                            _controllerType = TextEditingController(text: '');
+                            valueNumOriginal='';
+                          }
+                        });
+                      },
                     ),
                   ),
                   Container(
@@ -857,22 +909,71 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             return ListTile(
                               title: Text('CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
-                                if(_controllerTerm1.text.isNotEmpty && valueProd == _controllerTerm1.text){
-                                  _controllerTerm1 = TextEditingController(text: item['codprod']);
+                                if(_controllerCodProduct.text.isNotEmpty){
+                                  if(_controllerTerm1.text.isNotEmpty && valueProd == _controllerTerm1.text){
+                                    _controllerTerm1 = TextEditingController(text: item['codprod']);
+                                    term1Price = item['preco'];
+                                    term1Marca = item['marca'];
+                                  }
+                                  if(_controllerTerm2.text.isNotEmpty && valueProd == _controllerTerm2.text){
+                                    _controllerTerm2 = TextEditingController(text: item['codprod']);
+                                    term2Price = item['preco'];
+                                    term2Marca = item['marca'];
+                                  }
+                                  if(_controllerCase.text.isNotEmpty && valueProd == _controllerCase.text){
+                                    _controllerCase = TextEditingController(text: item['codprod']);
+                                    case1Price = item['preco'];
+                                    case1Marca = item['marca'];
+                                  }
+                                  if(_controllerAdap1.text.isNotEmpty && valueProd == _controllerAdap1.text){
+                                    _controllerAdap1 = TextEditingController(text: item['codprod']);
+                                    adap1Price = item['preco'];
+                                    adap1Marca = item['marca'];
+                                  }
+                                  if(_controllerAdap2.text.isNotEmpty && valueProd == _controllerAdap2.text){
+                                    _controllerAdap2 = TextEditingController(text: item['codprod']);
+                                    adap2Price = item['preco'];
+                                    adap2Marca = item['marca'];
+                                  }
+                                  valueProd='';
+                                  listProduct.add(
+                                      SaveListProduct(
+                                          cod: item['codprod'],
+                                          codUnico: _controllerCodProduct.text,
+                                          ref: 'ref',
+                                          qtd: '0',
+                                          fabricante: item['marca'],
+                                          valorTabela: item['preco'],
+                                          desconto: '0',
+                                          valorUnitario: item['preco'],
+                                          total: item['preco']
+                                      )
+                                  );
                                 }
-                                if(_controllerTerm2.text.isNotEmpty && valueProd == _controllerTerm2.text){
-                                  _controllerTerm2 = TextEditingController(text: item['codprod']);
-                                }
-                                if(_controllerCase.text.isNotEmpty && valueProd == _controllerCase.text){
-                                  _controllerCase = TextEditingController(text: item['codprod']);
-                                }
-                                if(_controllerAdap1.text.isNotEmpty && valueProd == _controllerAdap1.text){
-                                  _controllerAdap1 = TextEditingController(text: item['codprod']);
-                                }
-                                if(_controllerAdap2.text.isNotEmpty && valueProd == _controllerAdap2.text){
-                                  _controllerAdap2 = TextEditingController(text: item['codprod']);
-                                }
-                                valueProd='';
+                              }),
+                            );
+                          }
+                      );
+                    }
+                )
+            ):Container(),
+            valueNumOriginal!=''? Container(
+                height: heigth*0.3,
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: _controllerItems.stream,
+                    builder: (context,snapshot){
+                      return ListView.builder(
+                          itemCount: _resultsNumOriginal.length,
+                          itemBuilder: (contect,index){
+                            DocumentSnapshot item = _resultsNumOriginal[index];
+
+                            return ListTile(
+                              title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
+                              onTap: ()=>setState(() {
+                                _controllerType = TextEditingController(text: item['numoriginal']);
+                                typePrice = item['preco'];
+                                typeMarca = item['marca'];
+                                valueNumOriginal='';
                               }),
                             );
                           }
@@ -1131,44 +1232,62 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        setState(() {
-                          _listSave.add(
-                              SaveListModel(
-                                cod: _controllerCodProduct!=null?_controllerCodProduct.text:'',
-                                ref: _controllerRef!=null?_controllerRef.text:'',
-                                qtd: _controllerQtd!=null?_controllerQtd.text:'',
-                                maker: _controllerMaker!=null?_controllerMaker.text:'',
-                                application: _controllerAplication!=null?_controllerAplication.text:'',
-                                size: _controllerSize!=null?_controllerSize.text:'',
-                                type: _controllerType!=null?_controllerType.text:'',
-                                comp: _controllerComp!=null?_controllerComp.text:'',
-                                term1: _controllerTerm1!=null?_controllerTerm1.text:'',
-                                term2: _controllerTerm2!=null?_controllerTerm2.text:'',
-                                case1: _controllerCase!=null?_controllerCase.text:'',
-                                pos: _controllerPos!=null?_controllerPos.text:'',
-                                adap1: _controllerAdap1!=null?_controllerAdap1.text:'',
-                                adap2: _controllerAdap2!=null?_controllerAdap2.text:'',
-                                anel: _controllerAN!=null?_controllerAN.text:'',
-                                mola: _controllerMO!=null?_controllerMO.text:''
-                             )
-                          );
-                          _controllerCodProduct.clear();
-                          _controllerRef.clear();
-                          _controllerQtd.clear();
-                          _controllerMaker.clear();
-                          _controllerAplication.clear();
-                          _controllerSize.clear();
-                          _controllerType.clear();
-                          _controllerComp.clear();
-                          _controllerTerm1.clear();
-                          _controllerTerm2.clear();
-                          _controllerCase.clear();
-                          _controllerPos.clear();
-                          _controllerAdap1.clear();
-                          _controllerAdap2.clear();
-                          _controllerAN.clear();
-                          _controllerMO.clear();
-                        });
+                        if(_controllerClientName.text.isNotEmpty && _controllerCodProduct.text.isNotEmpty && _controllerMaker.text.isNotEmpty && _controllerType.text.isNotEmpty){
+                          setState(() {
+                            _listSave.add(
+                                SaveListModel(
+                                    cod: _controllerCodProduct!=null?_controllerCodProduct.text:'',
+                                    ref: _controllerRef!=null?_controllerRef.text:'',
+                                    qtd: _controllerQtd!=null?_controllerQtd.text:'',
+                                    maker: _controllerMaker!=null?_controllerMaker.text:'',
+                                    application: _controllerAplication!=null?_controllerAplication.text:'',
+                                    size: _controllerSize!=null?_controllerSize.text:'',
+                                    type: _controllerType!=null?_controllerType.text:'',
+                                    typePrice: typePrice,
+                                    typeMarca: typeMarca,
+                                    comp: _controllerComp!=null?_controllerComp.text:'',
+                                    term1: _controllerTerm1!=null?_controllerTerm1.text:'',
+                                    term1Price: term1Price,
+                                    term1Marca: term1Marca,
+                                    term2: _controllerTerm2!=null?_controllerTerm2.text:'',
+                                    term2Price: term2Price,
+                                    term2Marca: term2Marca,
+                                    case1: _controllerCase!=null?_controllerCase.text:'',
+                                    case1Price: case1Price,
+                                    case1Marca: case1Marca,
+                                    pos: _controllerPos!=null?_controllerPos.text:'',
+                                    adap1: _controllerAdap1!=null?_controllerAdap1.text:'',
+                                    adap1Price: adap1Price,
+                                    adap1Marca: adap1Marca,
+                                    adap2: _controllerAdap2!=null?_controllerAdap2.text:'',
+                                    adap2Price: adap2Price,
+                                    adap2Marca: adap2Marca,
+                                    anel: _controllerAN!=null?_controllerAN.text:'',
+                                    mola: _controllerMO!=null?_controllerMO.text:'',
+                                    valorTabela: 'R\S 0,00',
+                                    desconto: 'R\S 0,00',
+                                    valorUnitario: 'R\S 0,00',
+                                    total: 'R\S 0,00',
+                                )
+                            );
+                            _controllerCodProduct.clear();
+                            _controllerRef.clear();
+                            _controllerQtd.clear();
+                            _controllerMaker.clear();
+                            _controllerAplication.clear();
+                            _controllerSize.clear();
+                            _controllerType.clear();
+                            _controllerComp.clear();
+                            _controllerTerm1.clear();
+                            _controllerTerm2.clear();
+                            _controllerCase.clear();
+                            _controllerPos.clear();
+                            _controllerAdap1.clear();
+                            _controllerAdap2.clear();
+                            _controllerAN.clear();
+                            _controllerMO.clear();
+                          });
+                        }
                       }
                     ),
                   ),
@@ -1201,12 +1320,11 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                SizedBox(width: 530),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 100),
                   child: ButtonCustom(
                     widthCustom: 0.1,
                     heightCustom: 0.07,
@@ -1215,78 +1333,82 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     colorText: PaletteColors.white,
                     colorButton: PaletteColors.primaryColor,
                     colorBorder: PaletteColors.primaryColor,
+                    font: 'Nunito',
                     onPressed: () {
-                      _listSave.add(
-                          SaveListModel(
-                              cod: _controllerCodProduct!=null?_controllerCodProduct.text:'',
-                              ref: _controllerRef!=null?_controllerRef.text:'',
-                              qtd: _controllerQtd!=null?_controllerQtd.text:'',
-                              maker: _controllerMaker!=null?_controllerMaker.text:'',
-                              application: _controllerAplication!=null?_controllerAplication.text:'',
-                              size: _controllerSize!=null?_controllerSize.text:'',
-                              type: _controllerType!=null?_controllerType.text:'',
-                              comp: _controllerComp!=null?_controllerComp.text:'',
-                              term1: _controllerTerm1!=null?_controllerTerm1.text:'',
-                              term2: _controllerTerm2!=null?_controllerTerm2.text:'',
-                              case1: _controllerCase!=null?_controllerCase.text:'',
-                              pos: _controllerPos!=null?_controllerPos.text:'',
-                              adap1: _controllerAdap1!=null?_controllerAdap1.text:'',
-                              adap2: _controllerAdap2!=null?_controllerAdap2.text:'',
-                              anel: _controllerAN!=null?_controllerAN.text:'',
-                              mola: _controllerMO!=null?_controllerMO.text:''
-                          )
-                      );
                       List aux = [];
+                      List auxPrice = [];
                       for(var i=0;_listSave.length>i;i++){
-                       aux.add('${_listSave[i].cod}#${_listSave[i].ref}#${_listSave[i].qtd}#${_listSave[i].maker}#${_listSave[i].application}#${_listSave[i].type}#${_listSave[i].comp}#${_listSave[i].size}#${_listSave[i].term1}#${_listSave[i].term2}#${_listSave[i].case1}#${_listSave[i].pos}#${_listSave[i].adap1}#${_listSave[i].adap2}#${_listSave[i].anel}#${_listSave[i].mola}');
+                       aux.add(
+                           'cod#${_listSave[i].cod}#ref#${_listSave[i].ref}#qtd#${_listSave[i].qtd}#maker#${_listSave[i].maker}'
+                           '#aplication#${_listSave[i].application}#numoriginal#${_listSave[i].type}#comprimento#${_listSave[i].comp}'
+                           '#type#${_listSave[i].size}#typePrice#${_listSave[i].typePrice}#typeMarca#${_listSave[i].typeMarca}'
+                           '#term1#${_listSave[i].term1}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
+                           '#term2#${_listSave[i].term2}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
+                           '#capa#${_listSave[i].case1}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
+                           '#pos#${_listSave[i].pos}#adap1#${_listSave[i].adap1}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
+                           '#adap2#${_listSave[i].adap2}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}#anel#${_listSave[i].anel}#mola#${_listSave[i].mola}'
+                       );
                       }
-                      FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                       'id':id,
-                        'data':_controllerDate!=null?_controllerDate.text:'',
-                        'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
-                        'cliente':_controllerClientName!=null?_controllerClientName.text:'',
-                        'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
-                        'produtos':aux.toList(),
-                        'dateOrder':DateTime.now()
-                      }).then((value){
-                        _listSave.clear();
-                        _controllerCodProduct.clear();
-                        _controllerRef.clear();
-                        _controllerQtd.clear();
-                        _controllerMaker.clear();
-                        _controllerAplication.clear();
-                        _controllerSize.clear();
-                        _controllerType.clear();
-                        _controllerComp.clear();
-                        _controllerTerm1.clear();
-                        _controllerTerm2.clear();
-                        _controllerCase.clear();
-                        _controllerPos.clear();
-                        _controllerAdap1.clear();
-                        _controllerAdap2.clear();
-                        _controllerAN.clear();
-                        _controllerMO.clear();
-                      });
+                      for(var i=0;listProduct.length>i;i++){
+                        auxPrice.add(
+                            'cod#${listProduct[i].cod}#codUnico#${listProduct[i].codUnico}#ref#${listProduct[i].ref}#qtd#${listProduct[i].qtd}#'
+                            'fabricante#${listProduct[i].fabricante}#valorTabela#${listProduct[i].valorTabela}#desconto#${listProduct[i].desconto}#'
+                            'valorUnitario#${listProduct[i].valorUnitario}#total#${listProduct[i].total}'
+                        );
+                      }
+                      if(aux.length != 0 ){
+                        FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                          'id':id,
+                          'data':_controllerDate!=null?_controllerDate.text:'',
+                          'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
+                          'cliente':_controllerClientName!=null?_controllerClientName.text:'',
+                          'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
+                          'produtos':aux.toList(),
+                          'prodPrecos':auxPrice.toList(),
+                          'dateOrder':DateTime.now()
+                        }).then((value){
+                          _controllerCodProduct.clear();
+                          _controllerRef.clear();
+                          _controllerQtd.clear();
+                          _controllerMaker.clear();
+                          _controllerAplication.clear();
+                          _controllerSize.clear();
+                          _controllerType.clear();
+                          _controllerComp.clear();
+                          _controllerTerm1.clear();
+                          _controllerTerm2.clear();
+                          _controllerCase.clear();
+                          _controllerPos.clear();
+                          _controllerAdap1.clear();
+                          _controllerAdap2.clear();
+                          _controllerAN.clear();
+                          _controllerMO.clear();
+                          Navigator.push(context, new MaterialPageRoute(builder: (context) => new
+                            PriceScreen(saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,client: _controllerClientName.text,codClient: _controllerClientCod.text,))
+                          );
+                        });
+                      }
                     },
-                    font: 'Nunito',
                   ),
                 ),
-                SizedBox(width: 15),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ButtonCustom(
-                    widthCustom: 0.14,
-                    heightCustom: 0.07,
-                    text: "Resumo de montagem",
-                    size: 12.0,
-                    colorText: PaletteColors.white,
-                    colorButton: PaletteColors.primaryColor,
-                    colorBorder: PaletteColors.primaryColor,
-                    onPressed: () =>
-                        Navigator.popAndPushNamed(context, '/price'),
-                    font: 'Nunito',
-                  ),
-                ),
+                // SizedBox(width: 15),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: ButtonCustom(
+                //     widthCustom: 0.14,
+                //     heightCustom: 0.07,
+                //     text: "Resumo de montagem",
+                //     size: 12.0,
+                //     colorText: PaletteColors.white,
+                //     colorButton: PaletteColors.primaryColor,
+                //     colorBorder: PaletteColors.primaryColor,
+                //     font: 'Nunito',
+                //     onPressed: () {
+                //       if(_listSave.length!=0){
+                //       }
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ],

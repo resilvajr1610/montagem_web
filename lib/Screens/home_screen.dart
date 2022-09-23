@@ -25,8 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool type = true;
   var time = 0;
   final cors = 'https://cors-anywhere.herokuapp.com/';
-  final urlProdutos = 'http://206.84.60.186:8088/api/produto/passwd/P4\$\$';
-  final urlClientes = 'http://206.84.60.186:8087/api/cliente/passwd/P4\$\$';
+  // final urlProdutos = 'http://206.84.60.186:8088/produto/tipo/passwd/FULL/P4\$\$';
+  final urlProdutos = 'http://206.84.60.186:8088/produto/tipo/passwd/INC/P4\$\$';
+  // final urlClientes = 'http://206.84.60.186:8087/api/cliente/passwd/P4\$\$';
+  final urlClientes = 'http://206.84.60.186:8087/cliente/tipo/passwd/INC/P4\$\$';
   // final url = 'https://jsonplaceholder.typicode.com/posts';
 
   apiCorsProduto()async{
@@ -104,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     var resquest = await http.get(Uri.parse(cors)).then((response) {
       print('r ${response.statusCode}');
+      print('response ${response.body}');
       if(response.statusCode == 200){
         print('ok');
         apiDataClientes();

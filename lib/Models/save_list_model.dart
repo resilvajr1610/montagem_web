@@ -7,14 +7,30 @@ class SaveListModel{
   String size;
   String comp;
   String type;
+  String typePrice;
+  String typeMarca;
   String term1;
+  String term1Price;
+  String term1Marca;
   String term2;
+  String term2Price;
+  String term2Marca;
   String case1;
+  String case1Price;
+  String case1Marca;
   String pos;
   String adap1;
+  String adap1Price;
+  String adap1Marca;
   String adap2;
+  String adap2Price;
+  String adap2Marca;
   String anel;
   String mola;
+  String valorTabela;
+  String desconto;
+  String valorUnitario;
+  String total;
 
   SaveListModel({
     required this.cod,
@@ -25,13 +41,29 @@ class SaveListModel{
     required this.size,
     required this.comp,
     required this.type,
+    required this.typePrice,
+    required this.typeMarca,
     required this.term1,
+    required this.term1Price,
+    required this.term1Marca,
     required this.term2,
+    required this.term2Price,
+    required this.term2Marca,
     required this.case1,
+    required this.case1Price,
+    required this.case1Marca,
     required this.pos,
     required this.adap1,
+    required this.adap1Price,
+    required this.adap1Marca,
     required this.adap2,
+    required this.adap2Price,
+    required this.adap2Marca,
     required this.anel,
     required this.mola,
+    required this.valorTabela,
+    required this.desconto,
+    required this.valorUnitario,
+    required this.total,
   });
 }

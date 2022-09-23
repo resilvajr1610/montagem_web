@@ -11,8 +11,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _controllerEmail = TextEditingController();
-  final _controllerPassword = TextEditingController();
+  final _controllerEmail = TextEditingController(text: 'teste@gmail.com');
+  final _controllerPassword = TextEditingController(text: 'senha123');
   bool visiblePassword = false;
   FirebaseAuth _auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
