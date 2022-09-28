@@ -12,8 +12,7 @@ class ListTileButtom extends StatefulWidget {
   final priority;
   final status;
   Color hovercolor;
-
-
+  final args;
 
   ListTileButtom({
     required this.order,
@@ -23,12 +22,9 @@ class ListTileButtom extends StatefulWidget {
     required this.priority,
     required this.status,
     required this.hovercolor,
-
     required this.onTap,
-
     this.showButtom = false,
-
-
+    required this.args
   });
 
   @override
@@ -154,8 +150,7 @@ class _ListTileButtomState extends State<ListTileButtom> {
                               colorText: PaletteColors.white,
                               colorButton: PaletteColors.primaryColor,
                               colorBorder: PaletteColors.primaryColor,
-                              onPressed: () =>
-                                  Navigator.popAndPushNamed(context, '/prod'),
+                              onPressed: () => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args),
                               font: 'Nunito',
                             ),
                           ),

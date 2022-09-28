@@ -25,22 +25,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   var _controllerClientCod = TextEditingController();
   var _controllerClientName = TextEditingController();
   var _controllerAffiliation = TextEditingController(text: 'Belmap');
-  var _controllerCodProduct = TextEditingController();
-  var _controllerRef = TextEditingController();
-  var _controllerQtd = TextEditingController();
-  var _controllerMaker = TextEditingController();
-  var _controllerAplication = TextEditingController();
-  var _controllerType = TextEditingController();
-  var _controllerComp = TextEditingController();
-  var _controllerSize = TextEditingController();
-  var _controllerTerm1 = TextEditingController();
-  var _controllerTerm2 = TextEditingController();
-  var _controllerCase = TextEditingController();
-  var _controllerPos = TextEditingController();
-  var _controllerAdap1 = TextEditingController();
-  var _controllerAdap2 = TextEditingController();
-  var _controllerAN = TextEditingController();
-  var _controllerMO = TextEditingController();
   List _allResultsClient = [];
   List _allResultsProd = [];
   List _allResultsNumOriginal = [];
@@ -51,6 +35,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   List <SaveListProduct> listProduct = [];
   String valueClient='';
   String valueProd='';
+  int indexGlobal=0;
   String valueNumOriginal='';
   String id='';
   String typePrice='';
@@ -65,6 +50,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   String adap1Marca='';
   String adap2Price='';
   String adap2Marca='';
+  bool loadingCliente=false;
 
   _dataClient(String codcli) async {
 
@@ -72,10 +58,11 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     Map<String, dynamic>? dataMap = snapshot.data() as Map<String, dynamic>?;
     setState(() {
       _controllerClientName = TextEditingController(text: dataMap?['cliente']);
+      loadingCliente=false;
     });
   }
   _dataSearchProd() async {
-    var data = await db.collection("produtos").limit(100).get();
+    var data = await db.collection("produtos").get();
     setState(() {
       _allResultsProd = data.docs;
       _allResultsNumOriginal = data.docs;
@@ -87,7 +74,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
 
   _dataSearchClient() async {
 
-    var data = await db.collection("clientes").limit(100).get();
+    var data = await db.collection("clientes").get();
     setState(() {
       _allResultsClient = data.docs;
     });
@@ -111,12 +98,16 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       for (var items in _allResultsClient) {
         var item = SearchClientModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerClientName.text.toLowerCase())) {
-          showResults.add(items);
+        if (item.startsWith(_controllerClientName.text.toLowerCase())) {
+          setState(() {
+            showResults.add(items);
+          });
         }
       }
     } else {
-      showResults = List.from(_allResultsClient);
+      setState(() {
+        showResults = List.from(_allResultsClient);
+      });
     }
     setState(() {
       _resultsClient = showResults;
@@ -126,43 +117,43 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   resultSearchListProd(String type) {
     var showResults = [];
 
-    if (_controllerTerm1.text != "" && type == 'term1') {
+    if (_listSave[_listSave.length-1].term1.text != "" && type == 'term1') {
       for (var items in _allResultsProd) {
         var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerTerm1.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].term1.text.toLowerCase())) {
           showResults.add(items);
         }
       }
-    }else if(_controllerTerm2.text != "" && type == 'term2') {
+    }else if(_listSave[_listSave.length-1].term2.text != "" && type == 'term2') {
       for (var items in _allResultsProd) {
         var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerTerm2.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].term2.text.toLowerCase())) {
           showResults.add(items);
         }
       }
-    }else if(_controllerCase.text != "" && type == 'case' ) {
+    }else if(_listSave[_listSave.length-1].case1.text != "" && type == 'case' ) {
       for (var items in _allResultsProd) {
         var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerCase.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].case1.text.toLowerCase())) {
           showResults.add(items);
         }
       }
-    }else if(_controllerAdap1.text != "" && type == 'adap1') {
+    }else if(_listSave[_listSave.length-1].adap1.text != "" && type == 'adap1') {
       for (var items in _allResultsProd) {
         var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerAdap1.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].adap1.text.toLowerCase())) {
           showResults.add(items);
         }
       }
-    }else if(_controllerAdap2.text != "" && type == 'adap2') {
+    }else if(_listSave[_listSave.length-1].adap2.text != "" && type == 'adap2') {
       for (var items in _allResultsProd) {
         var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerAdap2.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].adap2.text.toLowerCase())) {
           showResults.add(items);
         }
       }
@@ -180,7 +171,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       for (var items in _allResultsNumOriginal) {
         var item = SearchNumOriginalModel.fromSnapshot(items).name.toLowerCase();
 
-        if (item.contains(_controllerType.text.toLowerCase())) {
+        if (item.startsWith(_listSave[_listSave.length-1].type.text.toLowerCase())) {
           showResults.add(items);
         }
       }
@@ -197,19 +188,79 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     });
   }
 
+  _addList(){
+    var _controllerCodProduct = TextEditingController();
+    var _controllerRef = TextEditingController();
+    var _controllerQtd = TextEditingController();
+    var _controllerMaker = TextEditingController();
+    var _controllerAplication = TextEditingController();
+    var _controllerSize = TextEditingController();
+    var _controllerComp = TextEditingController();
+    var _controllerType = TextEditingController();
+    var _controllerTerm1 = TextEditingController();
+    var _controllerTerm2 = TextEditingController();
+    var _controllerCase = TextEditingController();
+    var _controllerPos = TextEditingController();
+    var _controllerAdap1 = TextEditingController();
+    var _controllerAdap2 = TextEditingController();
+    var _controllerAN = TextEditingController();
+    var _controllerMO = TextEditingController();
+    setState(() {
+      _listSave.add(
+          SaveListModel(
+              cod: _controllerCodProduct,
+              ref: _controllerRef,
+              qtd: _controllerQtd,
+              maker: _controllerMaker,
+              application: _controllerAplication,
+              size: _controllerSize,
+              comp: _controllerComp,
+              type: _controllerType,
+              typePrice: typePrice,
+              typeMarca: typeMarca,
+              term1: _controllerTerm1,
+              term1Price: term1Price,
+              term1Marca: term1Marca,
+              term2: _controllerTerm2,
+              term2Price: term2Price,
+              term2Marca: term2Marca,
+              case1: _controllerCase,
+              case1Price: case1Price,
+              case1Marca: case1Marca,
+              pos: _controllerPos,
+              adap1: _controllerAdap1,
+              adap1Price: adap1Price,
+              adap1Marca: adap1Marca,
+              adap2: _controllerAdap2,
+              adap2Price: adap2Price,
+              adap2Marca: adap2Marca,
+              anel: _controllerAN,
+              mola: _controllerMO,
+              valorTabela: '0',
+              desconto: '0',
+              valorUnitario: '0',
+              total: '0'
+          )
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     createId();
     _dataSearchClient();
     _dataSearchProd();
-    _controllerClientName.addListener(_searchClient);
-    _controllerTerm1.addListener(_searchProd);
-    _controllerTerm2.addListener(_searchProd);
-    _controllerCase.addListener(_searchProd);
-    _controllerAdap1.addListener(_searchProd);
-    _controllerAdap2.addListener(_searchProd);
-    _controllerType.addListener(_searchNumOriginal);
+    _addList();
+    if(_listSave.length!=0){
+      _controllerClientName.addListener(_searchClient);
+      _listSave[0].term1.addListener(_searchProd);
+      _listSave[0].term2.addListener(_searchProd);
+      _listSave[0].case1.addListener(_searchProd);
+      _listSave[0].adap1.addListener(_searchProd);
+      _listSave[0].adap2.addListener(_searchProd);
+      _listSave[0].type.addListener(_searchNumOriginal);
+    }
   }
 
   @override
@@ -312,6 +363,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                 Container(
                   width: width * 0.12,
                   child: InputRegister(
+                    height: 50.0,
                     enable: false,
                     controller: _controllerDate,
                     hint: '00/00/0000',
@@ -332,18 +384,21 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                 Container(
                   width: width * 0.075,
                   child: InputRegister(
+                    height: 50.0,
                     controller: _controllerClientCod,
                     hint: '00000',
                     fonts: 14.0,
-                    keyboardType: TextInputType.number,
                     width: width * 0.05,
                     sizeIcon: 0.01,
                     icons: Icons.height,
                     colorBorder: PaletteColors.inputGrey,
                     background: PaletteColors.inputGrey,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onChanged: (value){
                       setState(() {
                         if(value != ''){
+                          loadingCliente=true;
                           _dataClient(value.toString());
                         }else{
                           _controllerClientName = TextEditingController(text: '');
@@ -353,8 +408,25 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   ),
                 ),
                 Container(
+                  height: 50,
                   width: width * 0.25,
-                  child: InputRegister(
+                  color: PaletteColors.inputGrey,
+                  child: loadingCliente?Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 50,height: 30),
+                        SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: CircularProgressIndicator()
+                        ),
+                        SizedBox(width: 20),
+                        Text('Procurando cliente. Aguarde ...',style: TextStyle(color: PaletteColors.primaryColor),)
+                      ],
+                    ),
+                  ):InputRegister(
+                    height: 50.0,
                     controller: _controllerClientName,
                     hint: 'Digite o código do cliente cadastrado',
                     fonts: 14.0,
@@ -367,6 +439,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                     onChanged:(value){
                       setState(() {
                         valueClient = value.toString();
+                        _controllerClientName.addListener(_searchClient);
                       });
                     },
                   ),
@@ -374,6 +447,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                 Container(
                   width: width * 0.1,
                   child: InputRegister(
+                    height: 50.0,
                     controller: _controllerAffiliation,
                     hint: 'Belmap',
                     fonts: 14.0,
@@ -577,323 +651,384 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                 )
               ],
             ),
-            Padding(
+            Container(
+              height: _listSave.length*60,
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: width * 0.06,
-                    child: InputRegister(
-                      controller: _controllerCodProduct,
-                      hint: '0000',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.06,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.05,
-                    margin: EdgeInsets.only(left: 3),
-                    child: InputRegister(
-                      controller: _controllerRef,
-                      hint: 'AAA',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.05,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.035,
-                    margin: EdgeInsets.only(left: 8),
-                    child: InputRegister(
-                      controller: _controllerQtd,
-                      hint: '00',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.035,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.05,
-                    child: InputRegister(
-                      controller: _controllerMaker,
-                      hint: 'AAA',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.05,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.11,
-                    child: InputRegister(
-                      controller: _controllerAplication,
-                      hint: 'AAA',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.11,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.05,
-                    child: InputRegister(
-                      controller: _controllerType,
-                      hint: '0000',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.05,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          if(value != ''){
-                            valueNumOriginal =value.toString();
-                            resultSearchListNumOriginal();
-                          }else{
-                            _controllerType = TextEditingController(text: '');
-                            valueNumOriginal='';
-                          }
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.04,
-                    child: InputRegister(
-                      controller: _controllerComp,
-                      hint: '0,00',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.04,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.035,
-                    child: InputRegister(
-                      controller: _controllerSize,
-                      hint: 'PP',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.035,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.045,
-                    child: InputRegister(
-                      controller: _controllerTerm1,
-                      hint: '000',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.045,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          setState(() {
-                            if(value != ''){
-                                valueProd =value.toString();
-                                resultSearchListProd('term1');
-                            }else{
-                              _controllerTerm1 = TextEditingController(text: '');
-                              valueProd='';
-                            }
-                          });
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.045,
-                    child: InputRegister(
-                      controller: _controllerTerm2,
-                      hint: '000',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.045,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          setState(() {
-                            if(value != ''){
-                              valueProd =value.toString();
-                              resultSearchListProd('term2');
-                            }else{
-                              _controllerTerm2 = TextEditingController(text: '');
-                              valueProd='';
-                            }
-                          });
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.045,
-                    child: InputRegister(
-                      controller: _controllerCase,
-                      hint: '000',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.45,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          setState(() {
-                            if(value != ''){
-                              valueProd =value.toString();
-                              resultSearchListProd('case');
-                            }else{
-                              _controllerCase = TextEditingController(text: '');
-                              valueProd='';
-                            }
-                          });
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.032,
-                    child: InputRegister(
-                      controller: _controllerPos,
-                      hint: '',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.032,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.045,
-                    child: InputRegister(
-                      controller: _controllerAdap1,
-                      hint: '',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.045,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          setState(() {
-                            if(value != ''){
-                              valueProd =value.toString();
-                              resultSearchListProd('adap1');
-                            }else{
-                              _controllerAdap1 = TextEditingController(text: '');
-                              valueProd='';
-                            }
-                          });
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.045,
-                    child: InputRegister(
-                      controller: _controllerAdap2,
-                      hint: '',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.045,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){
-                        setState(() {
-                          setState(() {
-                            if(value != ''){
-                              valueProd =value.toString();
-                              resultSearchListProd('adap2');
-                            }else{
-                              _controllerAdap2 = TextEditingController(text: '');
-                              valueProd='';
-                            }
-                          });
-                        });
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.03,
-                    child: InputRegister(
-                      controller: _controllerAN,
-                      hint: '',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.03,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                  Container(
-                    width: width * 0.03,
-                    child: InputRegister(
-                      controller: _controllerMO,
-                      hint: '',
-                      fonts: 12.0,
-                      keyboardType: TextInputType.text,
-                      width: width * 0.03,
-                      sizeIcon: 0.01,
-                      icons: Icons.height,
-                      colorBorder: PaletteColors.inputGrey,
-                      background: PaletteColors.inputGrey,
-                      onChanged: (value){},
-                    ),
-                  ),
-                ],
+              child: ListView.builder(
+                  itemCount: _listSave.length,
+                  itemBuilder: (context,index) {
+                  return Row(
+                    children: [
+                      Container(
+                        width: width * 0.06,
+                        child: InputRegister(
+                          controller: _listSave[index].cod,
+                          hint: '0000',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.06,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.05,
+                        margin: EdgeInsets.only(left: 3),
+                        child: InputRegister(
+                          controller: _listSave[index].ref,
+                          hint: 'AAA',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.05,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.035,
+                        margin: EdgeInsets.only(left: 8),
+                        child: InputRegister(
+                          controller: _listSave[index].qtd,
+                          hint: '00',
+                          fonts: 12.0,
+                          width: width * 0.035,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.05,
+                        child: InputRegister(
+                          controller: _listSave[index].maker,
+                          hint: 'AAA',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.05,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.11,
+                        child: InputRegister(
+                          controller: _listSave[index].application,
+                          hint: 'AAA',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.11,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.05,
+                        child: InputRegister(
+                          controller: _listSave[index].type,
+                          hint: '0000',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.05,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              if(value != ''){
+                                setState(() {
+                                  indexGlobal=index;
+                                });
+                                valueNumOriginal =value.toString();
+                                resultSearchListNumOriginal();
+                              }else{
+                                _listSave[index].type = TextEditingController(text: '');
+                                valueNumOriginal='';
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.04,
+                        child: InputRegister(
+                          controller: _listSave[index].comp,
+                          hint: '0,00',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.number,
+                          width: width * 0.04,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.035,
+                        child: InputRegister(
+                          controller: _listSave[index].size,
+                          hint: 'PP',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.035,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.045,
+                        child: InputRegister(
+                          controller: _listSave[index].term1,
+                          hint: '000',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.045,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              setState(() {
+                                if(value != ''){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                  valueProd =value.toString();
+                                  resultSearchListProd('term1');
+                                }else{
+                                  _listSave[index].term1 = TextEditingController(text: '');
+                                  valueProd='';
+                                }
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.045,
+                        child: InputRegister(
+                          controller: _listSave[index].term2,
+                          hint: '000',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.045,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              setState(() {
+                                if(value != ''){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                  valueProd =value.toString();
+                                  resultSearchListProd('term2');
+                                }else{
+                                  _listSave[index].term2 = TextEditingController(text: '');
+                                  valueProd='';
+                                }
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.045,
+                        child: InputRegister(
+                          controller: _listSave[index].case1,
+                          hint: '000',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.45,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              setState(() {
+                                if(value != ''){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                  valueProd =value.toString();
+                                  resultSearchListProd('case');
+                                }else{
+                                  _listSave[index].case1 = TextEditingController(text: '');
+                                  valueProd='';
+                                }
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.032,
+                        child: InputRegister(
+                          controller: _listSave[index].pos,
+                          hint: '',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.032,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.045,
+                        child: InputRegister(
+                          controller: _listSave[index].adap1,
+                          hint: '',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.045,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              setState(() {
+                                if(value != ''){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                  valueProd =value.toString();
+                                  resultSearchListProd('adap1');
+                                }else{
+                                  _listSave[index].adap1 = TextEditingController(text: '');
+                                  valueProd='';
+                                }
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.045,
+                        child: InputRegister(
+                          controller: _listSave[index].adap2,
+                          hint: '',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.045,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              setState(() {
+                                if(value != ''){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                  valueProd =value.toString();
+                                  resultSearchListProd('adap2');
+                                }else{
+                                  _listSave[index].adap2 = TextEditingController(text: '');
+                                  valueProd='';
+                                }
+                              });
+                            });
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.03,
+                        child: InputRegister(
+                          controller: _listSave[index].anel,
+                          hint: '',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.03,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){},
+                        ),
+                      ),
+                      Container(
+                        width: width * 0.03,
+                        child: InputRegister(
+                          controller: _listSave[index].mola,
+                          hint: '',
+                          fonts: 12.0,
+                          keyboardType: TextInputType.text,
+                          width: width * 0.03,
+                          sizeIcon: 0.01,
+                          icons: Icons.height,
+                          colorBorder: PaletteColors.inputGrey,
+                          background: PaletteColors.inputGrey,
+                          onChanged: (value){
+                            setState(() {
+                              indexGlobal=index;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }
               ),
             ),
             valueProd!=''? Container(
@@ -909,29 +1044,29 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             return ListTile(
                               title: Text('CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
-                                if(_controllerCodProduct.text.isNotEmpty){
-                                  if(_controllerTerm1.text.isNotEmpty && valueProd == _controllerTerm1.text){
-                                    _controllerTerm1 = TextEditingController(text: item['codprod']);
+                                if(_listSave[indexGlobal].cod.text.isNotEmpty){
+                                  if(_listSave[indexGlobal].term1.text.isNotEmpty && valueProd == _listSave[indexGlobal].term1.text){
+                                    _listSave[indexGlobal].term1 = TextEditingController(text: item['codprod']);
                                     term1Price = item['preco'];
                                     term1Marca = item['marca'];
                                   }
-                                  if(_controllerTerm2.text.isNotEmpty && valueProd == _controllerTerm2.text){
-                                    _controllerTerm2 = TextEditingController(text: item['codprod']);
+                                  if(_listSave[indexGlobal].term2.text.isNotEmpty && valueProd == _listSave[indexGlobal].term2.text){
+                                    _listSave[indexGlobal].term2 = TextEditingController(text: item['codprod']);
                                     term2Price = item['preco'];
                                     term2Marca = item['marca'];
                                   }
-                                  if(_controllerCase.text.isNotEmpty && valueProd == _controllerCase.text){
-                                    _controllerCase = TextEditingController(text: item['codprod']);
+                                  if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
+                                    _listSave[indexGlobal].case1 = TextEditingController(text: item['codprod']);
                                     case1Price = item['preco'];
                                     case1Marca = item['marca'];
                                   }
-                                  if(_controllerAdap1.text.isNotEmpty && valueProd == _controllerAdap1.text){
-                                    _controllerAdap1 = TextEditingController(text: item['codprod']);
+                                  if(_listSave[indexGlobal].adap1.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap1.text){
+                                    _listSave[indexGlobal].adap1 = TextEditingController(text: item['codprod']);
                                     adap1Price = item['preco'];
                                     adap1Marca = item['marca'];
                                   }
-                                  if(_controllerAdap2.text.isNotEmpty && valueProd == _controllerAdap2.text){
-                                    _controllerAdap2 = TextEditingController(text: item['codprod']);
+                                  if(_listSave[indexGlobal].adap2.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap2.text){
+                                    _listSave[indexGlobal].adap2 = TextEditingController(text: item['codprod']);
                                     adap2Price = item['preco'];
                                     adap2Marca = item['marca'];
                                   }
@@ -939,7 +1074,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                   listProduct.add(
                                       SaveListProduct(
                                           cod: item['codprod'],
-                                          codUnico: _controllerCodProduct.text,
+                                          codUnico: _listSave[indexGlobal].cod.text,
                                           ref: 'ref',
                                           qtd: '0',
                                           fabricante: item['marca'],
@@ -970,242 +1105,15 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             return ListTile(
                               title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
-                                _controllerType = TextEditingController(text: item['numoriginal']);
+                                _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
                                 typePrice = item['preco'];
-                                typeMarca = item['marca'];
-                                valueNumOriginal='';
+                                typeMarca = item['marca'];                                valueNumOriginal='';
                               }),
                             );
                           }
                       );
                     }
                 )
-            ):Container(),
-            _listSave.length!=0?Container(
-              height: _listSave.length*50,
-              child: ListView.builder(
-                  itemCount: _listSave.length,
-                  itemBuilder: (context,index){
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                      child: Row(
-                        children: [
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.05,
-                            height: 40,
-                            child: Text(_listSave[index].cod,style: TextStyle(color: PaletteColors.grey),),
-                          ),
-                          SizedBox(width: 3),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.04,
-                            height: 40,
-                            child: Text(_listSave[index].ref,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          SizedBox(width: 4),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.025,
-                            height: 40,
-                            child: Text(_listSave[index].qtd,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          SizedBox(width: 2),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.04,
-                            height: 40,
-                            child: Text(_listSave[index].maker,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.1,
-                            height: 40,
-                            child: Text(_listSave[index].application,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.04,
-                            height: 40,
-                            child: Text(_listSave[index].type,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.03,
-                            height: 40,
-                            child: Text(_listSave[index].comp,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.025,
-                            height: 40,
-                            child: Text(_listSave[index].size,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.035,
-                            height: 40,
-                            child: Text(_listSave[index].term1,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.035,
-                            height: 40,
-                            child: Text(_listSave[index].term2,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.035,
-                            height: 40,
-                            child: Text(_listSave[index].case1,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.022,
-                            height: 40,
-                            child: Text(_listSave[index].pos,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.035,
-                            height: 40,
-                            child: Text(_listSave[index].adap1,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.035,
-                            height: 40,
-                            child: Text(_listSave[index].adap2,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.02,
-                            height: 40,
-                            child: Text(_listSave[index].anel,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(horizontal: 8,vertical: 4),
-                            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                                color: PaletteColors.inputGrey,
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: PaletteColors.inputGrey,)
-                            ),
-                            width: width * 0.02,
-                            height: 40,
-                            child: Text(_listSave[index].mola,style: TextStyle(color: PaletteColors.grey)),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-              ),
             ):Container(),
             SizedBox(height: 20),
             Row(
@@ -1232,60 +1140,9 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        if(_controllerClientName.text.isNotEmpty && _controllerCodProduct.text.isNotEmpty && _controllerMaker.text.isNotEmpty && _controllerType.text.isNotEmpty){
+                        if(_controllerClientName.text.isNotEmpty && _listSave[0].cod.text.isNotEmpty && _listSave[0].maker.text.isNotEmpty && _listSave[0].type.text.isNotEmpty){
                           setState(() {
-                            _listSave.add(
-                                SaveListModel(
-                                    cod: _controllerCodProduct!=null?_controllerCodProduct.text:'',
-                                    ref: _controllerRef!=null?_controllerRef.text:'',
-                                    qtd: _controllerQtd!=null?_controllerQtd.text:'',
-                                    maker: _controllerMaker!=null?_controllerMaker.text:'',
-                                    application: _controllerAplication!=null?_controllerAplication.text:'',
-                                    size: _controllerSize!=null?_controllerSize.text:'',
-                                    type: _controllerType!=null?_controllerType.text:'',
-                                    typePrice: typePrice,
-                                    typeMarca: typeMarca,
-                                    comp: _controllerComp!=null?_controllerComp.text:'',
-                                    term1: _controllerTerm1!=null?_controllerTerm1.text:'',
-                                    term1Price: term1Price,
-                                    term1Marca: term1Marca,
-                                    term2: _controllerTerm2!=null?_controllerTerm2.text:'',
-                                    term2Price: term2Price,
-                                    term2Marca: term2Marca,
-                                    case1: _controllerCase!=null?_controllerCase.text:'',
-                                    case1Price: case1Price,
-                                    case1Marca: case1Marca,
-                                    pos: _controllerPos!=null?_controllerPos.text:'',
-                                    adap1: _controllerAdap1!=null?_controllerAdap1.text:'',
-                                    adap1Price: adap1Price,
-                                    adap1Marca: adap1Marca,
-                                    adap2: _controllerAdap2!=null?_controllerAdap2.text:'',
-                                    adap2Price: adap2Price,
-                                    adap2Marca: adap2Marca,
-                                    anel: _controllerAN!=null?_controllerAN.text:'',
-                                    mola: _controllerMO!=null?_controllerMO.text:'',
-                                    valorTabela: 'R\S 0,00',
-                                    desconto: 'R\S 0,00',
-                                    valorUnitario: 'R\S 0,00',
-                                    total: 'R\S 0,00',
-                                )
-                            );
-                            _controllerCodProduct.clear();
-                            _controllerRef.clear();
-                            _controllerQtd.clear();
-                            _controllerMaker.clear();
-                            _controllerAplication.clear();
-                            _controllerSize.clear();
-                            _controllerType.clear();
-                            _controllerComp.clear();
-                            _controllerTerm1.clear();
-                            _controllerTerm2.clear();
-                            _controllerCase.clear();
-                            _controllerPos.clear();
-                            _controllerAdap1.clear();
-                            _controllerAdap2.clear();
-                            _controllerAN.clear();
-                            _controllerMO.clear();
+                            _addList();
                           });
                         }
                       }
@@ -1367,22 +1224,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                           'prodPrecos':auxPrice.toList(),
                           'dateOrder':DateTime.now()
                         }).then((value){
-                          _controllerCodProduct.clear();
-                          _controllerRef.clear();
-                          _controllerQtd.clear();
-                          _controllerMaker.clear();
-                          _controllerAplication.clear();
-                          _controllerSize.clear();
-                          _controllerType.clear();
-                          _controllerComp.clear();
-                          _controllerTerm1.clear();
-                          _controllerTerm2.clear();
-                          _controllerCase.clear();
-                          _controllerPos.clear();
-                          _controllerAdap1.clear();
-                          _controllerAdap2.clear();
-                          _controllerAN.clear();
-                          _controllerMO.clear();
                           Navigator.push(context, new MaterialPageRoute(builder: (context) => new
                             PriceScreen(saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,client: _controllerClientName.text,codClient: _controllerClientCod.text,))
                           );

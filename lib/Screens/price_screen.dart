@@ -4,6 +4,7 @@ import 'package:montagem_web/Widgets/list_client.dart';
 import 'package:montagem_web/Widgets/list_material.dart';
 import '../Models/save_list_product.dart';
 import '../Utils/exports.dart';
+import '../Utils/text_const.dart';
 
 class PriceScreen extends StatefulWidget {
   final List<SaveListModel> saveListModel;
@@ -22,6 +23,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
   List<String> priority = ['Cliente Balcão', 'Alta', 'Média', 'Baixa'];
   String? selectedPriority = 'Cliente Balcão';
+  int order=0;
 
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
@@ -39,16 +41,19 @@ class _PriceScreenState extends State<PriceScreen> {
   void initState() {
     super.initState();
     setState(() {
-      codProduct=widget.saveListModel[0].cod;
-      // double valorItem = 0.0;
-      // double totalItens =0.0;
-      // for(var i=0;widget.saveListProduct.length>i;i++){
-      //   listGetProduct.add(widget.saveListProduct[i]);
-      //   valorItem = double.parse(listGetProduct[i].total);
-      //   totalItens = totalItens+valorItem;
-      // }
-      // valorTabela = 'R\$ ${totalItens.toStringAsFixed(2).replaceAll('.', ',')}';
+      codProduct=widget.saveListModel[0].cod.text;
       refreshValues();
+    });
+    _getOrder();
+  }
+
+  _getOrder()async{
+    DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    setState(() {
+      order = data?["order"]??0;
+      _controllerNumberAssembly = TextEditingController(text: '${order+1}');
+      print(order);
     });
   }
 
@@ -208,6 +213,7 @@ class _PriceScreenState extends State<PriceScreen> {
                         Container(
                           width: width * 0.12,
                           child: InputRegister(
+                            enable: false,
                             controller: _controllerNumberAssembly,
                             hint: '0000000',
                             fonts: 14.0,
@@ -610,13 +616,16 @@ class _PriceScreenState extends State<PriceScreen> {
                           onPressed: () {
                             db.collection('assembly').doc(widget.idAssembly).update({
                               'obs' : _controllerObservation.text.isNotEmpty?_controllerObservation.text:'',
-                              'numMontagem' : _controllerObservation.text.isNotEmpty?_controllerObservation.text:'',
+                              'order' : _controllerNumberAssembly.text,
                               'whinthor' : _controllerWhintor.text.isNotEmpty?_controllerWhintor.text:'',
                               'priority' : selectedPriority,
                               'discountPercent' : _controllerDiscount.text.isNotEmpty?_controllerDiscount.text:'0',
                               'discountTotal': descAcrescentado,
-                              'totalFinal': valorFinal
-                            }).then((value) => Navigator.pushReplacementNamed(context, '/home'));
+                              'totalFinal': valorFinal,
+                              'status' : TextConst.aguardando
+                            }).then((value) => db.collection('order').doc('order').update({
+                              'order':int.parse(_controllerNumberAssembly.text)
+                            }).then((value) => Navigator.pushReplacementNamed(context, '/home')));
                           },
                           font: 'Nunito',
                         ),
@@ -759,15 +768,15 @@ class _PriceScreenState extends State<PriceScreen> {
                           itemBuilder: (context,index){
                             return ListClient(
                               hovercolor: Colors.white,
-                              qtd: widget.saveListModel[index].qtd,
-                              description: widget.saveListModel[index].application,
+                              qtd: widget.saveListModel[index].qtd.text,
+                              description: widget.saveListModel[index].application.text,
                               valuetable: '${widget.saveListModel[index].valorTabela}',
                               discount: '${widget.saveListModel[index].desconto}',
                               value: '${widget.saveListModel[index].valorUnitario}',
                               total:'${widget.saveListModel[index].total}' ,
                               onTap: (){
                                 setState(() {
-                                  codProduct = widget.saveListModel[index].cod;
+                                  codProduct = widget.saveListModel[index].cod.text;
                                   print('codProduct $codProduct');
                                 });
                               },

@@ -19,7 +19,7 @@ class Routes {
         );
       case "/prod":
         return MaterialPageRoute(
-            builder: (_) => ProductionScreen(),
+            builder: (_) => ProductionScreen(args as String),
         );
       case "/assembly":
         return MaterialPageRoute(

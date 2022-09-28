@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:montagem_web/Models/error_string_model.dart';
 
 import '../Utils/exports.dart';
 
@@ -15,11 +16,13 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
   FirebaseFirestore db = FirebaseFirestore.instance;
   List _allResult = [];
   List <ListIconModel> listModel =[];
+  bool loading = true;
   
   _dataGet()async{
-    var data = await db.collection("assembly").get();
+    var data = await db.collection("assembly").orderBy('dateOrder',descending: true).get();
     setState(() {
       _allResult = data.docs;
+      loading = false;
     });
     return "complete";
   }
@@ -112,7 +115,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                   Container(
                     width: width * 0.12,
                     child: TextCustom(
-                      text: 'Data/ Hora',
+                      text: 'Data',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
@@ -154,7 +157,29 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
               SizedBox(height: 10),
               Container(
                 height: heigth*0.8,
-                child: StreamBuilder(
+                child: loading
+                ?Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 100,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator()
+                        ),
+                        SizedBox(width: 50,),
+                        Container(
+                          child: Text('Carregando ...',style: TextStyle(color: PaletteColors.primaryColor,fontSize: 30),),
+                        )
+                      ],
+                    ),
+                  ],
+                )
+                :StreamBuilder(
                   stream: _controllerItems.stream,
                   builder: (context, snapshot) {
 
@@ -165,8 +190,8 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                       case ConnectionState.done:
                         if(_allResult.length == 0){
                           return Center(
-                              child: Text('Sem histórico',
-                                style: TextStyle(fontSize: 20,),)
+                              child: Text('Nenhum pedido pendente',
+                                style: TextStyle(fontSize: 30,color: PaletteColors.primaryColor),)
                           );
                         }else {
                           return Padding(
@@ -177,17 +202,24 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                   DocumentSnapshot item = _allResult[index];
 
                                   listModel.add(
-                                      ListIconModel(date: item['data'], assembly: 'falta adicionar', client: '${item['codcli']} - ${item['cliente']}', number: 'falta adicionar', winthor: item['whinthor'])
+                                      ListIconModel(
+                                          date: ErrorStringModel(item, 'data'),
+                                          assembly: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                          client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
+                                          number: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                          winthor: ErrorStringModel(item,'whinthor')
+                                      )
                                   );
 
                                   return ListTileButtom(
-                                    order: 'falta adicionar',
-                                    whintor: item['whinthor'],
-                                    date: item['data'],
-                                    client: '${item['codcli']} - ${item['cliente']}',
-                                    priority: item['priority'],
-                                    status: 'definir os status',
+                                    order: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                    whintor: ErrorStringModel(item,'whinthor'),
+                                    date: ErrorStringModel(item, 'data'),
+                                    client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
+                                    priority: ErrorStringModel(item,'priority'),
+                                    status: ErrorStringModel(item,'status'),
                                     showButtom: listModel[index].iconShow,
+                                    args: ErrorStringModel(item,'id'),
                                     onTap: () {
                                       setState(() {
                                         listModel[index].iconShow==false?listModel[index].iconShow=true:listModel[index].iconShow=false;

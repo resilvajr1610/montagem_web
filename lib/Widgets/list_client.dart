@@ -49,7 +49,7 @@ class _ListClientState extends State<ListClient> {
                   Container(
                     width: width*0.07,
                     child: TextCustom(
-                      text: widget.qtd,
+                      text: widget.qtd.toString(),
                       size: 14.0,
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
@@ -59,7 +59,7 @@ class _ListClientState extends State<ListClient> {
                   Container(
                     width: width*0.27,
                     child: TextCustom(
-                      text: widget.description,
+                      text: widget.description.toString(),
                       maxLines: 3,
                       size: 14.0,
                       color: PaletteColors.grey,

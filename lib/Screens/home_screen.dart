@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Visibility(
                   visible: sinc,
                   child: TextCustom(
-                    text: 'itens encontrados: ${type?dataProdutos:dataClientes.length.toString()}',
+                    text: 'itens encontrados: ${type?dataProdutos.length.toString():dataClientes.length.toString()}',
                     maxLines: 2,
                     size: 20.0,
                     color: PaletteColors.primaryColor,

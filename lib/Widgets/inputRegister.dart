@@ -16,6 +16,7 @@ class InputRegister extends StatelessWidget {
   int? maxline = 1;
   var onChanged;
   bool enable;
+  var height;
 
   InputRegister({
     required this.controller,
@@ -30,7 +31,8 @@ class InputRegister extends StatelessWidget {
     required this.colorBorder,
     required this.background,
     required this.onChanged,
-    this.enable = true
+    this.enable = true,
+    this.height = 40.0
   });
 
   @override
@@ -41,7 +43,7 @@ class InputRegister extends StatelessWidget {
     return Container(
       alignment: Alignment.topCenter,
       width: this.width,
-      height: 40.0,
+      height: this.height,
       padding: EdgeInsets.symmetric(horizontal: 8),
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
