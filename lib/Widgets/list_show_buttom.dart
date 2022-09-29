@@ -1,6 +1,9 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../Utils/exports.dart';
+import '../Utils/text_const.dart';
 
 class ListTileButtom extends StatefulWidget {
   final onTap;
@@ -150,7 +153,9 @@ class _ListTileButtomState extends State<ListTileButtom> {
                               colorText: PaletteColors.white,
                               colorButton: PaletteColors.primaryColor,
                               colorBorder: PaletteColors.primaryColor,
-                              onPressed: () => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args),
+                              onPressed: () => FirebaseFirestore.instance.collection('assembly').doc(widget.args).update({
+                                'status':TextConst.producao
+                              }).then((value) => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args)),
                               font: 'Nunito',
                             ),
                           ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
 
 import '../Utils/exports.dart';
+import '../Utils/text_const.dart';
 import '../Widgets/list_material.dart';
 
 class ProductionScreen extends StatefulWidget {
@@ -224,9 +225,10 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorText: PaletteColors.white,
                             colorButton: PaletteColors.primaryColor,
                             colorBorder: PaletteColors.primaryColor,
-                            onPressed: () =>
-                                Navigator.popAndPushNamed(context, '/home'),
                             font: 'Nunito',
+                            onPressed: ()=>FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
+                              'status':TextConst.finalizado
+                            }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3)))),
                           ),
                           SizedBox(width: width *0.06)
                         ],
@@ -324,9 +326,10 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorText: PaletteColors.white,
                             colorButton: PaletteColors.cancel,
                             colorBorder: PaletteColors.cancel,
-                            onPressed: () =>
-                                Navigator.popAndPushNamed(context, '/home'),
                             font: 'Nunito',
+                            onPressed: ()=>FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
+                              'status':TextConst.cancelado
+                            }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3)))),
                           ),
                           SizedBox(width: width *0.06)
                         ],

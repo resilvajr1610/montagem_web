@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Models/save_list_product.dart';
-import 'package:montagem_web/Models/search_numoriginal_model.dart';
 import 'package:montagem_web/Models/search_product_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
 import '../Models/search_client_model.dart';
@@ -27,16 +26,13 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   var _controllerAffiliation = TextEditingController(text: 'Belmap');
   List _allResultsClient = [];
   List _allResultsProd = [];
-  List _allResultsNumOriginal = [];
   List _resultsClient = [];
   List _resultsProd = [];
-  List _resultsNumOriginal = [];
   List <SaveListModel> _listSave = [];
   List <SaveListProduct> listProduct = [];
   String valueClient='';
   String valueProd='';
   int indexGlobal=0;
-  String valueNumOriginal='';
   String id='';
   String typePrice='';
   String typeMarca='';
@@ -51,6 +47,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   String adap2Price='';
   String adap2Marca='';
   bool loadingCliente=false;
+  bool loadingData = true;
 
   _dataClient(String codcli) async {
 
@@ -65,15 +62,13 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     var data = await db.collection("produtos").get();
     setState(() {
       _allResultsProd = data.docs;
-      _allResultsNumOriginal = data.docs;
+      loadingData=false;
     });
     resultSearchListClient();
-    _searchNumOriginal();
     return "complete";
   }
 
   _dataSearchClient() async {
-
     var data = await db.collection("clientes").get();
     setState(() {
       _allResultsClient = data.docs;
@@ -87,9 +82,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   }
   _searchProd() {
     resultSearchListProd('');
-  }
-  _searchNumOriginal() {
-    resultSearchListNumOriginal();
   }
   resultSearchListClient() {
     var showResults = [];
@@ -157,26 +149,19 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
           showResults.add(items);
         }
       }
-    }else {
-      showResults = List.from(_allResultsProd);
-    }
-    setState(() {
-      _resultsProd = showResults;
-    });
-  }
-
-  resultSearchListNumOriginal() {
-    var showResults = [];
-
-      for (var items in _allResultsNumOriginal) {
-        var item = SearchNumOriginalModel.fromSnapshot(items).name.toLowerCase();
+    }else if(_listSave[_listSave.length-1].type.text != "" && type == 'type') {
+      for (var items in _allResultsProd) {
+        var item = SearchProdModel.fromSnapshot(items).name.toLowerCase();
 
         if (item.startsWith(_listSave[_listSave.length-1].type.text.toLowerCase())) {
           showResults.add(items);
         }
       }
+    }else {
+      showResults = List.from(_allResultsProd);
+    }
     setState(() {
-      _resultsNumOriginal = showResults;
+      _resultsProd = showResults;
     });
   }
 
@@ -259,7 +244,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       _listSave[0].case1.addListener(_searchProd);
       _listSave[0].adap1.addListener(_searchProd);
       _listSave[0].adap2.addListener(_searchProd);
-      _listSave[0].type.addListener(_searchNumOriginal);
+      _listSave[0].type.addListener(_searchProd);
     }
   }
 
@@ -270,6 +255,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
 
     return Container(
       height: heigth,
+      width: width,
       margin: EdgeInsets.only(top: 40.0, bottom: 40, left: 40, right: 40),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -283,7 +269,17 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
           ),
         ],
       ),
-      child: SingleChildScrollView(
+      child: loadingData
+          ?Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text('Coletando informações ...')
+              ],
+            )
+          ):SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -775,11 +771,11 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                 setState(() {
                                   indexGlobal=index;
                                 });
-                                valueNumOriginal =value.toString();
-                                resultSearchListNumOriginal();
+                                valueProd =value.toString();
+                                resultSearchListProd('type');
                               }else{
                                 _listSave[index].type = TextEditingController(text: '');
-                                valueNumOriginal='';
+                                valueProd='';
                               }
                             });
                           },
@@ -1042,37 +1038,43 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             DocumentSnapshot item = _resultsProd[index];
 
                             return ListTile(
-                              title: Text('CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
+                              title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
                                 if(_listSave[indexGlobal].cod.text.isNotEmpty){
                                   if(_listSave[indexGlobal].term1.text.isNotEmpty && valueProd == _listSave[indexGlobal].term1.text){
-                                    _listSave[indexGlobal].term1 = TextEditingController(text: item['codprod']);
+                                    _listSave[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                     term1Price = item['preco'];
                                     term1Marca = item['marca'];
                                   }
                                   if(_listSave[indexGlobal].term2.text.isNotEmpty && valueProd == _listSave[indexGlobal].term2.text){
-                                    _listSave[indexGlobal].term2 = TextEditingController(text: item['codprod']);
+                                    _listSave[indexGlobal].term2 = TextEditingController(text: item['numoriginal']);
                                     term2Price = item['preco'];
                                     term2Marca = item['marca'];
                                   }
                                   if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
-                                    _listSave[indexGlobal].case1 = TextEditingController(text: item['codprod']);
+                                    _listSave[indexGlobal].case1 = TextEditingController(text: item['numoriginal']);
                                     case1Price = item['preco'];
                                     case1Marca = item['marca'];
                                   }
                                   if(_listSave[indexGlobal].adap1.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap1.text){
-                                    _listSave[indexGlobal].adap1 = TextEditingController(text: item['codprod']);
+                                    _listSave[indexGlobal].adap1 = TextEditingController(text: item['numoriginal']);
                                     adap1Price = item['preco'];
                                     adap1Marca = item['marca'];
                                   }
                                   if(_listSave[indexGlobal].adap2.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap2.text){
-                                    _listSave[indexGlobal].adap2 = TextEditingController(text: item['codprod']);
+                                    _listSave[indexGlobal].adap2 = TextEditingController(text: item['numoriginal']);
                                     adap2Price = item['preco'];
                                     adap2Marca = item['marca'];
+                                  }
+                                  if(_listSave[indexGlobal].type.text.isNotEmpty && valueProd == _listSave[indexGlobal].type.text){
+                                    _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
+                                    typePrice = item['preco'];
+                                    typeMarca = item['marca'];
                                   }
                                   valueProd='';
                                   listProduct.add(
                                       SaveListProduct(
+                                          numoriginal: item['numoriginal'],
                                           cod: item['codprod'],
                                           codUnico: _listSave[indexGlobal].cod.text,
                                           ref: 'ref',
@@ -1085,29 +1087,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                       )
                                   );
                                 }
-                              }),
-                            );
-                          }
-                      );
-                    }
-                )
-            ):Container(),
-            valueNumOriginal!=''? Container(
-                height: heigth*0.3,
-                child: StreamBuilder<QuerySnapshot>(
-                    stream: _controllerItems.stream,
-                    builder: (context,snapshot){
-                      return ListView.builder(
-                          itemCount: _resultsNumOriginal.length,
-                          itemBuilder: (contect,index){
-                            DocumentSnapshot item = _resultsNumOriginal[index];
-
-                            return ListTile(
-                              title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
-                              onTap: ()=>setState(() {
-                                _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
-                                typePrice = item['preco'];
-                                typeMarca = item['marca'];                                valueNumOriginal='';
                               }),
                             );
                           }

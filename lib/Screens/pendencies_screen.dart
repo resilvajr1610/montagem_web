@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:montagem_web/Models/error_string_model.dart';
 
 import '../Utils/exports.dart';
+import '../Utils/text_const.dart';
 
 class PendenciesScreen extends StatefulWidget {
   const PendenciesScreen({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
   bool loading = true;
   
   _dataGet()async{
-    var data = await db.collection("assembly").orderBy('dateOrder',descending: true).get();
+    var data = await db.collection("assembly").orderBy('priority').get();
     setState(() {
       _allResult = data.docs;
       loading = false;
@@ -211,22 +212,24 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                       )
                                   );
 
-                                  return ListTileButtom(
-                                    order: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
-                                    whintor: ErrorStringModel(item,'whinthor'),
-                                    date: ErrorStringModel(item, 'data'),
-                                    client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
-                                    priority: ErrorStringModel(item,'priority'),
-                                    status: ErrorStringModel(item,'status'),
-                                    showButtom: listModel[index].iconShow,
-                                    args: ErrorStringModel(item,'id'),
-                                    onTap: () {
-                                      setState(() {
-                                        listModel[index].iconShow==false?listModel[index].iconShow=true:listModel[index].iconShow=false;
-                                      });
-                                    },
-                                    hovercolor: Colors.white,
-                                  );
+                                  return TextConst.cancelado == ErrorStringModel(item,'status') ||  TextConst.finalizado ==ErrorStringModel(item,'status')
+                                      ?Container()
+                                      :ListTileButtom(
+                                        order: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                        whintor: ErrorStringModel(item,'whinthor'),
+                                        date: ErrorStringModel(item, 'data'),
+                                        client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
+                                        priority: ErrorStringModel(item,'priority').toUpperCase(),
+                                        status: ErrorStringModel(item,'status').toUpperCase(),
+                                        showButtom: listModel[index].iconShow,
+                                        args: ErrorStringModel(item,'id'),
+                                        onTap: () {
+                                          setState(() {
+                                            listModel[index].iconShow==false?listModel[index].iconShow=true:listModel[index].iconShow=false;
+                                          });
+                                        },
+                                        hovercolor: Colors.white,
+                                      );
                                 }
                             ),
                           );

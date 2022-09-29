@@ -1,4 +1,5 @@
 class SaveListProduct{
+  String numoriginal;
   String cod;
   String codUnico;
   String ref;
@@ -10,6 +11,7 @@ class SaveListProduct{
   String total;
 
   SaveListProduct({
+    required this.numoriginal,
     required this.cod,
     required this.codUnico,
     required this.ref,

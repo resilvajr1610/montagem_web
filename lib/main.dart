@@ -23,6 +23,7 @@ void main ()async{
   }
 
   runApp(MaterialApp(
+    title: 'Montagem',
     debugShowCheckedModeBanner: false,
     // home: HomeScreen(),
     initialRoute:route,

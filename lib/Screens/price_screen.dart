@@ -21,8 +21,8 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
 
-  List<String> priority = ['Cliente Balcão', 'Alta', 'Média', 'Baixa'];
-  String? selectedPriority = 'Cliente Balcão';
+  List<String> priority = ['1 - Cliente Balcão', '2 - Alta', '3 - Média', '4 - Baixa'];
+  String? selectedPriority = '1 - Cliente Balcão';
   int order=0;
 
   var _controllerNumberAssembly = TextEditingController();

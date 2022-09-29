@@ -25,6 +25,10 @@ class Routes {
         return MaterialPageRoute(
           builder: (_) => AssemblyScreen(),
         );
+      case "/pendencies":
+        return MaterialPageRoute(
+          builder: (_) => PendenciesScreen(),
+        );
 
       default :
         _erroRota();
