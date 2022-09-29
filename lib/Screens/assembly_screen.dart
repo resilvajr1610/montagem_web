@@ -1175,14 +1175,15 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                       List auxPrice = [];
                       for(var i=0;_listSave.length>i;i++){
                        aux.add(
-                           'cod#${_listSave[i].cod}#ref#${_listSave[i].ref}#qtd#${_listSave[i].qtd}#maker#${_listSave[i].maker}'
-                           '#aplication#${_listSave[i].application}#numoriginal#${_listSave[i].type}#comprimento#${_listSave[i].comp}'
-                           '#type#${_listSave[i].size}#typePrice#${_listSave[i].typePrice}#typeMarca#${_listSave[i].typeMarca}'
-                           '#term1#${_listSave[i].term1}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
-                           '#term2#${_listSave[i].term2}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
-                           '#capa#${_listSave[i].case1}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
-                           '#pos#${_listSave[i].pos}#adap1#${_listSave[i].adap1}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
-                           '#adap2#${_listSave[i].adap2}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}#anel#${_listSave[i].anel}#mola#${_listSave[i].mola}'
+                           'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
+                           '#aplication#${_listSave[i].application.text}#numoriginal#${_listSave[i].type.text}#comprimento#${_listSave[i].comp.text}'
+                           '#type#${_listSave[i].size.text}#typePrice#${_listSave[i].typePrice.length}#typeMarca#${_listSave[i].typeMarca}'
+                           '#term1#${_listSave[i].term1.text}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
+                           '#term2#${_listSave[i].term2.text}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
+                           '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
+                           '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
+                           '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
+                           '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}'
                        );
                       }
                       for(var i=0;listProduct.length>i;i++){

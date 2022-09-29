@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
 
+import '../Models/product_model.dart';
+import '../Models/save_list_product.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
 import '../Widgets/list_material.dart';
@@ -27,13 +30,16 @@ class _ProductionScreenState extends State<ProductionScreen> {
 
   String? selectedPriority = '';
 
+  FirebaseFirestore db = FirebaseFirestore.instance;
   var _controllerDate = TextEditingController();
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
-  var _controllerPriority = TextEditingController();
-  var _controllerDiscount = TextEditingController();
+  var _controllerOrder = TextEditingController();
   var _controllerObservation = TextEditingController();
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  var _controllerObservationProd = TextEditingController();
+  List <SaveListProduct> listProdPrecos = [];
+  List <ProductModel> listProdutos = [];
+  String cod = '';
 
   _data() async {
     DocumentSnapshot snapshot = await db.collection("assembly").doc(widget.id).get();
@@ -42,7 +48,30 @@ class _ProductionScreenState extends State<ProductionScreen> {
     setState(() {
       _controllerDate = TextEditingController(text: data?["data"]);
       _controllerWhintor = TextEditingController(text: data?["whinthor"]);
+      _controllerOrder = TextEditingController(text: data?["order"]);
+      _controllerObservation = TextEditingController(text: data?["obs"]);
+      _controllerObservationProd = TextEditingController(text: data?["obsProd"]??'');
       selectedPriority = data?['priority'];
+      List prodPrecos = data?['prodPrecos'];
+      List produtos = data?['produtos'];
+      for(var i=0;prodPrecos.length>i;i++){
+        var splited = prodPrecos[i].toString().split('#');
+        listProdPrecos.add(
+            SaveListProduct(
+                numoriginal: '', cod: splited[1], codUnico: splited[3], ref: splited[5], qtd: splited[7], fabricante: splited[9], valorTabela: splited[11],
+                desconto: splited[13], valorUnitario: splited[15], total: splited[17]
+            )
+        );
+      }
+      for(var i=0;produtos.length>i;i++){
+        var splited = produtos[i].toString().split('#');
+        listProdutos.add(
+            ProductModel(
+                cod: splited[1], qtd: splited[5], number: '${i+1}', typeHose: splited[11], size: splited[13], type: splited[15],
+                term1: splited[21], term2: splited[27],cape: splited[33], pos: splited[39], adap1: splited[41], adap2: splited[47], anel: splited[53], mola: splited[55])
+        );
+      }
+      cod = listProdutos[0].cod;
     });
   }
 
@@ -189,7 +218,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.1,
                             child: InputRegister(
-                              controller: _controllerWhintor,
+                              enable: false,
+                              controller: _controllerOrder,
                               hint: '00000000',
                               fonts: 14.0,
                               keyboardType: TextInputType.number,
@@ -227,7 +257,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorBorder: PaletteColors.primaryColor,
                             font: 'Nunito',
                             onPressed: ()=>FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
-                              'status':TextConst.finalizado
+                              'status':TextConst.finalizado,
+                              'obsProd':_controllerObservationProd.text
                             }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3)))),
                           ),
                           SizedBox(width: width *0.06)
@@ -240,7 +271,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.46,
                             child: TextCustom(
-                              text: 'Obs Vendedor',
+                              text: 'Observação Vendedor',
                               size: 14.0,
                               color: PaletteColors.primaryColor,
                               fontFamily: 'Nunito',
@@ -255,8 +286,9 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.47,
                             child: InputRegister(
-                              controller: _controllerNumberAssembly,
-                              hint: 'aaaaabbbbbbbccccccdddddd',
+                              enable: false,
+                              controller: _controllerObservation,
+                              hint: 'sem observação',
                               fonts: 14.0,
                               keyboardType: TextInputType.number,
                               width: width * 0.46,
@@ -290,7 +322,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.47,
                             child: TextCustom(
-                              text: 'Obs sobra a Produção',
+                              text: 'Observação sobre a Produção',
                               size: 14.0,
                               color: PaletteColors.primaryColor,
                               fontFamily: 'Nunito',
@@ -305,8 +337,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.47,
                             child: InputRegister(
-                              controller: _controllerNumberAssembly,
-                              hint: 'aaaaabbbbbbbccccccdddddd',
+                              controller: _controllerObservationProd,
+                              hint: 'Anote sua observação',
                               fonts: 14.0,
                               keyboardType: TextInputType.number,
                               width: width * 0.46,
@@ -328,7 +360,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorBorder: PaletteColors.cancel,
                             font: 'Nunito',
                             onPressed: ()=>FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
-                              'status':TextConst.cancelado
+                              'status':TextConst.cancelado,
+                              'obsProd':_controllerObservationProd.text
                             }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3)))),
                           ),
                           SizedBox(width: width *0.06)
@@ -393,51 +426,26 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 8),
-                      ListMaterial(
-                        hovercolor: Colors.white,
-                        cod: '00000',
-                        ref: '00000000000',
-                        qtd: '00',
-                        manufacturer: 'NAC',
-                        valuetable: '',
-                        discount: '',
-                        value: '',
-                        total:'' ,
-                      ),
-                      ListMaterial(
-                        hovercolor: Colors.white,
-                        cod: '00000',
-                        ref: '00000000000',
-                        qtd: '00',
-                        manufacturer: 'NAC',
-                        valuetable: '',
-                        discount: '',
-                        value: '',
-                        total:'' ,
-                      ),
-                      ListMaterial(
-                        hovercolor: Colors.white,
-                        cod: '00000',
-                        ref: '00000000000',
-                        qtd: '00',
-                        manufacturer: 'NAC',
-                        valuetable: '',
-                        discount: '',
-                        value: '',
-                        total:'' ,
-                      ),
-                      ListMaterial(
-                        hovercolor: Colors.white,
-                        cod: '00000',
-                        ref: '00000000000',
-                        qtd: '00',
-                        manufacturer: 'NAC',
-                        valuetable: '',
-                        discount: '',
-                        value: '',
-                        total:'' ,
+                      Container(
+                        height: heigth*0.4,
+                        child: ListView.builder(
+                          itemCount: listProdPrecos.length,
+                          itemBuilder: (context,index){
+                            return cod == listProdPrecos[index].codUnico
+                              ?ListMaterial(
+                                hovercolor: Colors.white,
+                                cod: listProdPrecos[index].codUnico.toUpperCase(),
+                                ref: listProdPrecos[index].ref.toUpperCase(),
+                                qtd: listProdPrecos[index].qtd,
+                                manufacturer: listProdPrecos[index].fabricante.toUpperCase(),
+                                valuetable: '',
+                                discount: '',
+                                value: '',
+                                total:'' ,
+                              ):Container();
+                          }
+                        ),
                       ),
                       SizedBox(height: 20),
                       Row(
@@ -598,41 +606,36 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           ),
                         ],
                       ),
-                      ListHosesAssemble(
-                        hovercolor: PaletteColors.white,
-                        cod: 'SE41-A',
-                        qtd: '3',
-                        number: '1',
-                        type: 'R2-12',
-                        lenght: '0,54',
-                        t: 'PP',
-                        term1: 'FSP-12-12',
-                        term2: 'FSP-12-12',
-                        cape: 'CP2-12',
-                        pos: '',
-                        adap1: '',
-                        adap2: '',
-                        an: 'X',
-                        mo: '',),
-                      ListHosesAssemble(
-                        hovercolor: PaletteColors.white,
-                        cod: 'SE41-A',
-                        qtd: '3',
-                        number: '2',
-                        type: 'R2-12',
-                        lenght: '0,54',
-                        t: 'PP',
-                        term1: 'FSP-12-12',
-                        term2: 'FSP-12-12',
-                        cape: 'CP2-12',
-                        pos: '',
-                        adap1: '',
-                        adap2: '',
-                        an: 'X',
-                        mo: '',)
-
-
-
+                      Container(
+                        height: heigth*0.2,
+                        child: ListView.builder(
+                          itemCount: listProdutos.length,
+                          itemBuilder: (context,index){
+                            return ListHosesAssemble(
+                              hovercolor: PaletteColors.white,
+                              cod: listProdutos[index].cod.toUpperCase(),
+                              qtd: listProdutos[index].qtd.toUpperCase(),
+                              number: listProdutos[index].number,
+                              type: listProdutos[index].typeHose.toUpperCase(),
+                              lenght: listProdutos[index].size.toUpperCase(),
+                              t: listProdutos[index].type.toUpperCase(),
+                              term1: listProdutos[index].term1.toUpperCase(),
+                              term2: listProdutos[index].term2.toUpperCase(),
+                              cape: listProdutos[index].cape.toUpperCase(),
+                              pos: listProdutos[index].pos.toUpperCase(),
+                              adap1: listProdutos[index].adap1.toUpperCase(),
+                              adap2: listProdutos[index].adap2.toUpperCase(),
+                              an: listProdutos[index].anel.toUpperCase(),
+                              mo: listProdutos[index].mola.toUpperCase(),
+                              onTap: (){
+                                setState(() {
+                                  cod = listProdutos[index].cod;
+                                });
+                              },
+                            );
+                          }
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -3,7 +3,6 @@ import '../Utils/exports.dart';
 class ListHosesAssemble extends StatefulWidget {
 
   final cod;
-
   final qtd;
   final number;
   final type;
@@ -17,8 +16,8 @@ class ListHosesAssemble extends StatefulWidget {
   final adap2;
   final an;
   final mo;
-
   Color hovercolor;
+  var onTap;
 
   ListHosesAssemble({
     required this.hovercolor,
@@ -36,6 +35,7 @@ class ListHosesAssemble extends StatefulWidget {
     this.adap2,
     this.an,
     this.mo,
+    required this.onTap
   });
 
   @override
@@ -56,10 +56,10 @@ class _ListHosesAssembleState extends State<ListHosesAssemble> {
       child: Container(
         color: widget.hovercolor,
         child: ListTile(
+          onTap: widget.onTap,
           title: Column(
             children: [
               Row(
-
                 children: [
                   SizedBox(width: 15),
                   Container(
