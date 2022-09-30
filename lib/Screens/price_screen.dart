@@ -12,8 +12,9 @@ class PriceScreen extends StatefulWidget {
   final String idAssembly;
   final String client;
   final String codClient;
+  final String order;
 
-  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient});
+  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order});
 
   @override
   State<PriceScreen> createState() => _PriceScreenState();
@@ -23,7 +24,6 @@ class _PriceScreenState extends State<PriceScreen> {
 
   List<String> priority = ['1 - Cliente Balcão', '2 - Alta', '3 - Média', '4 - Baixa'];
   String? selectedPriority = '1 - Cliente Balcão';
-  int order=0;
 
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
@@ -42,18 +42,8 @@ class _PriceScreenState extends State<PriceScreen> {
     super.initState();
     setState(() {
       codProduct=widget.saveListModel[0].cod.text;
+      _controllerNumberAssembly = TextEditingController(text: widget.order);
       refreshValues();
-    });
-    _getOrder();
-  }
-
-  _getOrder()async{
-    DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
-    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-    setState(() {
-      order = data?["order"]??0;
-      _controllerNumberAssembly = TextEditingController(text: '${order+1}');
-      print(order);
     });
   }
 

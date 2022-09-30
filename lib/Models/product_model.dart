@@ -13,6 +13,8 @@ class ProductModel{
   String adap2;
   String anel;
   String mola;
+  String maquina;
+  String aplicacao;
 
   ProductModel({
     required this.cod,
@@ -29,5 +31,7 @@ class ProductModel{
     required this.adap2,
     required this.anel,
     required this.mola,
+    this.maquina = '',
+    this.aplicacao = '',
   });
 }

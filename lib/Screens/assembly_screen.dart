@@ -6,6 +6,7 @@ import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Models/save_list_product.dart';
 import 'package:montagem_web/Models/search_product_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
+import 'package:montagem_web/Utils/text_const.dart';
 import '../Models/search_client_model.dart';
 import '../Utils/exports.dart';
 
@@ -48,6 +49,16 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   String adap2Marca='';
   bool loadingCliente=false;
   bool loadingData = true;
+  int order=0;
+
+  _getOrder()async{
+    DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    setState(() {
+      order = data?["order"]??0;
+      order= order+1;
+    });
+  }
 
   _dataClient(String codcli) async {
 
@@ -195,7 +206,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
           SaveListModel(
               cod: _controllerCodProduct,
               ref: _controllerRef,
-              qtd: _controllerQtd,
+              qtd: _controllerQtd = TextEditingController(text: '1'),
               maker: _controllerMaker,
               application: _controllerAplication,
               size: _controllerSize,
@@ -246,6 +257,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       _listSave[0].adap2.addListener(_searchProd);
       _listSave[0].type.addListener(_searchProd);
     }
+    _getOrder();
   }
 
   @override
@@ -1040,7 +1052,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             return ListTile(
                               title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
-                                if(_listSave[indexGlobal].cod.text.isNotEmpty){
                                   if(_listSave[indexGlobal].term1.text.isNotEmpty && valueProd == _listSave[indexGlobal].term1.text){
                                     _listSave[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                     term1Price = item['preco'];
@@ -1087,7 +1098,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                       )
                                   );
                                 }
-                              }),
+                              ),
                             );
                           }
                       );
@@ -1202,10 +1213,13 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                           'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
                           'produtos':aux.toList(),
                           'prodPrecos':auxPrice.toList(),
-                          'dateOrder':DateTime.now()
+                          'dateOrder':DateTime.now(),
+                          'status': TextConst.aguardando,
+                          'order': order.toString(),
+                          'priority': '1 - Cliente Balcão'
                         }).then((value){
                           Navigator.push(context, new MaterialPageRoute(builder: (context) => new
-                            PriceScreen(saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,client: _controllerClientName.text,codClient: _controllerClientCod.text,))
+                            PriceScreen(saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,client: _controllerClientName.text,codClient: _controllerClientCod.text,order: order.toString(),))
                           );
                         });
                       }

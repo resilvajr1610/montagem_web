@@ -1,6 +1,11 @@
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Widgets/list_hoses_resume.dart';
-
+import '../Models/product_model.dart';
 import '../Utils/exports.dart';
+import '../Utils/text_const.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -10,34 +15,98 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  int selectedText = 0;
-  List<ListIconModel> items = [
-    ListIconModel(date: '00/00/0000',assembly: '000000',
-        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-        number: '00000000', winthor: '000000000', iconShow: false),
-    ListIconModel(date: '00/00/0000',assembly: '000000',
-        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-        number: '00000000', winthor: '000000000', iconShow: false),
-    ListIconModel(date: '00/00/0000',assembly: '000000',
-        client: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
-        number: '00000000', winthor: '000000000', iconShow: false),
-
-  ];
-  bool selectedValue = false;
-
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
   var _controllerNumberOp = TextEditingController();
   var _controllerClient = TextEditingController();
-
   var _controllerReference = TextEditingController();
   var _controllerInitialDate = TextEditingController();
   var _controllerFinalDate = TextEditingController();
+  var _controllerItems = StreamController<QuerySnapshot>.broadcast();
+
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  List <ProductModel> listProdutos = [];
+  String cod = '';
+  List _allResults=[];
+  List show = [];
+
+  _data() async {
+    var data = await db.collection("assembly")
+        .orderBy('order',descending: true)
+        .get();
+    setState(() {
+      _allResults = data.docs;
+    });
+  }
+  _dataSearch() async {
+    _allResults.clear();
+    var data;
+    if(_controllerNumberAssembly.text.isNotEmpty && _controllerInitialDate.text.isEmpty){
+       data = await db.collection("assembly")
+          .where('order', isEqualTo: _controllerNumberAssembly.text.trim())
+          .get();
+    }
+    if(_controllerFinalDate.text.isNotEmpty && _controllerInitialDate.text.isEmpty){
+      data = await db.collection("assembly")
+          .where('data', isLessThanOrEqualTo: _controllerFinalDate.text.trim())
+          .get();
+    }
+    if(_controllerClient.text.isNotEmpty && _controllerInitialDate.text.isEmpty && _controllerNumberAssembly.text.isEmpty){
+      data = await db.collection("assembly")
+          .where('cliente', isEqualTo: _controllerClient.text.trim())
+          .get();
+    }
+    if(_controllerInitialDate.text.isNotEmpty && _controllerNumberAssembly.text.isEmpty && _controllerFinalDate.text.isEmpty){
+       data = await db.collection("assembly")
+          .where('data', isGreaterThanOrEqualTo: _controllerInitialDate.text.trim())
+          .get();
+    }
+    if(_controllerInitialDate.text.isNotEmpty && _controllerNumberAssembly.text.isNotEmpty){
+      data = await db.collection("assembly")
+          .where('data', isGreaterThanOrEqualTo: _controllerInitialDate.text.trim())
+          .where('order', isEqualTo: _controllerNumberAssembly.text.trim())
+          .get();
+    }
+    if(_controllerInitialDate.text.isNotEmpty && _controllerFinalDate.text.isNotEmpty){
+      data = await db.collection("assembly")
+          .where('data', isGreaterThanOrEqualTo: _controllerInitialDate.text.trim())
+          .where('data', isLessThanOrEqualTo: _controllerFinalDate.text.trim())
+          .get();
+    }
+    setState(() {
+      _allResults = data.docs;
+      print(_allResults.length);
+      if(_allResults.length==0){
+        _data();
+      }
+    });
+  }
+
+  createList(List list){
+    listProdutos.clear();
+    for(var i=0;list.length>i;i++){
+      var splited = list[i].toString().split('#');
+      listProdutos.add(
+          ProductModel(
+              cod: splited[1], qtd: splited[5], number: '${i+1}', typeHose: splited[11], size: splited[13], type: splited[15],
+              term1: splited[21], term2: splited[27],cape: splited[33], pos: splited[39], adap1: splited[41], adap2: splited[47], anel: splited[53], mola: splited[55],
+              maquina: splited[7],aplicacao: splited[9],
+          )
+      );
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _data();
+  }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final heigth = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.height;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
@@ -128,7 +197,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   SizedBox(width: 20),
                   Container(
                     width: width* 0.11,
-
                     child: InputRegister(
                       controller: _controllerNumberAssembly,
                       hint: '0000000',
@@ -144,7 +212,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   Container(
                     width: width* 0.12,
-
                     child: InputRegister(
                       controller: _controllerWhintor,
                       hint: '00000000',
@@ -177,7 +244,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     width: width * 0.22,
                     child: InputRegister(
                       controller: _controllerClient,
-                      hint: 'IPIRANGA COMÉRCIO E SERVIÇOS LTDA',
+                      hint: 'cliente',
                       fonts: 14.0,
                       keyboardType: TextInputType.text,
                       width: width * 0.25,
@@ -256,6 +323,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        DataInputFormatter(),
+                      ],
                       onChanged: (value){},
                     ),
                   ),
@@ -271,6 +342,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       icons: Icons.height,
                       colorBorder: PaletteColors.inputGrey,
                       background: PaletteColors.inputGrey,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        DataInputFormatter(),
+                      ],
                       onChanged: (value){},
                     ),
                   ),
@@ -285,8 +360,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       colorText: PaletteColors.white,
                       colorButton: PaletteColors.primaryColor,
                       colorBorder: PaletteColors.primaryColor,
-                      onPressed: () =>
-                          Navigator.popAndPushNamed(context, '/home'),
+                      onPressed: () =>_dataSearch(),
                       font: 'Nunito',
                     ),
                   ),
@@ -308,116 +382,131 @@ class _HistoryScreenState extends State<HistoryScreen> {
               SizedBox(height: 15),
               Row(
                 children: [
-                  SizedBox(width: 30),
-                  TextCustom(
-                    text: 'Data',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.center,
+                  Container(
+                    width: width*0.07,
+                    margin: const EdgeInsets.only(left: 30 ),
+                    child: TextCustom(
+                      text: 'Data',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  SizedBox(width: 70),
-                  TextCustom(
-                    text: 'N° da montagem',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.center,
+                  Container(
+                    width: width*0.08,
+                    margin: const EdgeInsets.symmetric(horizontal: 15 ),
+                    child: TextCustom(
+                      text: 'N° da montagem',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  SizedBox(width: 45),
-                  TextCustom(
-                    text: 'Cliente',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.center,
+                  Container(
+                    width: width*0.15,
+                    child: TextCustom(
+                      text: 'Cliente',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  SizedBox(width: 275),
-                  TextCustom(
-                    text: 'N° OP',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.center,
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15 ),
+                    width: width*0.07,
+                    child: TextCustom(
+                      text: 'N° OP',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  SizedBox(width: 50),
-                  TextCustom(
-                    text: 'Orçamento Winthor',
-                    size: 14.0,
-                    color: PaletteColors.primaryColor,
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.normal,
-                    textAlign: TextAlign.center,
+                  Container(
+                    width: width*0.1,
+                    child: TextCustom(
+                      text: 'Orçamento Winthor',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-
+                  Container(
+                    width: width*0.1,
+                    child: TextCustom(
+                      text: 'Status',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ],
               ),
-              ListTileCustom(
-                date: items[0].date,
-                assembly: items[0].assembly,
-                client: items[0].client,
-                number: items[0].number,
-                winthor: items[0].winthor,
+              Container(
+                height: height*0.3,
+                child: StreamBuilder(
+                  stream: _controllerItems.stream,
+                  builder: (context, snapshot) {
 
-                showIcons: items[0].iconShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      items[0].iconShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      items[0].iconShow = false;
-                    }
-                  });
-                },
-                hovercolor: PaletteColors.white,
-              ),
-              ListTileCustom(
-                date: items[1].date,
-                assembly: items[1].assembly,
-                client: items[1].client,
-                number: items[1].number,
-                winthor: items[1].winthor,
+                    switch (snapshot.connectionState) {
+                      case ConnectionState.none:
+                      case ConnectionState.waiting:
+                      case ConnectionState.active:
+                      case ConnectionState.done:
+                        if(_allResults.length == 0){
+                          return Center(
+                              child: Text('Montagem finalizada não encontrada',
+                                style: TextStyle(fontSize: 16,color: PaletteColors.primaryColor),)
+                          );
+                        }else {
+                          return _allResults.length == 0?CircularProgressIndicator():ListView.builder(
+                              itemCount: _allResults.length,
+                              itemBuilder: (BuildContext context, index) {
 
-                showIcons: items[1].iconShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      items[1].iconShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      items[1].iconShow = false;
-                    }
-                  });
-                },
-                hovercolor: PaletteColors.white,
-              ),
-              ListTileCustom(
-                date: items[2].date,
-                assembly: items[2].assembly,
-                client: items[2].client,
-                number: items[2].number,
-                winthor: items[2].winthor,
+                                DocumentSnapshot item = _allResults[index];
+                                show.add(false);
 
-                showIcons: items[2].iconShow,
-                onTap: () {
-                  setState(() {
-                    if (selectedText == 0) {
-                      selectedText = selectedText + 1;
-                      items[2].iconShow = true;
-                    } else {
-                      selectedText = selectedText - 1;
-                      items[2].iconShow = false;
+                                return ListTileCustom(
+                                  hovercolor: PaletteColors.white,
+                                  date: item['data'],
+                                  assembly: item['order'],
+                                  client: item['cliente'],
+                                  number: item['order'],
+                                  winthor: ErrorStringModel(item,'whinthor'),
+                                  status: ErrorStringModel(item,'status'),
+                                  showIcons: show[index],
+                                  onTap: () {
+                                    setState(() {
+                                      if (show[index]) {
+                                        show[index] = false;
+                                      } else {
+                                        show[index] = true;
+                                      }
+                                    });
+                                  },
+                                  onPressedShow: (){
+                                    createList(item['produtos']);
+                                  },
+                                  onPressedEdit: (){},
+                                  onPressedDuplicated: (){},
+                                );
+                              }
+                          );
+                        }
                     }
-                  });
-                },
-                hovercolor: PaletteColors.white,
+                  },
+                ),
               ),
               SizedBox(height: 20),
               Divider(),
@@ -579,63 +668,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ],
               ),
-              ListHosesResume(
-                hovercolor: Colors.white,
-                qtd: '3',
-                machine: 'D6N',
-                application: 'Motor -> Bomba Principal',
-                type: 'R2-12',
-                lenght: '0,54',
-                t: 'PP',
-                term1: 'FSP-12-12',
-                term2: 'FSP-12-12',
-                cape: 'CP2-12',
-                pos: '',
-                adap1: '',
-                adap2: '',
-                an: 'X',
-                mo: '',
-
-              ),
-              ListHosesResume(
-                hovercolor: Colors.white,
-                qtd: '3',
-                machine: 'D6N',
-                application: 'Motor -> Bomba Principal',
-                type: 'R2-12',
-                lenght: '0,54',
-                t: 'PP',
-                term1: 'FSP-12-12',
-                term2: 'FSP-12-12',
-                cape: 'CP2-12',
-                pos: '',
-                adap1: '',
-                adap2: '',
-                an: 'X',
-                mo: '',
-
-              ),
-              ListHosesResume(
-                hovercolor: Colors.white,
-                qtd: '3',
-                machine: 'D6N',
-                application: 'Motor -> Bomba Principal',
-                type: 'R2-12',
-                lenght: '0,54',
-                t: 'PP',
-                term1: 'FSP-12-12',
-                term2: 'FSP-12-12',
-                cape: 'CP2-12',
-                pos: '',
-                adap1: '',
-                adap2: '',
-                an: 'X',
-                mo: '',
-
+              Container(
+                height: height*0.3,
+                child: ListView.builder(
+                    itemCount: listProdutos.length,
+                    itemBuilder: (context,index){
+                      return  ListHosesResume(
+                        hovercolor: Colors.white,
+                        qtd: listProdutos[index].qtd,
+                        machine: listProdutos[index].maquina,
+                        application: listProdutos[index].aplicacao,
+                        type: listProdutos[index].typeHose,
+                        lenght: listProdutos[index].size,
+                        t: listProdutos[index].type,
+                        term1: listProdutos[index].term1,
+                        term2: listProdutos[index].term2,
+                        cape: listProdutos[index].cape,
+                        pos: listProdutos[index].pos,
+                        adap1: listProdutos[index].adap1,
+                        adap2: listProdutos[index].adap2,
+                        an: listProdutos[index].anel,
+                        mo: listProdutos[index].mola,
+                      );
+                    }
+                ),
               ),
               SizedBox(height: 40),
-
-
             ],
           ),
         ),
