@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Utils/exports.dart';
 import '../Widgets/snackBars.dart';
+import '../services/shared_preferences_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,12 +13,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _controllerEmail = TextEditingController();
+  var _controllerEmail = TextEditingController();
   final _controllerPassword = TextEditingController();
   bool visiblePassword = true;
   FirebaseAuth _auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   String _error="";
+  final PrefService _prefService = PrefService();
 
   _signFirebase()async{
 
@@ -29,7 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
             email: _controllerEmail.text.trim(),
             password: _controllerPassword.text.trim()
         ).then((auth)async{
-          Navigator.pushReplacementNamed(context, "/home");
+
+          _prefService.createCache(_controllerPassword.text,_controllerEmail.text).whenComplete((){
+            Navigator.pushReplacementNamed(context, "/home");
+          });
         });
       }on FirebaseAuthException catch (e) {
         if(e.code =="unknown"){
@@ -55,6 +61,23 @@ class _LoginScreenState extends State<LoginScreen> {
         showSnackBar(context, _error,_scaffoldKey);
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _prefService.readEmail('email').then((value){
+      if(value != null){
+        setState(() {
+          _controllerEmail = TextEditingController(text: value.toString());
+        });
+        _prefService.readPassword('password').then((value){
+          if(value != null){
+            return Navigator.pushReplacementNamed(context, "/home");
+          }
+        });
+      }
+    });
   }
 
   @override

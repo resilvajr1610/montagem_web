@@ -20,6 +20,7 @@ dependencies:
   http:
   url_launcher:
   brasil_fields:
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:
