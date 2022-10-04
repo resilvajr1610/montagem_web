@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:montagem_web/Models/pdf_model.dart';
 import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Widgets/list_client.dart';
 import 'package:montagem_web/Widgets/list_material.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import '../Models/pdf_tabela_model.dart';
 import '../Models/save_list_product.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
+import '../services/pdf_model.dart';
 
 class PriceScreen extends StatefulWidget {
   final List<SaveListModel> saveListModel;
@@ -13,8 +17,10 @@ class PriceScreen extends StatefulWidget {
   final String client;
   final String codClient;
   final String order;
+  final String data;
+  final String filial;
 
-  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order});
+  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order,required this.data, required this.filial});
 
   @override
   State<PriceScreen> createState() => _PriceScreenState();
@@ -35,6 +41,10 @@ class _PriceScreenState extends State<PriceScreen> {
   String valorTabela = 'R\$ 0,00';
   String descAcrescentado = 'R\$ 0,00';
   String valorFinal = 'R\$ 0,00';
+  double brutoGeral = 0.00;
+  double descGeral = 0.00;
+  double liquidoGeral = 0.00;
+  int indexGlobal = 0;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -47,49 +57,217 @@ class _PriceScreenState extends State<PriceScreen> {
     });
   }
 
-  refreshValues(){
-    double aplicado = 0.0;
-    aplicado = desconto/100;
-    double valorItem = 0.0;
-    double totalItens =0.0;
-    double valor = 0.0;
-    double descontoTotal = 0.0;
-    double descTabela = 0.0;
-    double total = 0.0;
-    double valorAtual = 0.0;
+  descontos(){
+    double desc = double.parse(_controllerDiscount.text.replaceAll(',','.'));
+    double descTotal = (double.parse(widget.saveListModel[indexGlobal].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
+    double liquido = double.parse(widget.saveListModel[indexGlobal].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
+    double uni = liquido/double.parse(widget.saveListProduct[indexGlobal].qtd);
+
     setState(() {
-      listGetProduct=[];
+      valorFinal = 'R\$ ${liquido.toStringAsFixed(2).replaceAll('.', ',')}';
+      valorTabela = widget.saveListModel[indexGlobal].valorTabela;
+      descAcrescentado = 'R\$ ${descTotal.toStringAsFixed(2).replaceAll('.', ',')}';
+      String unitario = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
+      listGetProduct.clear();
+
+      for (var i = 0; widget.saveListProduct.length > i; i++){
+
+        double descTotalPecas = (double.parse(widget.saveListProduct[i].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
+        double liquidoPecas = double.parse(widget.saveListProduct[i].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
+        double uniPecas = liquido/double.parse(widget.saveListProduct[i].qtd);
+
+          listGetProduct.add(
+              SaveListProduct(
+                  numoriginal: widget.saveListProduct[i].numoriginal, cod: widget.saveListProduct[i].cod, codUnico: widget.saveListProduct[i].codUnico, ref: widget.saveListProduct[i].ref,
+                  qtd: widget.saveListProduct[i].qtd, fabricante: widget.saveListProduct[i].fabricante,valorTabela: widget.saveListProduct[i].valorTabela,
+                  desconto: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}',valorUnitario: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}',
+                  total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}'
+              )
+          );
+      }
     });
 
-    if(listGetProduct.length==0){
-      for(var i=0;widget.saveListProduct.length>i;i++){
+  }
+
+  refreshValues(){
+
+      for (var i = 0; widget.saveListProduct.length > i; i++) {
         listGetProduct.add(widget.saveListProduct[i]);
-        valor = double.parse(listGetProduct[i].valorUnitario.toString().replaceAll(',', '.').replaceAll('R\$ ', ''));
-        descontoTotal = valor*aplicado;
-        valorItem = double.parse(listGetProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
-        totalItens = totalItens+valorItem;
-        listGetProduct[i].desconto = 'R\$ ${descontoTotal.toStringAsFixed(2).replaceAll('.', ',')}';
-        valorAtual = valor - (valor*aplicado);
-        listGetProduct[i].valorUnitario = 'R\$ ${valorAtual.toStringAsFixed(2).replaceAll('.', ',')}';
-        listGetProduct[i].total = 'R\$ ${valorAtual.toStringAsFixed(2).replaceAll('.', ',')}';
       }
 
-      descTabela = totalItens*aplicado;
-      total = totalItens-descTabela;
-
-      valorTabela = 'R\$ ${totalItens.toStringAsFixed(2).replaceAll('.', ',')}';
-      descAcrescentado = 'R\$ ${descTabela.toStringAsFixed(2).replaceAll('.', ',')}';
-      valorFinal = 'R\$ ${total.toStringAsFixed(2).replaceAll('.', ',')}';
-      setState(() {});
-      for(var i=0; widget.saveListModel.length>i;i++){
-        if(widget.saveListModel[i].cod == codProduct){
-          widget.saveListModel[i].valorTabela = valorTabela;
-          widget.saveListModel[i].desconto = descAcrescentado;
-          widget.saveListModel[i].total = valorFinal;
-        }
-      }
-    }
+    setState(() {
+      valorTabela = widget.saveListModel[0].valorTabela;
+      valorFinal = widget.saveListModel[0].valorTabela;
+    });
 }
+
+  _createPdfGeral()async{
+
+    var nMontagem  = widget.order;
+    var date   = widget.data;
+    var filial   = widget.filial;
+    var cliente   = '${widget.codClient} - ${widget.client}';
+
+    PdfDocument document = PdfDocument();
+    final page = document.pages.add();
+
+    page.graphics.drawString('N° de Montagem: $nMontagem',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,0,500,50));
+    page.graphics.drawString('Emissão : $date',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(400,0,600,50));
+    page.graphics.drawString('Filial : $filial',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,30,800,50));
+    page.graphics.drawString('Cliente : $cliente',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,60,800,50));
+
+    page.graphics.drawString('Qtd',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,100,50,50));
+    page.graphics.drawString('Descrição',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(50,100,100,50));
+    page.graphics.drawString('Valor Tabela',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,100,150,50));
+    page.graphics.drawString('Desconto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(300,100,150,50));
+    page.graphics.drawString('Valor Unitário',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,100,150,50));
+    page.graphics.drawString('Total',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,100,50,50));
+
+    List<PDFModel> list=[];
+    double top = 100;
+    for(var i=0; widget.saveListModel.length>i;i++){
+      top = top+30;
+      double valorQtd = double.parse(widget.saveListModel[i].qtd.text);
+      print('valorQtd');
+      print(valorQtd);
+      double valorTotal = double.parse(widget.saveListModel[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
+      double desc = double.parse(widget.saveListModel[i].desconto.replaceAll('R\$ ', '').replaceAll(',', '.'));
+      brutoGeral = brutoGeral + valorTotal;
+      descGeral = desc + descGeral;
+      liquidoGeral = brutoGeral-descGeral;
+      print('valorTotal');
+      print(valorTotal);
+      double uni =  valorTotal/valorQtd;
+      print('uni');
+      print(uni);
+      list.add(
+          PDFModel(
+              qtd: widget.saveListModel[i].qtd.text,
+              descricao: widget.saveListModel[i].application.text,
+              valorTabela: valorTabela.toString(),
+              desconto: desconto.toString(),
+              valorUnitario: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}',
+              total: valorFinal.toString()
+          )
+      );
+      page.graphics.drawString('${list[i].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top,50,50));
+      page.graphics.drawString('${list[i].descricao}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(50,top,100,50));
+      page.graphics.drawString('${list[i].valorTabela}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,top,150,50));
+      page.graphics.drawString('${list[i].desconto} %',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(300,top,150,50));
+      page.graphics.drawString('${list[i].valorUnitario}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top,150,50));
+      page.graphics.drawString('${list[i].total}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top,100,50));
+    }
+
+
+    page.graphics.drawString('Valor Bruto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+90,150,50));
+    page.graphics.drawString('R\$ ${brutoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+90,150,50));
+
+    page.graphics.drawString('Desconto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+120,150,50));
+    page.graphics.drawString('R\$ ${descGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+120,150,50));
+
+    page.graphics.drawString('Valor Líquido',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+150,150,50));
+    page.graphics.drawString('R\$ ${liquidoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+150,150,50));
+
+    bool time = false;
+    List<int> bytes = await document.save().whenComplete((){
+      document.dispose();
+      setState(() {
+        time=true;
+      });
+    });
+    if(time){
+      saveAndLaunhFile(bytes, 'n_montagem_$nMontagem.pdf');
+    }
+  }
+
+  _createPdfTabela()async{
+
+    var nMontagem  = widget.order;
+    var date   = widget.data;
+    var filial   = widget.filial;
+    var cliente   = '${widget.codClient} - ${widget.client}';
+
+    PdfDocument document = PdfDocument();
+    final page = document.pages.add();
+
+    page.graphics.drawString('N° de Montagem: $nMontagem',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,0,500,50));
+    page.graphics.drawString('Código: $codProduct',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(200,0,500,50));
+    page.graphics.drawString('Emissão : $date',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(400,0,600,50));
+    page.graphics.drawString('Filial : $filial',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,30,800,50));
+    page.graphics.drawString('Cliente : $cliente',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,60,800,50));
+
+    page.graphics.drawString('Código',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,100,50,50));
+    page.graphics.drawString('Referência',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,100,100,50));
+    page.graphics.drawString('Quantidade',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(130,100,150,50));
+    page.graphics.drawString('Fabricante',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,100,150,50));
+    page.graphics.drawString('Valor\nTabela',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(280,100,100,50));
+    page.graphics.drawString('Desconto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(330,100,60,50));
+    page.graphics.drawString('Valor\nUnitário',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(400,100,80,50));
+    page.graphics.drawString('Total',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(460,100,50,50));
+
+    List<PDFTabelaModel> list=[];
+    for(var i=0; widget.saveListProduct.length>i;i++){
+     if(widget.saveListProduct[i].codUnico==codProduct){
+       double valorQtd = double.parse(widget.saveListProduct[i].qtd);
+       print('valorQtd');
+       print(valorQtd);
+       double valorTotal = double.parse(widget.saveListProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
+       double desc = double.parse(widget.saveListProduct[i].desconto.replaceAll('R\$ ', '').replaceAll(',', '.'));
+       brutoGeral = brutoGeral + valorTotal;
+       descGeral = desc + descGeral;
+       liquidoGeral = brutoGeral-descGeral;
+       print('valorTotal');
+       print(valorTotal);
+       double uni =  valorTotal/valorQtd;
+       print('uni');
+       print(uni);
+       list.add(
+           PDFTabelaModel(
+               cod: widget.saveListProduct[i].cod,
+               ref: widget.saveListProduct[i].ref,
+               qtd: widget.saveListProduct[i].qtd,
+               fab: widget.saveListProduct[i].fabricante,
+               valorTabela: widget.saveListProduct[i].valorTabela,
+               desconto: widget.saveListProduct[i].desconto,
+               valorUnitario: widget.saveListProduct[i].valorUnitario,
+               total: widget.saveListProduct[i].total
+           )
+       );
+     }
+    }
+    double top = 100;
+    for(var ind=0; list.length>ind;ind++){
+      top = top+30;
+      page.graphics.drawString('${list[ind].cod}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top,50,50));
+      page.graphics.drawString('${list[ind].ref}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,top,70,50));
+      page.graphics.drawString('${list[ind].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(130,top,100,50));
+      page.graphics.drawString('${list[ind].fab}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,top,100,50));
+      page.graphics.drawString('${list[ind].valorTabela}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(280,top,150,50));
+      page.graphics.drawString('${list[ind].desconto}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(330,top,150,50));
+      page.graphics.drawString('${list[ind].valorUnitario}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(400,top,150,50));
+      page.graphics.drawString('${list[ind].total}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(460,top,100,50));
+    }
+
+    page.graphics.drawString('Valor Bruto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+90,150,50));
+    page.graphics.drawString('R\$ ${brutoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+90,150,50));
+
+    page.graphics.drawString('Desconto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+120,150,50));
+    page.graphics.drawString('R\$ ${descGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+120,150,50));
+
+    page.graphics.drawString('Valor Líquido',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+150,150,50));
+    page.graphics.drawString('R\$ ${liquidoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+150,150,50));
+
+    bool time = false;
+    List<int> bytes = await document.save().whenComplete((){
+      document.dispose();
+      setState(() {
+        time=true;
+      });
+    });
+    if(time){
+      saveAndLaunhFile(bytes, 'cod_$codProduct.pdf');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +472,9 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
                           onPressed: () {
-                            refreshValues();
+                            if(_controllerDiscount.text.isNotEmpty){
+                              descontos();
+                            }
                           },
                           font: 'Nunito',
                         ),
@@ -555,7 +735,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                           fontWeight: FontWeight.normal,
                                         ),
                                         TextCustom(
-                                          text: 'R\$ 000,00',
+                                          text: 'R\$ 0,00',
                                           size: 14.0,
                                           color: PaletteColors.grey,
                                           fontFamily: 'Nunito',
@@ -613,9 +793,7 @@ class _PriceScreenState extends State<PriceScreen> {
                               'discountTotal': descAcrescentado,
                               'totalFinal': valorFinal,
                               'status' : TextConst.aguardando
-                            }).then((value) => db.collection('order').doc('order').update({
-                              'order':int.parse(_controllerNumberAssembly.text)
-                            }).then((value) => Navigator.pushReplacementNamed(context, '/home')));
+                            }).then((value) => Navigator.pushReplacementNamed(context, '/home'));
                           },
                           font: 'Nunito',
                         ),
@@ -640,7 +818,7 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorText: PaletteColors.white,
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
-                          onPressed: (){},
+                          onPressed: ()=>_createPdfTabela(),
                           font: 'Nunito',
                         ),
                         SizedBox(width: 20),
@@ -671,7 +849,7 @@ class _PriceScreenState extends State<PriceScreen> {
                         ),
                         SizedBox(width: 20),
                         TextCustom(
-                          text: '${widget.codClient }- ${widget.client}',
+                          text: '${widget.codClient} - ${widget.client}',
                           size: 14.0,
                           color: PaletteColors.grey,
                           fontFamily: 'Nunito',
@@ -725,7 +903,6 @@ class _PriceScreenState extends State<PriceScreen> {
                             color: PaletteColors.primaryColor,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-
                           ),
                         ),
                         Container(
@@ -767,6 +944,9 @@ class _PriceScreenState extends State<PriceScreen> {
                               onTap: (){
                                 setState(() {
                                   codProduct = widget.saveListModel[index].cod.text;
+                                  indexGlobal = index;
+                                    valorTabela = widget.saveListModel[index].valorTabela;
+                                    valorFinal = widget.saveListModel[index].valorTabela;
                                   print('codProduct $codProduct');
                                 });
                               },
@@ -869,7 +1049,14 @@ class _PriceScreenState extends State<PriceScreen> {
                             colorText: PaletteColors.white,
                             colorButton: PaletteColors.primaryColor,
                             colorBorder: PaletteColors.primaryColor,
-                            onPressed: (){},
+                            onPressed: (){
+                              if(widget.saveListModel.length!=0){
+                                print(widget.saveListModel.length);
+                                _createPdfGeral();
+                              }else{
+                                print('erro');
+                              }
+                            },
                             font: 'Nunito',
                           ),
                         ],

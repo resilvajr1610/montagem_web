@@ -21,6 +21,7 @@ dependencies:
   url_launcher:
   brasil_fields:
   shared_preferences: ^2.0.5
+  syncfusion_flutter_pdf: ^20.1.61-beta
 
 dev_dependencies:
   flutter_test:
@@ -37,5 +38,3 @@ flutter:
       - family: Nunito
         fonts:
           - asset: assets/fonts/Nunito-Regular.ttf
-
-

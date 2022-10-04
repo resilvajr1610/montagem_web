@@ -25,7 +25,7 @@ void main ()async{
   runApp(MaterialApp(
     title: 'Montagem',
     debugShowCheckedModeBanner: false,
-    // home: HomeScreen(),
+    // home: PendenciesScreen(),
     initialRoute:route,
     onGenerateRoute: Routes.generateRoute,
   ));

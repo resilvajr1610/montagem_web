@@ -29,7 +29,6 @@ class Routes {
         return MaterialPageRoute(
           builder: (_) => PendenciesScreen(),
         );
-
       default :
         _erroRota();
     }

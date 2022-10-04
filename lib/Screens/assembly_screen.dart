@@ -184,10 +184,30 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     });
   }
 
+  insertList(int index){
+
+    double totalTabela = 0;
+    double uni =0;
+
+    if(typePrice!='' || term1Price!='' || term2Price!='' || case1Price!='' || adap1Price != '' || adap2Price!=''){
+      totalTabela = (double.parse(typePrice) + double.parse(term1Price) + double.parse(term2Price) + double.parse(case1Price) + double.parse(adap1Price) + double.parse(adap2Price))*int.parse(_listSave[index].qtd.text);
+      print('totalTabela ${totalTabela}');
+      uni = totalTabela / int.parse(_listSave[index].qtd.text);
+      print('uni ${uni}');
+      setState(() {
+        _listSave[index].valorTabela = 'R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
+        _listSave[index].valorUnitario = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
+        _listSave[index].total = 'R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
+        totalTabela =0;
+        uni =0;
+      });
+    }
+  }
+
   _addList(){
     var _controllerCodProduct = TextEditingController();
     var _controllerRef = TextEditingController();
-    var _controllerQtd = TextEditingController();
+    var _controllerQtd = TextEditingController(text: '1');
     var _controllerMaker = TextEditingController();
     var _controllerAplication = TextEditingController();
     var _controllerSize = TextEditingController();
@@ -202,11 +222,11 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     var _controllerAN = TextEditingController();
     var _controllerMO = TextEditingController();
     setState(() {
-      _listSave.add(
-          SaveListModel(
+        _listSave.add(
+            SaveListModel(
               cod: _controllerCodProduct,
               ref: _controllerRef,
-              qtd: _controllerQtd = TextEditingController(text: '1'),
+              qtd: _controllerQtd,
               maker: _controllerMaker,
               application: _controllerAplication,
               size: _controllerSize,
@@ -232,12 +252,12 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
               adap2Marca: adap2Marca,
               anel: _controllerAN,
               mola: _controllerMO,
-              valorTabela: '0',
+              valorTabela: 'R\$ 00,00',
               desconto: '0',
-              valorUnitario: '0',
-              total: '0'
-          )
-      );
+              valorUnitario: 'R\$ 00,00',
+              total:'R\$ 00,00',
+            )
+        );
     });
   }
 
@@ -1088,13 +1108,13 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                           numoriginal: item['numoriginal'],
                                           cod: item['codprod'],
                                           codUnico: _listSave[indexGlobal].cod.text,
-                                          ref: 'ref',
-                                          qtd: '0',
+                                          ref:  item['numoriginal'].toString(),
+                                          qtd: _listSave[indexGlobal].qtd.text,
                                           fabricante: item['marca'],
-                                          valorTabela: item['preco'],
-                                          desconto: '0',
-                                          valorUnitario: item['preco'],
-                                          total: item['preco']
+                                          valorTabela: '${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
+                                          desconto: 'R\$ 0,00',
+                                          valorUnitario: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}',
+                                          total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
                                       )
                                   );
                                 }
@@ -1130,7 +1150,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        if(_controllerClientName.text.isNotEmpty && _listSave[0].cod.text.isNotEmpty && _listSave[0].maker.text.isNotEmpty && _listSave[0].type.text.isNotEmpty){
+                        if(_listSave[0].cod.text.isNotEmpty && _listSave[0].maker.text.isNotEmpty && _listSave[0].type.text.isNotEmpty){
                           setState(() {
                             _addList();
                           });
@@ -1196,6 +1216,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                            '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
                            '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}'
                        );
+                       insertList(i);
                       }
                       for(var i=0;listProduct.length>i;i++){
                         auxPrice.add(
@@ -1218,8 +1239,16 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                           'order': order.toString(),
                           'priority': '1 - Cliente Balcão'
                         }).then((value){
-                          Navigator.push(context, new MaterialPageRoute(builder: (context) => new
-                            PriceScreen(saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,client: _controllerClientName.text,codClient: _controllerClientCod.text,order: order.toString(),))
+                          db.collection('order').doc('order').update({
+                          'order':int.parse(order.toString())
+                          }).then((value) =>
+                              Navigator.push(context, new MaterialPageRoute(builder: (context) => new
+                                PriceScreen(
+                                  saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,
+                                  client: _controllerClientName.text,codClient: _controllerClientCod.text,
+                                  order: order.toString(),data: _controllerDate.text,filial: _controllerAffiliation.text,
+                                )
+                              ))
                           );
                         });
                       }
