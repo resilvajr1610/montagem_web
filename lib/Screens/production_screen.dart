@@ -19,7 +19,7 @@ class ProductionScreen extends StatefulWidget {
 class _ProductionScreenState extends State<ProductionScreen> {
   final listRoutes = [
     HomeScreen(),
-    AssemblyScreen(),
+    AssemblyScreen(id: '',),
     HistoryScreen(),
     PendenciesScreen(),
     ProductionScreen(''),

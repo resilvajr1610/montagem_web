@@ -23,7 +23,7 @@ class Routes {
         );
       case "/assembly":
         return MaterialPageRoute(
-          builder: (_) => AssemblyScreen(),
+          builder: (_) => AssemblyScreen(id: '',),
         );
       case "/pendencies":
         return MaterialPageRoute(

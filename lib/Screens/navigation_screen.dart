@@ -12,7 +12,7 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   final listRoutes = [
     HomeScreen(),
-    AssemblyScreen(),
+    AssemblyScreen(id: ''),
     HistoryScreen(),
     PendenciesScreen(),
   ];
