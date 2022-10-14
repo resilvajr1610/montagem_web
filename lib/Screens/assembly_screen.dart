@@ -257,6 +257,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
               desconto: '0',
               valorUnitario: 'R\$ 00,00',
               total:'R\$ 00,00',
+              descricao: '',
             )
         );
     });
@@ -308,6 +309,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
         var adap2Fab = splited[51];
         var _controllerAN = TextEditingController(text: splited[53]);
         var _controllerMO = TextEditingController(text: splited[55]);
+        var _descricao = splited[57];
 
             _listSave.add(
                 SaveListModel(
@@ -343,6 +345,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   desconto: '0',
                   valorUnitario: '0',
                   total:'0',
+                  descricao: _descricao,
                 )
         );
       }
@@ -1137,6 +1140,7 @@ init(){
                             Container(
                               width: width * 0.03,
                               child: InputRegister(
+                                enable: false,
                                 controller: _listSave[index].anel,
                                 hint: '',
                                 fonts: 12.0,
@@ -1215,6 +1219,7 @@ init(){
                                           _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
                                           typePrice = item['preco'];
                                           typeMarca = item['marca'];
+                                          _listSave[indexGlobal].descricao = '${item['diametro']} ${item['pressao']} Fem GIR ${item['estf1']}° / Macho ${item['estf2']}°';
                                         }
                                         valueProd='';
                                         listProduct.add(
@@ -1328,7 +1333,7 @@ init(){
                                  '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
                                  '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
                                  '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
-                                 '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}'
+                                 '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
                              );
                              insertList(i);
                             }
@@ -2187,11 +2192,13 @@ init(){
                                   _listSave[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                   term1Price = item['preco'];
                                   term1Marca = item['marca'];
+                                  _listSave[indexGlobal].anel = TextEditingController(text: item['codoring']!='null'?'X':'');
                                 }
                                 if(_listSave[indexGlobal].term2.text.isNotEmpty && valueProd == _listSave[indexGlobal].term2.text){
                                   _listSave[indexGlobal].term2 = TextEditingController(text: item['numoriginal']);
                                   term2Price = item['preco'];
                                   term2Marca = item['marca'];
+                                  _listSave[indexGlobal].anel = TextEditingController(text: item['codoring']!='null'?'X':'');
                                 }
                                 if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
                                   _listSave[indexGlobal].case1 = TextEditingController(text: item['numoriginal']);
@@ -2212,6 +2219,7 @@ init(){
                                   _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
                                   typePrice = item['preco'];
                                   typeMarca = item['marca'];
+                                  _listSave[indexGlobal].descricao = '${item['diametro']} ${item['pressao']} Fem GIR ${item['estf1']}° / Macho ${item['estf2']}°';
                                 }
                                 valueProd='';
                                 listProduct.add(
@@ -2325,7 +2333,7 @@ init(){
                                 '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
                                 '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
                                 '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
-                                '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}'
+                                '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
                         );
                         insertList(i);
                       }

@@ -784,16 +784,18 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
                           onPressed: () {
-                            db.collection('assembly').doc(widget.idAssembly).update({
-                              'obs' : _controllerObservation.text.isNotEmpty?_controllerObservation.text:'',
-                              'order' : _controllerNumberAssembly.text,
-                              'whinthor' : _controllerWhintor.text.isNotEmpty?_controllerWhintor.text:'',
-                              'priority' : selectedPriority,
-                              'discountPercent' : _controllerDiscount.text.isNotEmpty?_controllerDiscount.text:'0',
-                              'discountTotal': descAcrescentado,
-                              'totalFinal': valorFinal,
-                              'status' : TextConst.aguardando
-                            }).then((value) => Navigator.pushReplacementNamed(context, '/home'));
+                              if(_controllerWhintor.text.length==8){
+                                db.collection('assembly').doc(widget.idAssembly).update({
+                                  'obs' : _controllerObservation.text.isNotEmpty?_controllerObservation.text:'',
+                                  'order' : _controllerNumberAssembly.text,
+                                  'whinthor' : _controllerWhintor.text.isNotEmpty?_controllerWhintor.text:'',
+                                  'priority' : selectedPriority,
+                                  'discountPercent' : _controllerDiscount.text.isNotEmpty?_controllerDiscount.text:'0',
+                                  'discountTotal': descAcrescentado,
+                                  'totalFinal': valorFinal,
+                                  'status' : TextConst.aguardando
+                                }).then((value) => Navigator.pushReplacementNamed(context, '/home'));
+                              }
                           },
                           font: 'Nunito',
                         ),
@@ -806,7 +808,13 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorText: PaletteColors.white,
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
-                          onPressed: () {},
+                          onPressed: () {
+                            if(_controllerWhintor.text.length==8){
+                              db.collection('assembly').doc(widget.idAssembly).update({
+                                'status' : TextConst.producao
+                              });
+                            }
+                          },
                           font: 'Nunito',
                         ),
                         SizedBox(width: 20),
@@ -936,7 +944,7 @@ class _PriceScreenState extends State<PriceScreen> {
                             return ListClient(
                               hovercolor: Colors.white,
                               qtd: widget.saveListModel[index].qtd.text,
-                              description: widget.saveListModel[index].application.text,
+                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].descricao} x ${double.parse(widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
                               valuetable: '${widget.saveListModel[index].valorTabela}',
                               discount: '${widget.saveListModel[index].desconto}',
                               value: '${widget.saveListModel[index].valorUnitario}',

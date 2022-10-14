@@ -254,10 +254,14 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorButton: PaletteColors.primaryColor,
                             colorBorder: PaletteColors.primaryColor,
                             font: 'Nunito',
-                            onPressed: ()=>FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
-                              'status':TextConst.finalizado,
-                              'obsProd':_controllerObservationProd.text
-                            }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3)))),
+                            onPressed: (){
+                              if(_controllerWhintor.text.length==8){
+                                FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
+                                  'status':TextConst.finalizado,
+                                  'obsProd':_controllerObservationProd.text
+                                }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3))));
+                              }
+                            }
                           ),
                           SizedBox(width: width *0.06)
                         ],

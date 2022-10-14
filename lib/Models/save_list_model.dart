@@ -33,6 +33,7 @@ class SaveListModel{
   String desconto;
   String valorUnitario;
   String total;
+  String descricao;
 
   SaveListModel({
     required this.cod,
@@ -67,5 +68,6 @@ class SaveListModel{
     required this.desconto,
     required this.valorUnitario,
     required this.total,
+    required this.descricao,
   });
 }
