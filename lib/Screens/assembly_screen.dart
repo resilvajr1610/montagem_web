@@ -2,9 +2,12 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:montagem_web/Models/error_int_model.dart';
 import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Models/save_list_product.dart';
+import 'package:montagem_web/Models/search_codUnico_model.dart';
 import 'package:montagem_web/Models/search_product_model.dart';
+import 'package:montagem_web/Models/search_ref_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
 import 'package:montagem_web/Utils/text_const.dart';
 import '../Models/search_client_model.dart';
@@ -28,14 +31,18 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   var _controllerClientName = TextEditingController();
   var _controllerAffiliation = TextEditingController(text: 'Belmap');
   List _allResultsClient = [];
+  List _allResultsCodUnico = [];
   List _allResultsProd = [];
   List _resultsClient = [];
+  List _resultsCodUnico = [];
   List _resultsProd = [];
   List <SaveListModel> _listSave = [];
   List <SaveListProduct> listProduct = [];
   String valueClient='';
   String valueProd='';
+  String valuecodProd='';
   int indexGlobal=0;
+  int? indexDuplicate;
   String id='';
   String typePrice='0.0';
   String typeMarca='';
@@ -52,6 +59,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   bool loadingCliente=false;
   bool loadingData = true;
   int order=0;
+  List listLetter = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','Y','Z'];
 
   _getOrder()async{
     DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
@@ -90,12 +98,79 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     return "complete";
   }
 
+  _dataSearchCodUnico() async {
+    var data = await db.collection("codUnico").get();
+    setState(() {
+      _allResultsCodUnico = data.docs;
+      loadingData=false;
+    });
+    resultSearchListCodUnico();
+    resultSearchListRef();
+    return "complete";
+  }
+
+  _searchCodUnico() {
+    resultSearchListCodUnico();
+  }
+
+  _searchRef() {
+    resultSearchListRef();
+  }
+
+
   _searchClient() {
     resultSearchListClient();
   }
   _searchProd() {
     resultSearchListProd('');
   }
+
+  resultSearchListCodUnico() {
+    var showResults = [];
+
+    if (_listSave[indexGlobal].cod.text.isNotEmpty) {
+      for (var items in _allResultsCodUnico) {
+        var item = SearchCodUnicoModel.fromSnapshot(items).name.toUpperCase();
+
+        if (item.startsWith(_listSave[indexGlobal].cod.text.toUpperCase())) {
+          setState(() {
+            showResults.add(items);
+          });
+        }
+      }
+    } else {
+      setState(() {
+        showResults = List.from(_allResultsCodUnico);
+      });
+    }
+    setState(() {
+      _resultsCodUnico = showResults;
+    });
+  }
+
+  resultSearchListRef() {
+    var showResults = [];
+
+    if (_listSave[indexGlobal].ref.text.isNotEmpty) {
+      for (var items in _allResultsCodUnico) {
+        var item = SearchRefModel.fromSnapshot(items).name.toUpperCase();
+
+        if (item.startsWith(_listSave[indexGlobal].ref.text.toUpperCase())) {
+          setState(() {
+            showResults.add(items);
+          });
+        }
+      }
+    } else {
+      setState(() {
+        showResults = List.from(_allResultsCodUnico);
+      });
+    }
+    setState(() {
+      _resultsCodUnico = showResults;
+    });
+  }
+
   resultSearchListClient() {
     var showResults = [];
 
@@ -309,7 +384,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
         var adap2Fab = splited[51];
         var _controllerAN = TextEditingController(text: splited[53]);
         var _controllerMO = TextEditingController(text: splited[55]);
-        var _descricao = splited[57];
+        var _descricao = splited[splited.length-1];
 
             _listSave.add(
                 SaveListModel(
@@ -353,6 +428,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       _dataSearchProd();
       if(_listSave.length!=0){
         _controllerClientName.addListener(_searchClient);
+        _listSave[0].cod.addListener(_searchCodUnico);
+        _listSave[0].ref.addListener(_searchRef);
         _listSave[0].term1.addListener(_searchProd);
         _listSave[0].term2.addListener(_searchProd);
         _listSave[0].case1.addListener(_searchProd);
@@ -364,12 +441,15 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
 }
 
 init(){
+  _addList();
   createId();
   _dataSearchClient();
   _dataSearchProd();
-  _addList();
+  _dataSearchCodUnico();
   if(_listSave.length!=0){
     _controllerClientName.addListener(_searchClient);
+    _listSave[0].cod.addListener(_searchCodUnico);
+    _listSave[0].ref.addListener(_searchRef);
     _listSave[0].term1.addListener(_searchProd);
     _listSave[0].term2.addListener(_searchProd);
     _listSave[0].case1.addListener(_searchProd);
@@ -378,6 +458,60 @@ init(){
     _listSave[0].type.addListener(_searchProd);
   }
   _getOrder();
+}
+
+Future sequenceUpdate(String cod,bool update,int i)async{
+
+  if(update){
+    DocumentSnapshot snapshot = await db.collection('codUnico').doc(cod).get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    int rep = ErrorIntModel(data,'rep');
+    String letter1='';
+    String letter2='';
+      letter1 = listLetter[rep<=25?0:rep-25];
+      letter2 =  listLetter[(rep / 25).round()];
+
+  db.collection('codUnico').doc(cod).update({
+    'rep' : rep+1
+  }).then((value) => setState(()=>_listSave[i].cod = TextEditingController(text: '${_listSave[i].cod.text} - $letter1$letter2'))).then((value){
+    FirebaseFirestore.instance.collection('codUnico').doc(_listSave[i].cod.text).set({
+      'codUnico' : _listSave[i].cod.text,
+      'ref' : _listSave[i].ref.text,
+      'type': _listSave[i].type.text,
+      'typePrice': _listSave[i].typePrice,
+      'typeMarca': _listSave[i].typeMarca,
+      'term1': _listSave[i].term1.text,
+      'term1Price': _listSave[i].term1Price,
+      'term1Marca': _listSave[i].term1Marca,
+      'term2': _listSave[i].term2.text,
+      'term2Price': _listSave[i].term2Price,
+      'term2Marca': _listSave[i].term2Marca,
+      'case1': _listSave[i].case1.text,
+      'case1Price': _listSave[i].case1Price,
+      'case1Marca': _listSave[i].case1Marca,
+      'pos': _listSave[i].pos.text,
+    });
+  });
+
+  }else{
+    DocumentSnapshot snapshot = await db.collection('order').doc('codSequence').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+    int numberSequence = data?['numberSequence'];
+    print('numberSequence');
+    print(numberSequence);
+    if(numberSequence!=null){
+        _listSave[i].letter1 = listLetter[numberSequence<=100?0:numberSequence-100];
+        _listSave[i].letter2 =  listLetter[(numberSequence / 100).round()];
+        _listSave[i].cod = TextEditingController(text: '${_listSave[i].letter1}${_listSave[i].letter2}${numberSequence<10?0:''}$numberSequence - AA');
+        db.collection('order').doc('codSequence').update({
+          'letterFirst' : _listSave[i].letter1,
+          'letterSecond' : _listSave[i].letter2,
+          'numberSequence': numberSequence+1
+        }).then((value) => setState(() {
+          _listSave[i].codRep = true;
+        }));
+    }
+  }
 }
 
   @override
@@ -816,9 +950,17 @@ init(){
                                 icons: Icons.height,
                                 colorBorder: PaletteColors.inputGrey,
                                 background: PaletteColors.inputGrey,
-                                onChanged: (value){
+                                onChanged: (value) {
                                   setState(() {
-                                    indexGlobal=index;
+                                    if (value.toString() != '') {
+                                      setState(() {
+                                        indexGlobal = index;
+                                        valuecodProd = value.toString();
+                                        _listSave[index].cod = TextEditingController(text: value.toString());
+                                      });
+                                    } else {
+                                      valuecodProd='';
+                                    }
                                   });
                                 },
                               ),
@@ -838,7 +980,15 @@ init(){
                                 background: PaletteColors.inputGrey,
                                 onChanged: (value){
                                   setState(() {
-                                    indexGlobal=index;
+                                    if (value.toString() != '') {
+                                      setState(() {
+                                        indexGlobal = index;
+                                        valuecodProd = value.toString();
+                                        _listSave[index].ref = TextEditingController(text: value.toString());
+                                      });
+                                    } else {
+                                      valuecodProd='';
+                                    }
                                   });
                                 },
                               ),
@@ -1269,11 +1419,9 @@ init(){
                             ),
                             padding: EdgeInsets.zero,
                             onPressed: () {
-                              if(_listSave[0].cod.text.isNotEmpty && _listSave[0].maker.text.isNotEmpty && _listSave[0].type.text.isNotEmpty){
                                 setState(() {
                                   _addList();
                                 });
-                              }
                             }
                           ),
                         ),
@@ -1801,376 +1949,398 @@ init(){
               child: ListView.builder(
                   itemCount: _listSave.length,
                   itemBuilder: (context,index) {
-                    return Row(
-                      children: [
-                        Container(
-                          width: width * 0.06,
-                          child: InputRegister(
-                            controller: _listSave[index].cod,
-                            hint: '0000',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.06,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.05,
-                          margin: EdgeInsets.only(left: 3),
-                          child: InputRegister(
-                            controller: _listSave[index].ref,
-                            hint: 'AAA',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.05,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.035,
-                          margin: EdgeInsets.only(left: 8),
-                          child: InputRegister(
-                            controller: _listSave[index].qtd,
-                            hint: '00',
-                            fonts: 12.0,
-                            width: width * 0.035,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.05,
-                          child: InputRegister(
-                            controller: _listSave[index].maker,
-                            hint: 'AAA',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.05,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.11,
-                          child: InputRegister(
-                            controller: _listSave[index].application,
-                            hint: 'AAA',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.11,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.05,
-                          child: InputRegister(
-                            controller: _listSave[index].type,
-                            hint: '0000',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.05,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                if(value != ''){
+                    return Container(
+                      color: _listSave[index].selected?PaletteColors.primaryColor:PaletteColors.white,
+                      child: ListTile(
+                        onTap: (){
+                          setState(() {
+                            _listSave[index].selected? _listSave[index].selected=false : _listSave[index].selected=true;
+                            _listSave[index].selected?indexDuplicate = index:indexDuplicate=null;
+                          });
+                        },
+                        title: Row(
+                          children: [
+                            Container(
+                              width: width * 0.06,
+                              child: InputRegister(
+                                controller: _listSave[index].cod,
+                                hint: '0000',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.06,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                    valuecodProd = value.toString();
+                                    resultSearchListRef();
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.05,
+                              margin: EdgeInsets.only(left: 3),
+                              child: InputRegister(
+                                controller: _listSave[index].ref,
+                                hint: 'AAA',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.05,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    if (value.toString() != '') {
+                                      setState(() {
+                                        indexGlobal = index;
+                                        valuecodProd = value.toString();
+                                        _listSave[index].ref = TextEditingController(text: value.toString());
+                                        print(_listSave[index].ref);
+                                      });
+                                    } else {
+                                      valuecodProd='';
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.035,
+                              margin: EdgeInsets.only(left: 8),
+                              child: InputRegister(
+                                controller: _listSave[index].qtd,
+                                hint: '00',
+                                fonts: 12.0,
+                                width: width * 0.035,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                onChanged: (value){
                                   setState(() {
                                     indexGlobal=index;
                                   });
-                                  valueProd =value.toString();
-                                  resultSearchListProd('type');
-                                }else{
-                                  _listSave[index].type = TextEditingController(text: '');
-                                  valueProd='';
-                                }
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.04,
-                          child: InputRegister(
-                            controller: _listSave[index].comp,
-                            hint: '0,00',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.number,
-                            width: width * 0.04,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.035,
-                          child: InputRegister(
-                            controller: _listSave[index].size,
-                            hint: 'PP',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.035,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.045,
-                          child: InputRegister(
-                            controller: _listSave[index].term1,
-                            hint: '000',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.045,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                setState(() {
-                                  if(value != ''){
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.05,
+                              child: InputRegister(
+                                controller: _listSave[index].maker,
+                                hint: 'AAA',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.05,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.11,
+                              child: InputRegister(
+                                controller: _listSave[index].application,
+                                hint: 'AAA',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.11,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.05,
+                              child: InputRegister(
+                                controller: _listSave[index].type,
+                                hint: '0000',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.05,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    if(value != ''){
+                                      setState(() {
+                                        indexGlobal=index;
+                                      });
+                                      valueProd =value.toString();
+                                      resultSearchListProd('type');
+                                    }else{
+                                      _listSave[index].type = TextEditingController(text: '');
+                                      valueProd='';
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.04,
+                              child: InputRegister(
+                                controller: _listSave[index].comp,
+                                hint: '0,00',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.number,
+                                width: width * 0.04,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.035,
+                              child: InputRegister(
+                                controller: _listSave[index].size,
+                                hint: 'PP',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.035,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.045,
+                              child: InputRegister(
+                                controller: _listSave[index].term1,
+                                hint: '000',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.045,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
                                     setState(() {
-                                      indexGlobal=index;
+                                      if(value != ''){
+                                        setState(() {
+                                          indexGlobal=index;
+                                        });
+                                        valueProd =value.toString();
+                                        resultSearchListProd('term1');
+                                      }else{
+                                        _listSave[index].term1 = TextEditingController(text: '');
+                                        valueProd='';
+                                      }
                                     });
-                                    valueProd =value.toString();
-                                    resultSearchListProd('term1');
-                                  }else{
-                                    _listSave[index].term1 = TextEditingController(text: '');
-                                    valueProd='';
-                                  }
-                                });
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.045,
-                          child: InputRegister(
-                            controller: _listSave[index].term2,
-                            hint: '000',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.045,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                setState(() {
-                                  if(value != ''){
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.045,
+                              child: InputRegister(
+                                controller: _listSave[index].term2,
+                                hint: '000',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.045,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
                                     setState(() {
-                                      indexGlobal=index;
+                                      if(value != ''){
+                                        setState(() {
+                                          indexGlobal=index;
+                                        });
+                                        valueProd =value.toString();
+                                        resultSearchListProd('term2');
+                                      }else{
+                                        _listSave[index].term2 = TextEditingController(text: '');
+                                        valueProd='';
+                                      }
                                     });
-                                    valueProd =value.toString();
-                                    resultSearchListProd('term2');
-                                  }else{
-                                    _listSave[index].term2 = TextEditingController(text: '');
-                                    valueProd='';
-                                  }
-                                });
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.045,
-                          child: InputRegister(
-                            controller: _listSave[index].case1,
-                            hint: '000',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.45,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                setState(() {
-                                  if(value != ''){
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.045,
+                              child: InputRegister(
+                                controller: _listSave[index].case1,
+                                hint: '000',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.45,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
                                     setState(() {
-                                      indexGlobal=index;
+                                      if(value != ''){
+                                        setState(() {
+                                          indexGlobal=index;
+                                        });
+                                        valueProd =value.toString();
+                                        resultSearchListProd('case');
+                                      }else{
+                                        _listSave[index].case1 = TextEditingController(text: '');
+                                        valueProd='';
+                                      }
                                     });
-                                    valueProd =value.toString();
-                                    resultSearchListProd('case');
-                                  }else{
-                                    _listSave[index].case1 = TextEditingController(text: '');
-                                    valueProd='';
-                                  }
-                                });
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.032,
-                          child: InputRegister(
-                            controller: _listSave[index].pos,
-                            hint: '',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.032,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.045,
-                          child: InputRegister(
-                            controller: _listSave[index].adap1,
-                            hint: '',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.045,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                setState(() {
-                                  if(value != ''){
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.032,
+                              child: InputRegister(
+                                controller: _listSave[index].pos,
+                                hint: '',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.032,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.045,
+                              child: InputRegister(
+                                controller: _listSave[index].adap1,
+                                hint: '',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.045,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
                                     setState(() {
-                                      indexGlobal=index;
+                                      if(value != ''){
+                                        setState(() {
+                                          indexGlobal=index;
+                                        });
+                                        valueProd =value.toString();
+                                        resultSearchListProd('adap1');
+                                      }else{
+                                        _listSave[index].adap1 = TextEditingController(text: '');
+                                        valueProd='';
+                                      }
                                     });
-                                    valueProd =value.toString();
-                                    resultSearchListProd('adap1');
-                                  }else{
-                                    _listSave[index].adap1 = TextEditingController(text: '');
-                                    valueProd='';
-                                  }
-                                });
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.045,
-                          child: InputRegister(
-                            controller: _listSave[index].adap2,
-                            hint: '',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.045,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                setState(() {
-                                  if(value != ''){
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.045,
+                              child: InputRegister(
+                                controller: _listSave[index].adap2,
+                                hint: '',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.045,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
                                     setState(() {
-                                      indexGlobal=index;
+                                      if(value != ''){
+                                        setState(() {
+                                          indexGlobal=index;
+                                        });
+                                        valueProd =value.toString();
+                                        resultSearchListProd('adap2');
+                                      }else{
+                                        _listSave[index].adap2 = TextEditingController(text: '');
+                                        valueProd='';
+                                      }
                                     });
-                                    valueProd =value.toString();
-                                    resultSearchListProd('adap2');
-                                  }else{
-                                    _listSave[index].adap2 = TextEditingController(text: '');
-                                    valueProd='';
-                                  }
-                                });
-                              });
-                            },
-                          ),
+                                  });
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.03,
+                              child: InputRegister(
+                                controller: _listSave[index].anel,
+                                hint: '',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.03,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){},
+                              ),
+                            ),
+                            Container(
+                              width: width * 0.03,
+                              child: InputRegister(
+                                controller: _listSave[index].mola,
+                                hint: '',
+                                fonts: 12.0,
+                                keyboardType: TextInputType.text,
+                                width: width * 0.03,
+                                sizeIcon: 0.01,
+                                icons: Icons.height,
+                                colorBorder: PaletteColors.inputGrey,
+                                background: PaletteColors.inputGrey,
+                                onChanged: (value){
+                                  setState(() {
+                                    indexGlobal=index;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        Container(
-                          width: width * 0.03,
-                          child: InputRegister(
-                            controller: _listSave[index].anel,
-                            hint: '',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.03,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){},
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.03,
-                          child: InputRegister(
-                            controller: _listSave[index].mola,
-                            hint: '',
-                            fonts: 12.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.03,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (value){
-                              setState(() {
-                                indexGlobal=index;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+                      ),
                     );
                   }
               ),
@@ -2202,7 +2372,7 @@ init(){
                                 }
                                 if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
                                   _listSave[indexGlobal].case1 = TextEditingController(text: item['numoriginal']);
-                                  case1Price = item['preco'];
+                                  case1Price = (double.parse(item['preco'])*2).toString();
                                   case1Marca = item['marca'];
                                 }
                                 if(_listSave[indexGlobal].adap1.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap1.text){
@@ -2244,6 +2414,45 @@ init(){
                     }
                 )
             ):Container(),
+            valuecodProd!=''? Container(
+                height: heigth*0.3,
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: _controllerItems.stream,
+                    builder: (context,snapshot){
+                      return ListView.builder(
+                          itemCount: _resultsCodUnico.length,
+                          itemBuilder: (contect,index){
+                            DocumentSnapshot item = _resultsCodUnico[index];
+
+                            return ListTile(
+                              title: Text('Cód. Unico: ${item['codUnico']},Mangueira: ${item['type']}, Term1: ${item['term1']}, Term2: ${item['term2']}, Capa: ${item['case1']}, POS: ${item['pos']}'),
+                              onTap: ()=>setState(() {
+                                  _listSave[indexGlobal].cod = TextEditingController(text: item['codUnico']);
+                                  _listSave[indexGlobal].case1 = TextEditingController(text: item['case1']);
+                                  case1Price = item['case1Price'];
+                                  case1Marca = item['case1Marca'];
+                                  _listSave[indexGlobal].pos = TextEditingController(text: item['pos']);
+                                  _listSave[indexGlobal].ref = TextEditingController(text: item['ref']);
+                                  _listSave[indexGlobal].term1 = TextEditingController(text: item['term1']);
+                                  term1Price = item['term1Price'];
+                                  term1Marca = item['term1Marca'];
+                                  _listSave[indexGlobal].term2 = TextEditingController(text: item['term2']);
+                                  term2Price = item['term2Price'];
+                                  term2Marca = item['term2Marca'];
+                                  _listSave[indexGlobal].type = TextEditingController(text: item['type']);
+                                  typePrice = item['typePrice'];
+                                  typeMarca = item['typeMarca'];
+                                  valuecodProd='';
+                                  _listSave[indexGlobal].codRep = true;
+                                  sequenceUpdate(_listSave[indexGlobal].cod.text,true,0);
+                              }
+                              ),
+                            );
+                          }
+                      );
+                    }
+                )
+            ):Container(),
             SizedBox(height: 20),
             Row(
               children: [
@@ -2269,11 +2478,9 @@ init(){
                         ),
                         padding: EdgeInsets.zero,
                         onPressed: () {
-                          if(_listSave[0].cod.text.isNotEmpty && _listSave[0].maker.text.isNotEmpty && _listSave[0].type.text.isNotEmpty){
                             setState(() {
                               _addList();
                             });
-                          }
                         }
                     ),
                   ),
@@ -2299,7 +2506,80 @@ init(){
                         maxHeight: 20,
                       ),
                       padding: EdgeInsets.zero,
-                      onPressed: () {},
+                      onPressed: () {
+                        if(indexDuplicate!=null){
+                          setState(() {
+
+                            var _controllerCodProduct = TextEditingController(text: _listSave[indexDuplicate!].cod.text);
+                            var _controllerRef = TextEditingController(text: _listSave[indexDuplicate!].ref.text);
+                            var _controllerQtd = TextEditingController(text: _listSave[indexDuplicate!].qtd.text);
+                            var _controllerMaker = TextEditingController(text: _listSave[indexDuplicate!].maker.text);
+                            var _controllerAplication = TextEditingController(text: _listSave[indexDuplicate!].application.text);
+                            var _controllerSize = TextEditingController(text: _listSave[indexDuplicate!].size.text);
+                            var _controllerComp = TextEditingController(text: _listSave[indexDuplicate!].comp.text);
+                            var _controllerType = TextEditingController(text: _listSave[indexDuplicate!].type.text);
+                            var _controllerTerm1 = TextEditingController(text: _listSave[indexDuplicate!].term1.text);
+                            var _controllerTerm2 = TextEditingController(text: _listSave[indexDuplicate!].term2.text);
+                            var _controllerCase = TextEditingController(text: _listSave[indexDuplicate!].case1.text);
+                            var _controllerPos = TextEditingController(text: _listSave[indexDuplicate!].pos.text);
+                            var _controllerAdap1 = TextEditingController(text: _listSave[indexDuplicate!].adap1.text);
+                            var _controllerAdap2 = TextEditingController(text: _listSave[indexDuplicate!].adap2.text);
+                            var _controllerAN = TextEditingController(text: _listSave[indexDuplicate!].anel.text);
+                            var _controllerMO = TextEditingController(text: _listSave[indexDuplicate!].mola.text);
+                            var typePrice = _listSave[indexDuplicate!].typePrice;
+                            var typeMarca = _listSave[indexDuplicate!].typeMarca;
+                            var term1Price = _listSave[indexDuplicate!].term1Price;
+                            var term1Marca = _listSave[indexDuplicate!].term1Marca;
+                            var term2Price = _listSave[indexDuplicate!].term2Price;
+                            var term2Marca = _listSave[indexDuplicate!].term2Marca;
+                            var case1Price = _listSave[indexDuplicate!].case1Price;
+                            var case1Marca = _listSave[indexDuplicate!].case1Marca;
+                            var adap1Price = _listSave[indexDuplicate!].adap1Price;
+                            var adap1Marca = _listSave[indexDuplicate!].adap1Marca;
+                            var adap2Price = _listSave[indexDuplicate!].adap2Price;
+                            var adap2Marca = _listSave[indexDuplicate!].adap2Marca;
+
+                            _listSave.add(
+                                SaveListModel(
+                                  cod: _controllerCodProduct,
+                                  ref: _controllerRef,
+                                  qtd: _controllerQtd,
+                                  maker: _controllerMaker,
+                                  application: _controllerAplication,
+                                  size:_controllerSize,
+                                  comp:_controllerComp,
+                                  type:_controllerType,
+                                  typePrice: typePrice,
+                                  typeMarca: typeMarca,
+                                  term1: _controllerTerm1,
+                                  term1Price: term1Price,
+                                  term1Marca: term1Marca,
+                                  term2: _controllerTerm2,
+                                  term2Price: term2Price,
+                                  term2Marca: term2Marca,
+                                  case1: _controllerCase,
+                                  case1Price: case1Price,
+                                  case1Marca: case1Marca,
+                                  pos: _controllerPos,
+                                  adap1: _controllerAdap1,
+                                  adap1Price: adap1Price,
+                                  adap1Marca: adap1Marca,
+                                  adap2: _controllerAdap2,
+                                  adap2Price: adap2Price,
+                                  adap2Marca: adap2Marca,
+                                  anel: _controllerAN,
+                                  mola: _controllerMO,
+                                  valorTabela: 'R\$ 00,00',
+                                  desconto: '0',
+                                  valorUnitario: 'R\$ 00,00',
+                                  total:'R\$ 00,00',
+                                  descricao: '',
+                                )
+                            );
+                          });
+                          indexDuplicate=null;
+                        }
+                      },
                     ),
                   ),
                 )
@@ -2320,10 +2600,15 @@ init(){
                     colorButton: PaletteColors.primaryColor,
                     colorBorder: PaletteColors.primaryColor,
                     font: 'Nunito',
-                    onPressed: () {
+                    onPressed: ()async {
                       List aux = [];
                       List auxPrice = [];
                       for(var i=0;_listSave.length>i;i++){
+                        if(_listSave[i].codRep==false){
+                          Future.delayed(Duration(seconds: 2),(){
+                            sequenceUpdate('',false,i);
+                          });
+                        }
                         aux.add(
                             'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
                                 '#aplication#${_listSave[i].application.text}#numoriginal#${_listSave[i].type.text}#comprimento#${_listSave[i].comp.text}'
@@ -2336,6 +2621,25 @@ init(){
                                 '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
                         );
                         insertList(i);
+                        if(_listSave[i].cod.text!=''){
+                          FirebaseFirestore.instance.collection('codUnico').doc(_listSave[i].cod.text).set({
+                            'codUnico' : _listSave[i].cod.text,
+                            'ref' : _listSave[i].ref.text,
+                            'type': _listSave[i].type.text,
+                            'typePrice': _listSave[i].typePrice,
+                            'typeMarca': _listSave[i].typeMarca,
+                            'term1': _listSave[i].term1.text,
+                            'term1Price': _listSave[i].term1Price,
+                            'term1Marca': _listSave[i].term1Marca,
+                            'term2': _listSave[i].term2.text,
+                            'term2Price': _listSave[i].term2Price,
+                            'term2Marca': _listSave[i].term2Marca,
+                            'case1': _listSave[i].case1.text,
+                            'case1Price': _listSave[i].case1Price,
+                            'case1Marca': _listSave[i].case1Marca,
+                            'pos': _listSave[i].pos.text,
+                          });
+                        }
                       }
                       for(var i=0;listProduct.length>i;i++){
                         auxPrice.add(

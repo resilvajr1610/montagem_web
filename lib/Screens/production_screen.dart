@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
+import '../Models/error_int_model.dart';
 import '../Models/product_model.dart';
 import '../Models/save_list_product.dart';
 import '../Utils/exports.dart';
@@ -46,7 +47,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
     setState(() {
       _controllerDate = TextEditingController(text: data?["data"]);
       _controllerWhintor = TextEditingController(text: data?["whinthor"]);
-      _controllerOrder = TextEditingController(text: data?["order"]);
+      _controllerOrder = TextEditingController(text: data?["makerOrder"].toString());
       _controllerObservation = TextEditingController(text: data?["obs"]);
       _controllerObservationProd = TextEditingController(text: data?["obsProd"]??'');
       selectedPriority = data?['priority'];

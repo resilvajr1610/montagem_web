@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 
 class SaveListModel{
+  bool selected;
+  bool codRep;
+  String letter1;
+  String letter2;
+  int numberSequence;
   TextEditingController cod;
   TextEditingController ref;
   TextEditingController qtd;
@@ -36,6 +41,11 @@ class SaveListModel{
   String descricao;
 
   SaveListModel({
+    this.selected = false,
+    this.codRep = false,
+    this.letter1 = 'A',
+    this.letter2 = 'A',
+    this.numberSequence = 1,
     required this.cod,
     required this.ref,
     required this.qtd,

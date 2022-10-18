@@ -8,7 +8,7 @@ import '../Utils/text_const.dart';
 class ListTileButtom extends StatefulWidget {
   final onTap;
   bool showButtom;
-  final order;
+  int makerOrder;
   final whintor;
   final date;
   final client;
@@ -18,7 +18,7 @@ class ListTileButtom extends StatefulWidget {
   final args;
 
   ListTileButtom({
-    required this.order,
+    required this.makerOrder,
     required this.whintor,
     required this.date,
     required this.client,
@@ -36,11 +36,40 @@ class ListTileButtom extends StatefulWidget {
 
 class _ListTileButtomState extends State<ListTileButtom> {
 
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  int makerOrder = 0;
+
+  makerOrderRec()async{
+    DocumentSnapshot snapshot = await db.collection("order").doc('order').get();
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+    setState((){
+      makerOrder = data?["makerOrder"]??0;
+
+      print(makerOrder);
+      if(makerOrder!=0){
+        makerOrder = makerOrder+1;
+      }
+    });
+
+    if(widget.makerOrder!=0){
+      FirebaseFirestore.instance.collection('assembly').doc(widget.args).update({
+        'status': TextConst.producao,
+      }).then((value) => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args));
+    }else{
+      FirebaseFirestore.instance.collection('assembly').doc(widget.args).update({
+        'status': TextConst.producao,
+        'makerOrder' : makerOrder
+      }).then((value){
+        FirebaseFirestore.instance.collection('order').doc('order').update({
+          'makerOrder':makerOrder
+        });
+      }).then((value) => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
-
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -67,7 +96,7 @@ class _ListTileButtomState extends State<ListTileButtom> {
                         Container(
                           width: width * 0.12,
                           child: TextCustom(
-                            text: widget.order,
+                            text: widget.makerOrder!=0?widget.makerOrder.toString():makerOrder.toString(),
                             size: 14.0,
                             color: PaletteColors.grey,
                             fontFamily: 'Nunito',
@@ -124,7 +153,6 @@ class _ListTileButtomState extends State<ListTileButtom> {
                         Container(
                           width: width * 0.1,
                           child: TextCustom(
-
                             text: widget.status,
                             size: 14.0,
                             color: PaletteColors.grey,
@@ -153,9 +181,7 @@ class _ListTileButtomState extends State<ListTileButtom> {
                               colorText: PaletteColors.white,
                               colorButton: PaletteColors.primaryColor,
                               colorBorder: PaletteColors.primaryColor,
-                              onPressed: () => FirebaseFirestore.instance.collection('assembly').doc(widget.args).update({
-                                'status':TextConst.producao
-                              }).then((value) => Navigator.popAndPushNamed(context, '/prod',arguments: widget.args)),
+                              onPressed: ()=> makerOrderRec(),
                               font: 'Nunito',
                             ),
                           ),

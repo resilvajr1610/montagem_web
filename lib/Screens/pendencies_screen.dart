@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:montagem_web/Models/error_string_model.dart';
 
+import '../Models/error_int_model.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
 
@@ -205,7 +206,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                   listModel.add(
                                       ListIconModel(
                                           date: ErrorStringModel(item, 'data'),
-                                          assembly: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                          assembly: ErrorIntModel(item,'makerOrder')!=''?ErrorIntModel(item,'makerOrder'):0000,
                                           client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
                                           number: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
                                           winthor: ErrorStringModel(item,'whinthor')
@@ -215,7 +216,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                   return TextConst.cancelado == ErrorStringModel(item,'status') ||  TextConst.finalizado ==ErrorStringModel(item,'status')
                                       ?Container()
                                       :ListTileButtom(
-                                        order: ErrorStringModel(item,'order')!=''?ErrorStringModel(item,'order'):'0000',
+                                        makerOrder: ErrorIntModel(item,'makerOrder')!=0?ErrorIntModel(item,'makerOrder'):0000,
                                         whintor: ErrorStringModel(item,'whinthor'),
                                         date: ErrorStringModel(item, 'data'),
                                         client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',

@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Widgets/list_hoses_resume.dart';
+import '../Models/error_int_model.dart';
 import '../Models/product_model.dart';
 import '../Utils/exports.dart';
-import '../Utils/text_const.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -71,6 +71,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
       data = await db.collection("assembly")
           .where('data', isGreaterThanOrEqualTo: _controllerInitialDate.text.trim())
           .where('data', isLessThanOrEqualTo: _controllerFinalDate.text.trim())
+          .get();
+    }
+    if(_controllerNumberOp.text.isNotEmpty && _controllerNumberAssembly.text.isEmpty && _controllerFinalDate.text.isEmpty){
+      data = await db.collection("assembly")
+          .where('makerOrder', isEqualTo: int.parse(_controllerNumberOp.text.trim()))
           .get();
     }
     setState(() {
@@ -482,7 +487,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   date: item['data'],
                                   assembly: item['order'],
                                   client: item['cliente'],
-                                  number: item['order'],
+                                  makerOrder: ErrorIntModel(item,'makerOrder').toString(),
                                   winthor: ErrorStringModel(item,'whinthor'),
                                   status: ErrorStringModel(item,'status'),
                                   showIcons: show[index],

@@ -6,7 +6,7 @@ class ListTileCustom extends StatefulWidget {
   final date;
   final assembly;
   final client;
-  final number;
+  final makerOrder;
   final winthor;
   final status;
   Color hovercolor;
@@ -20,7 +20,7 @@ class ListTileCustom extends StatefulWidget {
     required this.date,
     required this.assembly,
     required this.client,
-    required this.number,
+    required this.makerOrder,
     required this.winthor,
     required this.status,
     required this.onTap,
@@ -91,7 +91,7 @@ class _ListTileCustomState extends State<ListTileCustom> {
                       Container(
                         width: width*0.07,
                         child: TextCustom(
-                          text: widget.number,
+                          text: widget.makerOrder,
                           size: 14.0,
                           color: PaletteColors.grey,
                           fontFamily: 'Nunito',

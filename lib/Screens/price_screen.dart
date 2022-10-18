@@ -808,11 +808,22 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorText: PaletteColors.white,
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
-                          onPressed: () {
+                          onPressed: ()async {
                             if(_controllerWhintor.text.length==8){
-                              db.collection('assembly').doc(widget.idAssembly).update({
-                                'status' : TextConst.producao
-                              });
+                              DocumentSnapshot snapshot = await db.collection("order").doc('order').get();
+                              Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+                              int makerOrder = 0;
+                              makerOrder = data?['makerOrder'];
+
+                              if(makerOrder!=0){
+                                db.collection('assembly').doc(widget.idAssembly).update({
+                                  'status' : TextConst.producao,
+                                  'makerOrder' : makerOrder+1
+                                }).then((value) => db.collection('order').doc('order').update({
+                                  'makerOrder' : makerOrder+1
+                                }));
+                              }
                             }
                           },
                           font: 'Nunito',

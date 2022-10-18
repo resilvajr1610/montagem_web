@@ -9,6 +9,4 @@ class PaletteColors{
   static const Color backGrey = Color(0xffE9E9E9);
   static const Color grey = Color(0xff5F5F5F);
   static const Color lightGrey = Color(0xffF9F9F9);
-
-
 }
