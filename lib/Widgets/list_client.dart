@@ -5,8 +5,8 @@ class ListClient extends StatefulWidget {
   final qtd;
   final description;
   final valuetable;
-  final discount;
-  final value;
+  TextEditingController discount;
+  TextEditingController valueUnit;
   final total;
   final onTap;
   Color hovercolor;
@@ -16,8 +16,8 @@ class ListClient extends StatefulWidget {
     this.qtd,
     this.description,
     this.valuetable,
-    this.discount,
-    this.value,
+    required this.discount,
+    required this.valueUnit,
     this.total,
     this.onTap
   });
@@ -76,29 +76,32 @@ class _ListClientState extends State<ListClient> {
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-
                     ),
                   ),
                   Container(
                     width: width*0.07,
-                    child: TextCustom(
-                      text: widget.discount,
-                      size: 14.0,
-                      color: PaletteColors.grey,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-
+                    child: TextFormField(
+                      controller: widget.discount,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'R\$ 00,00',
+                        hintStyle: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
                   ),
                   Container(
                     width: width*0.07,
-                    child: TextCustom(
-                      text: widget.value,
-                      size: 14.0,
-                      color: PaletteColors.grey,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-
+                    child: TextFormField(
+                      controller: widget.valueUnit,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'R\$ 00,00',
+                        hintStyle: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
                   ),
                   Container(
@@ -109,7 +112,6 @@ class _ListClientState extends State<ListClient> {
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-
                     ),
                   ),
                   SizedBox(width: width * 0.01),

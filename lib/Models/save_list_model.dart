@@ -35,8 +35,8 @@ class SaveListModel{
   TextEditingController anel;
   TextEditingController mola;
   String valorTabela;
-  String desconto;
-  String valorUnitario;
+  TextEditingController desconto;
+  TextEditingController valorUnitario;
   String total;
   String descricao;
 

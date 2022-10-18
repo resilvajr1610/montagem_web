@@ -3,29 +3,28 @@ import '../Utils/exports.dart';
 class ListMaterial extends StatefulWidget {
 
 
-  final cod;
-  final ref;
-  final qtd;
-  final manufacturer;
-  final valuetable;
-  final discount;
-  final value;
-  final total;
-
-
-
+  final String cod;
+  final String ref;
+  final String qtd;
+  final String manufacturer;
+  final String valuetable;
+  final TextEditingController discount;
+  final TextEditingController valueUnit;
+  final String total;
   Color hovercolor;
+  final bool enable;
 
   ListMaterial({
     required this.hovercolor,
-    this.qtd,
-    this.ref,
-    this.cod,
-    this.manufacturer,
-    this.valuetable,
-    this.discount,
-    this.value,
-    this.total,
+    this.qtd='',
+    this.ref='',
+    this.cod='',
+    this.manufacturer='',
+    this.valuetable='',
+    required this.discount,
+    required this.valueUnit,
+    this.total='',
+    this.enable = true
   });
 
   @override
@@ -49,7 +48,6 @@ class _ListMaterialState extends State<ListMaterial> {
           title: Column(
             children: [
               Row(
-
                 children: [
                   SizedBox(width: 15),
                   Container(
@@ -109,24 +107,30 @@ class _ListMaterialState extends State<ListMaterial> {
                   ),
                   Container(
                     width: width*0.07,
-                    child: TextCustom(
-                      text: widget.discount,
-                      size: 14.0,
-                      color: PaletteColors.grey,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-
+                    child: TextFormField(
+                      enabled: widget.enable,
+                      controller: widget.discount,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'R\$ 00,00',
+                        hintStyle: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
                   ),
                   Container(
                     width: width*0.07,
-                    child: TextCustom(
-                      text: widget.value,
-                      size: 14.0,
-                      color: PaletteColors.grey,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-
+                    child: TextFormField(
+                      enabled: widget.enable,
+                      controller: widget.valueUnit,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'R\$ 00,00',
+                        hintStyle: TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
                     ),
                   ),
                   Container(
@@ -137,7 +141,6 @@ class _ListMaterialState extends State<ListMaterial> {
                       color: PaletteColors.grey,
                       fontFamily: 'Nunito',
                       fontWeight: FontWeight.normal,
-
                     ),
                   ),
                   SizedBox(width: width * 0.01),

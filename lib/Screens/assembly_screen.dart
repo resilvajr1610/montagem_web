@@ -117,7 +117,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     resultSearchListRef();
   }
 
-
   _searchClient() {
     resultSearchListClient();
   }
@@ -272,7 +271,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       print('uni ${uni}');
       setState(() {
         _listSave[index].valorTabela = 'R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
-        _listSave[index].valorUnitario = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
+        _listSave[index].valorUnitario.text = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
         _listSave[index].total = 'R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
         totalTabela =0;
         uni =0;
@@ -329,8 +328,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
               anel: _controllerAN,
               mola: _controllerMO,
               valorTabela: 'R\$ 00,00',
-              desconto: '0',
-              valorUnitario: 'R\$ 00,00',
+              desconto: TextEditingController(text: '0'),
+              valorUnitario: TextEditingController(text: 'R\$ 00,00'),
               total:'R\$ 00,00',
               descricao: '',
             )
@@ -417,8 +416,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   anel: _controllerAN,
                   mola: _controllerMO,
                   valorTabela: '0',
-                  desconto: '0',
-                  valorUnitario: '0',
+                  desconto: TextEditingController(text: '0'),
+                  valorUnitario: TextEditingController(text: '0'),
                   total:'0',
                   descricao: _descricao,
                 )
@@ -1381,8 +1380,8 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                                 qtd: _listSave[indexGlobal].qtd.text,
                                                 fabricante: item['marca'],
                                                 valorTabela: '${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
-                                                desconto: 'R\$ 0,00',
-                                                valorUnitario: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}',
+                                                desconto: TextEditingController(text: 'R\$ 0,00'),
+                                                valorUnitario: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
                                                 total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
                                             )
                                         );
@@ -2001,7 +2000,6 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                         indexGlobal = index;
                                         valuecodProd = value.toString();
                                         _listSave[index].ref = TextEditingController(text: value.toString());
-                                        print(_listSave[index].ref);
                                       });
                                     } else {
                                       valuecodProd='';
@@ -2401,8 +2399,8 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                       qtd: _listSave[indexGlobal].qtd.text,
                                       fabricante: item['marca'],
                                       valorTabela: '${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
-                                      desconto: 'R\$ 0,00',
-                                      valorUnitario: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}',
+                                      desconto: TextEditingController(text: 'R\$ 0,00'),
+                                      valorUnitario: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
                                       total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
                                     )
                                 );
@@ -2414,7 +2412,7 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                     }
                 )
             ):Container(),
-            valuecodProd!=''? Container(
+            valuecodProd!='' && _resultsCodUnico.length!=0? Container(
                 height: heigth*0.3,
                 child: StreamBuilder<QuerySnapshot>(
                     stream: _controllerItems.stream,
@@ -2425,7 +2423,7 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                             DocumentSnapshot item = _resultsCodUnico[index];
 
                             return ListTile(
-                              title: Text('Cód. Unico: ${item['codUnico']},Mangueira: ${item['type']}, Term1: ${item['term1']}, Term2: ${item['term2']}, Capa: ${item['case1']}, POS: ${item['pos']}'),
+                              title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${item['type']}, Term1: ${item['term1']}, Term2: ${item['term2']}, Capa: ${item['case1']}, POS: ${item['pos']}'),
                               onTap: ()=>setState(() {
                                   _listSave[indexGlobal].cod = TextEditingController(text: item['codUnico']);
                                   _listSave[indexGlobal].case1 = TextEditingController(text: item['case1']);
@@ -2570,8 +2568,8 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                   anel: _controllerAN,
                                   mola: _controllerMO,
                                   valorTabela: 'R\$ 00,00',
-                                  desconto: '0',
-                                  valorUnitario: 'R\$ 00,00',
+                                  desconto: TextEditingController(text: '0'),
+                                  valorUnitario: TextEditingController(text: 'R\$ 00,00'),
                                   total:'R\$ 00,00',
                                   descricao: '',
                                 )
@@ -2604,7 +2602,7 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                       List aux = [];
                       List auxPrice = [];
                       for(var i=0;_listSave.length>i;i++){
-                        if(_listSave[i].codRep==false){
+                        if(_listSave[i].cod.text.isEmpty){
                           Future.delayed(Duration(seconds: 2),(){
                             sequenceUpdate('',false,i);
                           });
@@ -2644,8 +2642,8 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                       for(var i=0;listProduct.length>i;i++){
                         auxPrice.add(
                             'cod#${listProduct[i].cod}#codUnico#${listProduct[i].codUnico}#ref#${listProduct[i].ref}#qtd#${listProduct[i].qtd}#'
-                                'fabricante#${listProduct[i].fabricante}#valorTabela#${listProduct[i].valorTabela}#desconto#${listProduct[i].desconto}#'
-                                'valorUnitario#${listProduct[i].valorUnitario}#total#${listProduct[i].total}'
+                                'fabricante#${listProduct[i].fabricante}#valorTabela#${listProduct[i].valorTabela}#desconto#${listProduct[i].desconto.text}#'
+                                'valorUnitario#${listProduct[i].valorUnitario.text}#total#${listProduct[i].total}'
                         );
                       }
                       if(aux.length != 0 ){

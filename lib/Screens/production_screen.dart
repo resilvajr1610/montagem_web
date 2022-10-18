@@ -55,13 +55,22 @@ class _ProductionScreenState extends State<ProductionScreen> {
       List produtos = data?['produtos'];
       for(var i=0;prodPrecos.length>i;i++){
         var splited = prodPrecos[i].toString().split('#');
+        var desconto =  TextEditingController(text: splited[13]);
+        var valorUnitario =  TextEditingController(text: splited[15]);
+
+        print(desconto.text);
+        print(valorUnitario.text);
+
         listProdPrecos.add(
             SaveListProduct(
                 numoriginal: '', cod: splited[1], codUnico: splited[3], ref: splited[5], qtd: splited[7], fabricante: splited[9], valorTabela: splited[11],
-                desconto: splited[13], valorUnitario: splited[15], total: splited[17]
+                desconto: desconto, valorUnitario: valorUnitario, total: splited[17]
             )
         );
       }
+      setState(() {
+
+      });
       for(var i=0;produtos.length>i;i++){
         var splited = produtos[i].toString().split('#');
         listProdutos.add(
@@ -437,14 +446,15 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           itemBuilder: (context,index){
                             return cod == listProdPrecos[index].codUnico
                               ?ListMaterial(
+                                enable: false,
                                 hovercolor: Colors.white,
                                 cod: listProdPrecos[index].codUnico.toUpperCase(),
                                 ref: listProdPrecos[index].ref.toUpperCase(),
                                 qtd: listProdPrecos[index].qtd,
                                 manufacturer: listProdPrecos[index].fabricante.toUpperCase(),
                                 valuetable: '',
-                                discount: '',
-                                value: '',
+                                discount: listProdPrecos[index].desconto,
+                                valueUnit: listProdPrecos[index].valorUnitario,
                                 total:'' ,
                               ):Container();
                           }

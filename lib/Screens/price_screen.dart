@@ -35,6 +35,7 @@ class _PriceScreenState extends State<PriceScreen> {
   var _controllerWhintor = TextEditingController();
   var _controllerDiscount = TextEditingController();
   var _controllerObservation = TextEditingController();
+  var _controllerDiscuntOther = TextEditingController(text: '');
   var codProduct='';
   double desconto=0.0;
   List<SaveListProduct> listGetProduct=[];
@@ -80,7 +81,7 @@ class _PriceScreenState extends State<PriceScreen> {
               SaveListProduct(
                   numoriginal: widget.saveListProduct[i].numoriginal, cod: widget.saveListProduct[i].cod, codUnico: widget.saveListProduct[i].codUnico, ref: widget.saveListProduct[i].ref,
                   qtd: widget.saveListProduct[i].qtd, fabricante: widget.saveListProduct[i].fabricante,valorTabela: widget.saveListProduct[i].valorTabela,
-                  desconto: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}',valorUnitario: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}',
+                  desconto: TextEditingController(text: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}'),valorUnitario: TextEditingController(text: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}'),
                   total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}'
               )
           );
@@ -131,7 +132,7 @@ class _PriceScreenState extends State<PriceScreen> {
       print('valorQtd');
       print(valorQtd);
       double valorTotal = double.parse(widget.saveListModel[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
-      double desc = double.parse(widget.saveListModel[i].desconto.replaceAll('R\$ ', '').replaceAll(',', '.'));
+      double desc = double.parse(widget.saveListModel[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
       brutoGeral = brutoGeral + valorTotal;
       descGeral = desc + descGeral;
       liquidoGeral = brutoGeral-descGeral;
@@ -212,7 +213,7 @@ class _PriceScreenState extends State<PriceScreen> {
        print('valorQtd');
        print(valorQtd);
        double valorTotal = double.parse(widget.saveListProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
-       double desc = double.parse(widget.saveListProduct[i].desconto.replaceAll('R\$ ', '').replaceAll(',', '.'));
+       double desc = double.parse(widget.saveListProduct[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
        brutoGeral = brutoGeral + valorTotal;
        descGeral = desc + descGeral;
        liquidoGeral = brutoGeral-descGeral;
@@ -228,8 +229,8 @@ class _PriceScreenState extends State<PriceScreen> {
                qtd: widget.saveListProduct[i].qtd,
                fab: widget.saveListProduct[i].fabricante,
                valorTabela: widget.saveListProduct[i].valorTabela,
-               desconto: widget.saveListProduct[i].desconto,
-               valorUnitario: widget.saveListProduct[i].valorUnitario,
+               desconto: widget.saveListProduct[i].desconto.text,
+               valorUnitario: widget.saveListProduct[i].valorUnitario.text,
                total: widget.saveListProduct[i].total
            )
        );
@@ -592,8 +593,8 @@ class _PriceScreenState extends State<PriceScreen> {
                                 qtd: listGetProduct[index].qtd,
                                 manufacturer: listGetProduct[index].fabricante.toUpperCase(),
                                 valuetable: 'R\$ ${listGetProduct[index].valorTabela.replaceAll('.', ',')}',
-                                discount: '${listGetProduct[index].desconto}',
-                                value: '${listGetProduct[index].valorUnitario.replaceAll('.', ',')}',
+                                discount: listGetProduct[index].desconto,
+                                valueUnit: listGetProduct[index].valorUnitario,
                                 total:'${listGetProduct[index].total.replaceAll('.', ',')}' ,
                               ):Container();
                         }
@@ -646,7 +647,6 @@ class _PriceScreenState extends State<PriceScreen> {
                                 color: PaletteColors.primaryColor,
                                 fontFamily: 'Nunito',
                                 fontWeight: FontWeight.bold,
-
                               ),
                             ),
                            Container(
@@ -734,12 +734,22 @@ class _PriceScreenState extends State<PriceScreen> {
                                           fontFamily: 'Nunito',
                                           fontWeight: FontWeight.normal,
                                         ),
-                                        TextCustom(
-                                          text: 'R\$ 0,00',
-                                          size: 14.0,
-                                          color: PaletteColors.grey,
-                                          fontFamily: 'Nunito',
-                                          fontWeight: FontWeight.normal,
+                                        Container(
+                                          padding: EdgeInsets.symmetric(vertical: 3),
+                                          width: width*0.03,
+                                          height: 25,
+                                          alignment: Alignment.centerRight,
+                                          child: TextFormField(
+                                            controller: _controllerDiscuntOther,
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'R\$ 0,00',
+                                              hintStyle: TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 14.0
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                         TextCustom(
                                           text: valorFinal,
@@ -957,9 +967,9 @@ class _PriceScreenState extends State<PriceScreen> {
                               qtd: widget.saveListModel[index].qtd.text,
                               description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].descricao} x ${double.parse(widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
                               valuetable: '${widget.saveListModel[index].valorTabela}',
-                              discount: '${widget.saveListModel[index].desconto}',
-                              value: '${widget.saveListModel[index].valorUnitario}',
-                              total:'${widget.saveListModel[index].total}' ,
+                              discount: widget.saveListModel[index].desconto,
+                              valueUnit: widget.saveListModel[index].valorUnitario,
+                              total:'${widget.saveListModel[index].total}',
                               onTap: (){
                                 setState(() {
                                   codProduct = widget.saveListModel[index].cod.text;

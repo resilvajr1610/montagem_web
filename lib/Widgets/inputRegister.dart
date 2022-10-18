@@ -13,7 +13,7 @@ class InputRegister extends StatelessWidget {
   final icons;
   final colorBorder;
   final background;
-  int? maxline = 1;
+  int? maxline;
   var onChanged;
   bool enable;
   var height;
@@ -21,11 +21,11 @@ class InputRegister extends StatelessWidget {
   InputRegister({
     required this.controller,
     required this.hint,
-    required this.fonts,
-    required this.keyboardType,
+    this.fonts = 14.0,
+    this.keyboardType = TextInputType.text,
     required this.width,
     this.inputFormatters,
-    this.maxline,
+    this.maxline = 1,
     required this.sizeIcon,
     required this.icons,
     required this.colorBorder,

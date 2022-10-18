@@ -1,3 +1,5 @@
+import 'package:montagem_web/Utils/exports.dart';
+
 class SaveListProduct{
   String numoriginal;
   String cod;
@@ -6,8 +8,8 @@ class SaveListProduct{
   String qtd;
   String fabricante;
   String valorTabela;
-  String desconto;
-  String valorUnitario;
+  TextEditingController desconto;
+  TextEditingController valorUnitario;
   String total;
 
   SaveListProduct({
