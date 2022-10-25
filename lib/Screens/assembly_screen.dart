@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:montagem_web/Models/error_int_model.dart';
+import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Models/save_list_model.dart';
 import 'package:montagem_web/Models/save_list_product.dart';
 import 'package:montagem_web/Models/search_codUnico_model.dart';
@@ -10,6 +11,7 @@ import 'package:montagem_web/Models/search_product_model.dart';
 import 'package:montagem_web/Models/search_ref_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
 import 'package:montagem_web/Utils/text_const.dart';
+import '../Models/error_list_model.dart';
 import '../Models/search_client_model.dart';
 import '../Utils/exports.dart';
 
@@ -261,14 +263,11 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   }
 
   insertList(int index){
-
     double totalTabela = 0;
     double uni =0;
 
       totalTabela = (double.parse(typePrice) + double.parse(term1Price) + double.parse(term2Price) + double.parse(case1Price) + double.parse(adap1Price) + double.parse(adap2Price))*int.parse(_listSave[index].qtd.text);
-      print('totalTabela ${totalTabela}');
       uni = totalTabela / int.parse(_listSave[index].qtd.text);
-      print('uni ${uni}');
       setState(() {
         _listSave[index].valorTabela = 'R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
         _listSave[index].valorUnitario.text = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
@@ -351,6 +350,27 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       List  listProductFirebase = data?['prodPrecos'];
       id =  data?['id'];
       order = int.parse(data?['order']);
+
+      for(var i = 0;listProductFirebase.length>i;i++){
+        var splited = listProductFirebase[i].toString().split('#');
+
+        var controllerValor = TextEditingController(text:splited[15]);
+        var controllerDesc = TextEditingController(text:splited[13]);
+        listProduct.add(SaveListProduct(
+            numoriginal: '',
+            cod: splited[1],
+            codUnico: splited[3],
+            ref:  splited[5],
+            qtd: splited[7],
+            fabricante: splited[9],
+            valorTabela: splited[11],
+            desconto: controllerDesc,
+            valorUnitario: controllerValor,
+            total: splited[17],
+            item:  splited[19],
+            input: splited[21]
+        ));
+      }
 
       for(var i = 0; listSaveFirebase.length>i;i++){
         var splited = listSaveFirebase[i].toString().split('#');
@@ -459,12 +479,12 @@ init(){
   _getOrder();
 }
 
-Future sequenceUpdate(String cod,bool update,int i)async{
-
+Future<String> sequenceUpdate(String cod,bool update,int i)async{
   if(update){
     DocumentSnapshot snapshot = await db.collection('codUnico').doc(cod).get();
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-    int rep = ErrorIntModel(data,'rep');
+    int rep = data?['rep']??0;
+    print('rep $rep');
     String letter1='';
     String letter2='';
       letter1 = listLetter[rep<=25?0:rep-25];
@@ -472,45 +492,56 @@ Future sequenceUpdate(String cod,bool update,int i)async{
 
   db.collection('codUnico').doc(cod).update({
     'rep' : rep+1
-  }).then((value) => setState(()=>_listSave[i].cod = TextEditingController(text: '${_listSave[i].cod.text} - $letter1$letter2'))).then((value){
-    FirebaseFirestore.instance.collection('codUnico').doc(_listSave[i].cod.text).set({
-      'codUnico' : _listSave[i].cod.text,
-      'ref' : _listSave[i].ref.text,
-      'type': _listSave[i].type.text,
-      'typePrice': _listSave[i].typePrice,
-      'typeMarca': _listSave[i].typeMarca,
-      'term1': _listSave[i].term1.text,
-      'term1Price': _listSave[i].term1Price,
-      'term1Marca': _listSave[i].term1Marca,
-      'term2': _listSave[i].term2.text,
-      'term2Price': _listSave[i].term2Price,
-      'term2Marca': _listSave[i].term2Marca,
-      'case1': _listSave[i].case1.text,
-      'case1Price': _listSave[i].case1Price,
-      'case1Marca': _listSave[i].case1Marca,
-      'pos': _listSave[i].pos.text,
-    });
-  });
+  }).then((value) => setState((){
+    var splited =  _listSave[i].cod.text.split(" ");
+    _listSave[i].cod = TextEditingController(text: '${splited[0]} - $letter1$letter2');
+  }));
+
+  return '${_listSave[i].cod.text} - $letter1$letter2';
 
   }else{
     DocumentSnapshot snapshot = await db.collection('order').doc('codSequence').get();
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
     int numberSequence = data?['numberSequence'];
-    print('numberSequence');
-    print(numberSequence);
-    if(numberSequence!=null){
-        _listSave[i].letter1 = listLetter[numberSequence<=100?0:numberSequence-100];
-        _listSave[i].letter2 =  listLetter[(numberSequence / 100).round()];
-        _listSave[i].cod = TextEditingController(text: '${_listSave[i].letter1}${_listSave[i].letter2}${numberSequence<10?0:''}$numberSequence - AA');
-        db.collection('order').doc('codSequence').update({
-          'letterFirst' : _listSave[i].letter1,
-          'letterSecond' : _listSave[i].letter2,
-          'numberSequence': numberSequence+1
-        }).then((value) => setState(() {
-          _listSave[i].codRep = true;
-        }));
-    }
+   Future.delayed(Duration(seconds: 1),(){
+
+     if(numberSequence!=null){
+       _listSave[i].letter1 = listLetter[numberSequence<=100?0:numberSequence-100];
+       _listSave[i].letter2 =  listLetter[(numberSequence / 100).round()];
+       _listSave[i].cod = TextEditingController(text: '${_listSave[i].letter1}${_listSave[i].letter2}${numberSequence<10?0:''}$numberSequence - AA');
+       db.collection('order').doc('codSequence').set({
+         'letterFirst' : _listSave[i].letter1.toUpperCase(),
+         'letterSecond' : _listSave[i].letter2.toUpperCase(),
+         'numberSequence': numberSequence+1
+       }).then((value) => setState(() {
+         _listSave[i].codRep = true;
+
+         for(int index=0;index < listProduct.length;index++){
+           db.collection('codUnico').doc(_listSave[i].cod.text.toUpperCase()).set({
+             'items': FieldValue.arrayUnion([listProduct[index].item]),
+             'cod':FieldValue.arrayUnion([listProduct[index].cod]),
+             'qtd':FieldValue.arrayUnion([listProduct[index].qtd==''?'1':listProduct[i].qtd]),
+             'fabricante':FieldValue.arrayUnion([listProduct[index].fabricante==''?'vazio':listProduct[index].fabricante]),
+             'valorTabela':FieldValue.arrayUnion([listProduct[index].valorTabela==''?'0.00':listProduct[index].valorTabela]),
+             'desconto':FieldValue.arrayUnion([listProduct[index].desconto.text==''?'0.00':listProduct[index].desconto.text]),
+             'valorUnitario':FieldValue.arrayUnion([listProduct[index].valorUnitario.text==''?'0.00':listProduct[index].valorUnitario.text]),
+             'total':FieldValue.arrayUnion([listProduct[index].total==''?'0.00':listProduct[index].total]),
+             'input':FieldValue.arrayUnion([listProduct[index].input==''?'000':listProduct[index].input]),
+           },SetOptions(merge: true));
+         }
+         setState(() {});
+         db.collection('codUnico').doc(_listSave[i].cod.text.toUpperCase()).set({
+           'codUnico' : _listSave[i].cod.text,
+           'ref' : _listSave[i].ref.text,
+           'rep' : 1
+         },SetOptions(merge: true));
+       }));
+     }
+   });
+    return '${_listSave[i].letter1}${_listSave[i].letter2}${numberSequence<10?0:''}$numberSequence - AA';
   }
+
+  print('dentro : ${_listSave[i].cod.text}');
 }
 
   @override
@@ -1339,50 +1370,66 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                   return ListTile(
                                     title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                                     onTap: ()=>setState(() {
+                                      var name = '';
+                                      var input = '';
                                         if(_listSave[indexGlobal].term1.text.isNotEmpty && valueProd == _listSave[indexGlobal].term1.text){
                                           _listSave[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                           term1Price = item['preco'];
                                           term1Marca = item['marca'];
+                                          name = 'term1';
+                                          input = _listSave[indexGlobal].term1.text;
                                         }
                                         if(_listSave[indexGlobal].term2.text.isNotEmpty && valueProd == _listSave[indexGlobal].term2.text){
                                           _listSave[indexGlobal].term2 = TextEditingController(text: item['numoriginal']);
                                           term2Price = item['preco'];
                                           term2Marca = item['marca'];
+                                          name = 'term2';
+                                          input = _listSave[indexGlobal].term2.text;
                                         }
                                         if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
                                           _listSave[indexGlobal].case1 = TextEditingController(text: item['numoriginal']);
                                           case1Price = item['preco'];
                                           case1Marca = item['marca'];
+                                          name = 'case1';
+                                          input = _listSave[indexGlobal].case1.text;
                                         }
                                         if(_listSave[indexGlobal].adap1.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap1.text){
                                           _listSave[indexGlobal].adap1 = TextEditingController(text: item['numoriginal']);
                                           adap1Price = item['preco'];
                                           adap1Marca = item['marca'];
+                                          name = 'adap1';
+                                          input = _listSave[indexGlobal].adap1.text;
                                         }
                                         if(_listSave[indexGlobal].adap2.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap2.text){
                                           _listSave[indexGlobal].adap2 = TextEditingController(text: item['numoriginal']);
                                           adap2Price = item['preco'];
                                           adap2Marca = item['marca'];
+                                          name = 'adap2';
+                                          input = _listSave[indexGlobal].adap2.text;
                                         }
                                         if(_listSave[indexGlobal].type.text.isNotEmpty && valueProd == _listSave[indexGlobal].type.text){
                                           _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
                                           typePrice = item['preco'];
                                           typeMarca = item['marca'];
+                                          name = 'type';
+                                          input = _listSave[indexGlobal].type.text;
                                           _listSave[indexGlobal].descricao = '${item['diametro']} ${item['pressao']} Fem GIR ${item['estf1']}° / Macho ${item['estf2']}°';
                                         }
                                         valueProd='';
                                         listProduct.add(
                                             SaveListProduct(
-                                                numoriginal: item['numoriginal'],
-                                                cod: item['codprod'],
-                                                codUnico: _listSave[indexGlobal].cod.text,
-                                                ref:  item['numoriginal'].toString(),
-                                                qtd: _listSave[indexGlobal].qtd.text,
-                                                fabricante: item['marca'],
-                                                valorTabela: '${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
-                                                desconto: TextEditingController(text: 'R\$ 0,00'),
-                                                valorUnitario: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
-                                                total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
+                                              numoriginal: item['numoriginal'],
+                                              cod: item['codprod'],
+                                              codUnico: _listSave[indexGlobal].cod.text,
+                                              ref:  item['numoriginal'].toString(),
+                                              qtd: _listSave[indexGlobal].qtd.text,
+                                              fabricante: item['marca'],
+                                              valorTabela: '${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
+                                              desconto: TextEditingController(text: 'R\$ 0,00'),
+                                              valorUnitario: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                              total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
+                                              item:  name,
+                                              input: input
                                             )
                                         );
                                       }
@@ -1470,84 +1517,84 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                           onPressed: () {
                             List aux = [];
                             List auxPrice = [];
-                            for(var i=0;_listSave.length>i;i++){
-                             aux.add(
-                                 'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
-                                 '#aplication#${_listSave[i].application.text}#size#${_listSave[i].size.text}#comprimento#${_listSave[i].comp.text}'
-                                 '#type#${_listSave[i].type.text}#typePrice#${_listSave[i].typePrice.length}#typeMarca#${_listSave[i].typeMarca}'
-                                 '#term1#${_listSave[i].term1.text}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
-                                 '#term2#${_listSave[i].term2.text}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
-                                 '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
-                                 '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
-                                 '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
-                                 '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
-                             );
-                             insertList(i);
-                            }
-                            for(var i=0;listProduct.length>i;i++){
-                              auxPrice.add(
-                                  'cod#${listProduct[i].cod}#codUnico#${listProduct[i].codUnico}#ref#${listProduct[i].ref}#qtd#${listProduct[i].qtd}#'
-                                  'fabricante#${listProduct[i].fabricante}#valorTabela#${listProduct[i].valorTabela}#desconto#${listProduct[i].desconto}#'
-                                  'valorUnitario#${listProduct[i].valorUnitario}#total#${listProduct[i].total}'
-                              );
-                            }
-                            if(aux.length != 0 ){
-                              db.collection('assembly').doc(id).set({
-                                'id':id,
-                                'data':_controllerDate!=null?_controllerDate.text:'',
-                                'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
-                                'cliente':_controllerClientName!=null?_controllerClientName.text:'',
-                                'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
-                                'produtos':aux.toList(),
-                                'prodPrecos':auxPrice.toList(),
-                                'dateOrder':DateTime.now(),
-                                'status': TextConst.aguardando,
-                                'order': order.toString(),
-                                'priority': '1 - Cliente Balcão'
-                              }).then((value){
-                                db.collection('order').doc('order').update({
-                                'order':int.parse(order.toString())
-                                }).then((value) =>
-                                    Navigator.push(context, new MaterialPageRoute(builder: (context) => new
-                                      PriceScreen(
-                                        saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,
-                                        client: _controllerClientName.text,codClient: _controllerClientCod.text,
-                                        order: order.toString(),data: _controllerDate.text,filial: _controllerAffiliation.text,
-                                      )
-                                    ))
+                            setState(() {
+                              loadingData=true;
+                            });
+                            print('okkkk - 1');
+                            for(var i=0;_listSave.length>i;i++) {
+                              print('ok1 - 1');
+                              sequenceUpdate(_listSave[i].cod.text!=''?_listSave[i].cod.text:'',_listSave[i].cod.text!=''?true:false, i).then((value) => setState((){
+                                _listSave[i].cod = TextEditingController(text: value);
+                                aux.add(
+                                    'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
+                                        '#aplication#${_listSave[i].application.text}#numoriginal#${_listSave[i].type.text}#comprimento#${_listSave[i].comp.text}'
+                                        '#type#${_listSave[i].size.text}#typePrice#${_listSave[i].typePrice.length}#typeMarca#${_listSave[i].typeMarca}'
+                                        '#term1#${_listSave[i].term1.text}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
+                                        '#term2#${_listSave[i].term2.text}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
+                                        '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
+                                        '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
+                                        '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
+                                        '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
                                 );
-                              });
+                                for(var ip=0;listProduct.length>ip;ip++){
+                                  auxPrice.add(
+                                      'cod#${listProduct[ip].cod}#codUnico#${_listSave[i].cod.text}#ref#${listProduct[ip].ref}#qtd#${listProduct[ip].qtd}#'
+                                          'fabricante#${listProduct[ip].fabricante}#valorTabela#${listProduct[ip].valorTabela}#desconto#${listProduct[ip].desconto.text}#'
+                                          'valorUnitario#${listProduct[ip].valorUnitario.text}#total#${listProduct[ip].total}#item#${listProduct[ip].item}#input#${listProduct[ip].input}'
+                                  );
+                                  listProduct[ip].codUnico = _listSave[i].cod.text;
+                                }
+                                print('ok1 - 2');
+                                insertList(i);
+
+                                print('aux ${aux.length}');
+                                print('auxp ${auxPrice.length}');
+
+                                if(aux.length != 0 && auxPrice.length!=0){
+                                  setState(() {
+                                    loadingData=false;
+                                  });
+                                  print('ok1 - 3');
+                                  FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                                    'id':id,
+                                    'data':_controllerDate!=null?_controllerDate.text:'',
+                                    'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
+                                    'cliente':_controllerClientName!=null?_controllerClientName.text:'',
+                                    'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
+                                    'produtos':aux.toList(),
+                                    'prodPrecos':auxPrice.toList(),
+                                    'dateOrder':DateTime.now(),
+                                    'status': TextConst.aguardando,
+                                    'order': order.toString(),
+                                    'priority': '1 - Cliente Balcão'
+                                  }).then((value){
+                                    db.collection('order').doc('order').update({
+                                      'order':int.parse(order.toString())
+                                    }).then((value) =>
+                                        Navigator.push(context, new MaterialPageRoute(builder: (context) => new
+                                        PriceScreen(
+                                          saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,
+                                          client: _controllerClientName.text,codClient: _controllerClientCod.text,
+                                          order: order.toString(),data: _controllerDate.text,filial: _controllerAffiliation.text,
+                                        )
+                                        ))
+                                    );
+                                  });
+                                }
+                              }));
                             }
                           },
                         ),
                       ),
-                      // SizedBox(width: 15),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: ButtonCustom(
-                      //     widthCustom: 0.14,
-                      //     heightCustom: 0.07,
-                      //     text: "Resumo de montagem",
-                      //     size: 12.0,
-                      //     colorText: PaletteColors.white,
-                      //     colorButton: PaletteColors.primaryColor,
-                      //     colorBorder: PaletteColors.primaryColor,
-                      //     font: 'Nunito',
-                      //     onPressed: () {
-                      //       if(_listSave.length!=0){
-                      //       }
-                      //     },
-                      //   ),
-                      // ),
                     ],
                   ),
                 ],
             ),
           ),
         ),
-              ),
-            ]
       ),
+    ]
+    ),
     ):Container(
       height: heigth,
       width: width,
@@ -1793,7 +1840,7 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                 Container(
                   width: width * 0.06,
                   child: TextCustom(
-                    text: 'Rêferencia',
+                    text: 'Referência',
                     size: 14.0,
                     color: PaletteColors.primaryColor,
                     fontFamily: 'Nunito',
@@ -1975,7 +2022,7 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                   setState(() {
                                     indexGlobal=index;
                                     valuecodProd = value.toString();
-                                    resultSearchListRef();
+                                    resultSearchListCodUnico();
                                   });
                                 },
                               ),
@@ -1995,15 +2042,9 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                 background: PaletteColors.inputGrey,
                                 onChanged: (value){
                                   setState(() {
-                                    if (value.toString() != '') {
-                                      setState(() {
-                                        indexGlobal = index;
-                                        valuecodProd = value.toString();
-                                        _listSave[index].ref = TextEditingController(text: value.toString());
-                                      });
-                                    } else {
-                                      valuecodProd='';
-                                    }
+                                      indexGlobal = index;
+                                      valuecodProd = value.toString();
+                                      resultSearchListRef();
                                   });
                                 },
                               ),
@@ -2356,37 +2397,51 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                             return ListTile(
                               title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                               onTap: ()=>setState(() {
+                                var name = '';
+                                var input = '';
                                 if(_listSave[indexGlobal].term1.text.isNotEmpty && valueProd == _listSave[indexGlobal].term1.text){
                                   _listSave[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                   term1Price = item['preco'];
                                   term1Marca = item['marca'];
                                   _listSave[indexGlobal].anel = TextEditingController(text: item['codoring']!='null'?'X':'');
+                                  name = 'term1';
+                                  input = _listSave[indexGlobal].term1.text;
                                 }
                                 if(_listSave[indexGlobal].term2.text.isNotEmpty && valueProd == _listSave[indexGlobal].term2.text){
                                   _listSave[indexGlobal].term2 = TextEditingController(text: item['numoriginal']);
                                   term2Price = item['preco'];
                                   term2Marca = item['marca'];
                                   _listSave[indexGlobal].anel = TextEditingController(text: item['codoring']!='null'?'X':'');
+                                  name = 'term2';
+                                  input = _listSave[indexGlobal].term2.text;
                                 }
                                 if(_listSave[indexGlobal].case1.text.isNotEmpty && valueProd == _listSave[indexGlobal].case1.text){
                                   _listSave[indexGlobal].case1 = TextEditingController(text: item['numoriginal']);
                                   case1Price = (double.parse(item['preco'])*2).toString();
                                   case1Marca = item['marca'];
+                                  name = 'case1';
+                                  input = _listSave[indexGlobal].case1.text;
                                 }
                                 if(_listSave[indexGlobal].adap1.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap1.text){
                                   _listSave[indexGlobal].adap1 = TextEditingController(text: item['numoriginal']);
                                   adap1Price = item['preco'];
                                   adap1Marca = item['marca'];
+                                  name = 'adap1';
+                                  input = _listSave[indexGlobal].adap1.text;
                                 }
                                 if(_listSave[indexGlobal].adap2.text.isNotEmpty && valueProd == _listSave[indexGlobal].adap2.text){
                                   _listSave[indexGlobal].adap2 = TextEditingController(text: item['numoriginal']);
                                   adap2Price = item['preco'];
                                   adap2Marca = item['marca'];
+                                  name = 'adap2';
+                                  input = _listSave[indexGlobal].adap2.text;
                                 }
                                 if(_listSave[indexGlobal].type.text.isNotEmpty && valueProd == _listSave[indexGlobal].type.text){
                                   _listSave[indexGlobal].type = TextEditingController(text: item['numoriginal']);
                                   typePrice = item['preco'];
                                   typeMarca = item['marca'];
+                                  name = 'type';
+                                  input = _listSave[indexGlobal].type.text;
                                   _listSave[indexGlobal].descricao = '${item['diametro']} ${item['pressao']} Fem GIR ${item['estf1']}° / Macho ${item['estf2']}°';
                                 }
                                 valueProd='';
@@ -2402,6 +2457,8 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                                       desconto: TextEditingController(text: 'R\$ 0,00'),
                                       valorUnitario: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
                                       total: 'R\$ ${(double.parse(item['preco'])*int.parse(_listSave[indexGlobal].qtd.text)).toString().replaceAll('.', ',')}',
+                                      item: name,
+                                      input: input
                                     )
                                 );
                               }
@@ -2422,29 +2479,21 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                           itemBuilder: (contect,index){
                             DocumentSnapshot item = _resultsCodUnico[index];
 
-                            return ListTile(
-                              title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${item['type']}, Term1: ${item['term1']}, Term2: ${item['term2']}, Capa: ${item['case1']}, POS: ${item['pos']}'),
-                              onTap: ()=>setState(() {
-                                  _listSave[indexGlobal].cod = TextEditingController(text: item['codUnico']);
-                                  _listSave[indexGlobal].case1 = TextEditingController(text: item['case1']);
-                                  case1Price = item['case1Price'];
-                                  case1Marca = item['case1Marca'];
-                                  _listSave[indexGlobal].pos = TextEditingController(text: item['pos']);
-                                  _listSave[indexGlobal].ref = TextEditingController(text: item['ref']);
-                                  _listSave[indexGlobal].term1 = TextEditingController(text: item['term1']);
-                                  term1Price = item['term1Price'];
-                                  term1Marca = item['term1Marca'];
-                                  _listSave[indexGlobal].term2 = TextEditingController(text: item['term2']);
-                                  term2Price = item['term2Price'];
-                                  term2Marca = item['term2Marca'];
-                                  _listSave[indexGlobal].type = TextEditingController(text: item['type']);
-                                  typePrice = item['typePrice'];
-                                  typeMarca = item['typeMarca'];
+                            return   ErrorIntModel(item,'rep')==0?Container():ListTile(
+                              title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${item['input'][0].toString().toUpperCase()}, Term1: ${item['input'][1].toString().toUpperCase()}, Term2: ${item['input'][2].toString().toUpperCase()}, Capa: ${item['input'][3].toString().toUpperCase()}, POS: ${item['input'][4].toString().toUpperCase()}'),
+                              onTap: (){
+                                setState(() {
                                   valuecodProd='';
                                   _listSave[indexGlobal].codRep = true;
-                                  sequenceUpdate(_listSave[indexGlobal].cod.text,true,0);
+                                  _listSave[indexGlobal].cod = TextEditingController(text:item['codUnico']);
+                                  _listSave[indexGlobal].ref = TextEditingController(text:item['ref']);
+                                  _listSave[indexGlobal].type = TextEditingController(text:item['input'][0].toString().toUpperCase());
+                                  _listSave[indexGlobal].term1 = TextEditingController(text:item['input'][1].toString().toUpperCase());
+                                  _listSave[indexGlobal].term2 = TextEditingController(text:item['input'][2].toString().toUpperCase());
+                                  _listSave[indexGlobal].case1 = TextEditingController(text:item['input'][3].toString().toUpperCase());
+                                });
+                                  sequenceUpdate(_listSave[indexGlobal].cod.text,true,indexGlobal);
                               }
-                              ),
                             );
                           }
                       );
@@ -2601,99 +2650,76 @@ Future sequenceUpdate(String cod,bool update,int i)async{
                     onPressed: ()async {
                       List aux = [];
                       List auxPrice = [];
-                      for(var i=0;_listSave.length>i;i++){
-                        if(_listSave[i].cod.text.isEmpty){
-                          Future.delayed(Duration(seconds: 2),(){
-                            sequenceUpdate('',false,i);
-                          });
-                        }
-                        aux.add(
-                            'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
-                                '#aplication#${_listSave[i].application.text}#numoriginal#${_listSave[i].type.text}#comprimento#${_listSave[i].comp.text}'
-                                '#type#${_listSave[i].size.text}#typePrice#${_listSave[i].typePrice.length}#typeMarca#${_listSave[i].typeMarca}'
-                                '#term1#${_listSave[i].term1.text}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
-                                '#term2#${_listSave[i].term2.text}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
-                                '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
-                                '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
-                                '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
-                                '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
-                        );
-                        insertList(i);
-                        if(_listSave[i].cod.text!=''){
-                          FirebaseFirestore.instance.collection('codUnico').doc(_listSave[i].cod.text).set({
-                            'codUnico' : _listSave[i].cod.text,
-                            'ref' : _listSave[i].ref.text,
-                            'type': _listSave[i].type.text,
-                            'typePrice': _listSave[i].typePrice,
-                            'typeMarca': _listSave[i].typeMarca,
-                            'term1': _listSave[i].term1.text,
-                            'term1Price': _listSave[i].term1Price,
-                            'term1Marca': _listSave[i].term1Marca,
-                            'term2': _listSave[i].term2.text,
-                            'term2Price': _listSave[i].term2Price,
-                            'term2Marca': _listSave[i].term2Marca,
-                            'case1': _listSave[i].case1.text,
-                            'case1Price': _listSave[i].case1Price,
-                            'case1Marca': _listSave[i].case1Marca,
-                            'pos': _listSave[i].pos.text,
-                          });
-                        }
-                      }
-                      for(var i=0;listProduct.length>i;i++){
-                        auxPrice.add(
-                            'cod#${listProduct[i].cod}#codUnico#${listProduct[i].codUnico}#ref#${listProduct[i].ref}#qtd#${listProduct[i].qtd}#'
-                                'fabricante#${listProduct[i].fabricante}#valorTabela#${listProduct[i].valorTabela}#desconto#${listProduct[i].desconto.text}#'
-                                'valorUnitario#${listProduct[i].valorUnitario.text}#total#${listProduct[i].total}'
-                        );
-                      }
-                      if(aux.length != 0 ){
-                        FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                          'id':id,
-                          'data':_controllerDate!=null?_controllerDate.text:'',
-                          'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
-                          'cliente':_controllerClientName!=null?_controllerClientName.text:'',
-                          'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
-                          'produtos':aux.toList(),
-                          'prodPrecos':auxPrice.toList(),
-                          'dateOrder':DateTime.now(),
-                          'status': TextConst.aguardando,
-                          'order': order.toString(),
-                          'priority': '1 - Cliente Balcão'
-                        }).then((value){
-                          db.collection('order').doc('order').update({
-                            'order':int.parse(order.toString())
-                          }).then((value) =>
-                              Navigator.push(context, new MaterialPageRoute(builder: (context) => new
-                              PriceScreen(
-                                saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,
-                                client: _controllerClientName.text,codClient: _controllerClientCod.text,
-                                order: order.toString(),data: _controllerDate.text,filial: _controllerAffiliation.text,
-                              )
-                              ))
+                      setState(() {
+                        loadingData=true;
+                      });
+                      print('okkkk');
+                      for(var i=0;_listSave.length>i;i++) {
+                        print('ok1');
+                        sequenceUpdate('', false, i).then((value) => setState((){
+                          _listSave[i].cod = TextEditingController(text: value);
+                          print('ok2');
+                          aux.add(
+                              'cod#${_listSave[i].cod.text}#ref#${_listSave[i].ref.text}#qtd#${_listSave[i].qtd.text}#maker#${_listSave[i].maker.text}'
+                                  '#aplication#${_listSave[i].application.text}#numoriginal#${_listSave[i].type.text}#comprimento#${_listSave[i].comp.text}'
+                                  '#type#${_listSave[i].size.text}#typePrice#${_listSave[i].typePrice.length}#typeMarca#${_listSave[i].typeMarca}'
+                                  '#term1#${_listSave[i].term1.text}#term1Price#${_listSave[i].term1Price}#term1Marca#${_listSave[i].term1Marca}'
+                                  '#term2#${_listSave[i].term2.text}#term2Price#${_listSave[i].term2Price}#term2Marca#${_listSave[i].term2Marca}'
+                                  '#capa#${_listSave[i].case1.text}#capaPrice#${_listSave[i].case1Price}#capa1Marca#${_listSave[i].case1Marca}'
+                                  '#pos#${_listSave[i].pos.text}#adap1#${_listSave[i].adap1.text}#adap1Price#${_listSave[i].adap1Price}#adap1Marca#${_listSave[i].adap1Marca}'
+                                  '#adap2#${_listSave[i].adap2.text}#adap2Price#${_listSave[i].adap2Price}#adap2Marca#${_listSave[i].adap2Marca}'
+                                  '#anel#${_listSave[i].anel.text}#mola#${_listSave[i].mola.text}#descricao#${_listSave[i].descricao}'
                           );
-                        });
+                          for(var ip=0;listProduct.length>ip;ip++){
+                            auxPrice.add(
+                                'cod#${listProduct[ip].cod}#codUnico#${_listSave[i].cod.text}#ref#${listProduct[ip].ref}#qtd#${listProduct[ip].qtd}#'
+                                'fabricante#${listProduct[ip].fabricante}#valorTabela#${listProduct[ip].valorTabela}#desconto#${listProduct[ip].desconto.text}#'
+                                'valorUnitario#${listProduct[ip].valorUnitario.text}#total#${listProduct[ip].total}#item#${listProduct[ip].item}#input#${listProduct[ip].input}'
+                            );
+                            listProduct[ip].codUnico = _listSave[i].cod.text;
+                          }
+                          print('ok3');
+                          insertList(i);
+                          print('aux ${aux.length}');
+                          print('auxp ${auxPrice.length}');
+                          if(aux.length != 0 && auxPrice.length!=0){
+                            setState(() {
+                              loadingData=false;
+                            });
+                            print('ok4');
+                            FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                              'id':id,
+                              'data':_controllerDate!=null?_controllerDate.text:'',
+                              'codcli':_controllerClientCod!=null?_controllerClientCod.text:'',
+                              'cliente':_controllerClientName!=null?_controllerClientName.text:'',
+                              'filial':_controllerAffiliation!=null?_controllerAffiliation.text:'',
+                              'produtos':aux.toList(),
+                              'prodPrecos':auxPrice.toList(),
+                              'dateOrder':DateTime.now(),
+                              'status': TextConst.aguardando,
+                              'order': order.toString(),
+                              'priority': '1 - Cliente Balcão'
+                            },SetOptions(merge: true)).then((value){
+                              print('ok5');
+                              db.collection('order').doc('order').update({
+                                'order':int.parse(order.toString())
+                              }).then((value) =>
+                                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new
+                                  PriceScreen(
+                                    saveListModel: _listSave,saveListProduct: listProduct,idAssembly: id,
+                                    client: _controllerClientName.text,codClient: _controllerClientCod.text,
+                                    order: order.toString(),data: _controllerDate.text,filial: _controllerAffiliation.text,
+                                  )
+                                  ))
+                              );
+                            });
+                            print('ok6');
+                          }
+                        }));
                       }
                     },
                   ),
                 ),
-                // SizedBox(width: 15),
-                // Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: ButtonCustom(
-                //     widthCustom: 0.14,
-                //     heightCustom: 0.07,
-                //     text: "Resumo de montagem",
-                //     size: 12.0,
-                //     colorText: PaletteColors.white,
-                //     colorButton: PaletteColors.primaryColor,
-                //     colorBorder: PaletteColors.primaryColor,
-                //     font: 'Nunito',
-                //     onPressed: () {
-                //       if(_listSave.length!=0){
-                //       }
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ],

@@ -11,6 +11,8 @@ class SaveListProduct{
   TextEditingController desconto;
   TextEditingController valorUnitario;
   String total;
+  String item;
+  String input;
 
   SaveListProduct({
     required this.numoriginal,
@@ -23,5 +25,7 @@ class SaveListProduct{
     required this.desconto,
     required this.valorUnitario,
     required this.total,
+    required this.item,
+    required this.input,
   });
 }

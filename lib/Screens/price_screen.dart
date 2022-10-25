@@ -82,7 +82,7 @@ class _PriceScreenState extends State<PriceScreen> {
                   numoriginal: widget.saveListProduct[i].numoriginal, cod: widget.saveListProduct[i].cod, codUnico: widget.saveListProduct[i].codUnico, ref: widget.saveListProduct[i].ref,
                   qtd: widget.saveListProduct[i].qtd, fabricante: widget.saveListProduct[i].fabricante,valorTabela: widget.saveListProduct[i].valorTabela,
                   desconto: TextEditingController(text: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}'),valorUnitario: TextEditingController(text: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}'),
-                  total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}'
+                  total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}',item: widget.saveListProduct[i].item,input: widget.saveListProduct[i].input
               )
           );
       }
@@ -91,11 +91,9 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   refreshValues(){
-
-      for (var i = 0; widget.saveListProduct.length > i; i++) {
+      for (var i = 0;i < widget.saveListProduct.length; i++) {
         listGetProduct.add(widget.saveListProduct[i]);
       }
-
     setState(() {
       valorTabela = widget.saveListModel[0].valorTabela;
       valorFinal = widget.saveListModel[0].valorTabela;
@@ -129,18 +127,12 @@ class _PriceScreenState extends State<PriceScreen> {
     for(var i=0; widget.saveListModel.length>i;i++){
       top = top+30;
       double valorQtd = double.parse(widget.saveListModel[i].qtd.text);
-      print('valorQtd');
-      print(valorQtd);
       double valorTotal = double.parse(widget.saveListModel[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
       double desc = double.parse(widget.saveListModel[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
       brutoGeral = brutoGeral + valorTotal;
       descGeral = desc + descGeral;
       liquidoGeral = brutoGeral-descGeral;
-      print('valorTotal');
-      print(valorTotal);
       double uni =  valorTotal/valorQtd;
-      print('uni');
-      print(uni);
       list.add(
           PDFModel(
               qtd: widget.saveListModel[i].qtd.text,
@@ -210,18 +202,12 @@ class _PriceScreenState extends State<PriceScreen> {
     for(var i=0; widget.saveListProduct.length>i;i++){
      if(widget.saveListProduct[i].codUnico==codProduct){
        double valorQtd = double.parse(widget.saveListProduct[i].qtd);
-       print('valorQtd');
-       print(valorQtd);
        double valorTotal = double.parse(widget.saveListProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
        double desc = double.parse(widget.saveListProduct[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
        brutoGeral = brutoGeral + valorTotal;
        descGeral = desc + descGeral;
        liquidoGeral = brutoGeral-descGeral;
-       print('valorTotal');
-       print(valorTotal);
        double uni =  valorTotal/valorQtd;
-       print('uni');
-       print(uni);
        list.add(
            PDFTabelaModel(
                cod: widget.saveListProduct[i].cod,
@@ -582,7 +568,7 @@ class _PriceScreenState extends State<PriceScreen> {
                     ),
                     Container(
                       height: heigth*0.3,
-                      child: listGetProduct.length!=0?ListView.builder(
+                      child: ListView.builder(
                         itemCount: listGetProduct.length,
                         itemBuilder: (context,index){
                           return  codProduct == listGetProduct[index].codUnico
@@ -598,40 +584,9 @@ class _PriceScreenState extends State<PriceScreen> {
                                 total:'${listGetProduct[index].total.replaceAll('.', ',')}' ,
                               ):Container();
                         }
-                      ):CircularProgressIndicator(),
+                      ),
                     ),
                     SizedBox(height: 10),
-                    // Row(
-                    //   children: [
-                    //     SizedBox(width: 40),
-                    //     Material(
-                    //       color: Colors.transparent,
-                    //       child: Ink(
-                    //         decoration: ShapeDecoration(
-                    //           color: PaletteColors.primaryColor,
-                    //           shape: CircleBorder(),
-                    //         ),
-                    //         child: IconButton(
-                    //           icon: Icon(
-                    //             Icons.add,
-                    //             color: PaletteColors.white,
-                    //             size: 16.0,
-                    //           ),
-                    //           constraints: BoxConstraints(
-                    //             minWidth: 20,
-                    //             maxWidth: 20,
-                    //             minHeight: 20,
-                    //             maxHeight: 20,
-                    //           ),
-                    //           padding: EdgeInsets.zero,
-                    //           onPressed: () {
-                    //
-                    //           },
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     SizedBox(height: 10),
                     Row(
                       children: [
@@ -780,8 +735,7 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorText: PaletteColors.white,
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
-                          onPressed: () =>
-                              Navigator.pop(context),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AssemblyScreen(id: widget.idAssembly,))),
                           font: 'Nunito',
                         ),
                         SizedBox(width: 20),
@@ -965,7 +919,7 @@ class _PriceScreenState extends State<PriceScreen> {
                             return ListClient(
                               hovercolor: Colors.white,
                               qtd: widget.saveListModel[index].qtd.text,
-                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].descricao} x ${double.parse(widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
+                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].descricao} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
                               valuetable: '${widget.saveListModel[index].valorTabela}',
                               discount: widget.saveListModel[index].desconto,
                               valueUnit: widget.saveListModel[index].valorUnitario,
@@ -976,7 +930,6 @@ class _PriceScreenState extends State<PriceScreen> {
                                   indexGlobal = index;
                                     valorTabela = widget.saveListModel[index].valorTabela;
                                     valorFinal = widget.saveListModel[index].valorTabela;
-                                  print('codProduct $codProduct');
                                 });
                               },
                             );
@@ -1080,7 +1033,6 @@ class _PriceScreenState extends State<PriceScreen> {
                             colorBorder: PaletteColors.primaryColor,
                             onPressed: (){
                               if(widget.saveListModel.length!=0){
-                                print(widget.saveListModel.length);
                                 _createPdfGeral();
                               }else{
                                 print('erro');

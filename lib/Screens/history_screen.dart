@@ -503,8 +503,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   onPressedShow: (){
                                     createList(item['produtos']);
                                   },
-                                  onPressedEdit: ()=>Navigator.push(context, MaterialPageRoute(
-                                    builder: (_) => AssemblyScreen(id: item['id'],)),
+                                  onPressedEdit: ()=>Navigator.push(context, MaterialPageRoute(builder: (_) => AssemblyScreen(id: item['id'],)),
                                   ),
                                   onPressedDuplicated: (){},
                                 );

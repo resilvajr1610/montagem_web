@@ -58,19 +58,14 @@ class _ProductionScreenState extends State<ProductionScreen> {
         var desconto =  TextEditingController(text: splited[13]);
         var valorUnitario =  TextEditingController(text: splited[15]);
 
-        print(desconto.text);
-        print(valorUnitario.text);
-
         listProdPrecos.add(
             SaveListProduct(
                 numoriginal: '', cod: splited[1], codUnico: splited[3], ref: splited[5], qtd: splited[7], fabricante: splited[9], valorTabela: splited[11],
-                desconto: desconto, valorUnitario: valorUnitario, total: splited[17]
+                desconto: desconto, valorUnitario: valorUnitario, total: splited[17],item: splited[19],input: splited[21]
             )
         );
       }
-      setState(() {
 
-      });
       for(var i=0;produtos.length>i;i++){
         var splited = produtos[i].toString().split('#');
         listProdutos.add(
@@ -79,7 +74,9 @@ class _ProductionScreenState extends State<ProductionScreen> {
                 term1: splited[21], term2: splited[27],cape: splited[33], pos: splited[39], adap1: splited[41], adap2: splited[47], anel: splited[53], mola: splited[55])
         );
       }
-      cod = listProdutos[0].cod;
+      setState(() {
+        cod = listProdutos[0].cod;
+      });
     });
   }
 
@@ -643,6 +640,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                               onTap: (){
                                 setState(() {
                                   cod = listProdutos[index].cod;
+                                  print('cod');
+                                  print(cod);
                                 });
                               },
                             );
