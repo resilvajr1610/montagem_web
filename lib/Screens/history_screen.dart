@@ -2,10 +2,12 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:montagem_web/Models/error_string_model.dart';
+import 'package:montagem_web/Utils/text_const.dart';
 import 'package:montagem_web/Widgets/list_hoses_resume.dart';
 import '../Models/error_int_model.dart';
-import '../Models/product_model.dart';
+import '../Models/controllers_assembly_list_model.dart';
 import '../Utils/exports.dart';
+import '../Widgets/alert_model.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -18,14 +20,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
   var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
   var _controllerNumberOp = TextEditingController();
-  var _controllerClient = TextEditingController();
+  var _controllerClientName = TextEditingController();
+  var _controllerClientCod = TextEditingController();
   var _controllerReference = TextEditingController();
   var _controllerInitialDate = TextEditingController();
   var _controllerFinalDate = TextEditingController();
   var _controllerItems = StreamController<QuerySnapshot>.broadcast();
+  int order = 0;
+  int makerOrder = 0;
 
   FirebaseFirestore db = FirebaseFirestore.instance;
-  List <ProductModel> listProdutos = [];
+  List <ControllersAssemblyListModel> listProdutos = [];
   String cod = '';
   List _allResults=[];
   List show = [];
@@ -37,6 +42,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() {
       _allResults = data.docs;
     });
+  }
+  _getOrders()async{
+    DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
+    if(snapshot!=null){
+      setState(() {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+        order = data?['order'];
+        makerOrder = data?['makerOrder'];
+      });
+    }
   }
   _dataSearch() async {
     _allResults.clear();
@@ -51,9 +66,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
           .where('data', isLessThanOrEqualTo: _controllerFinalDate.text.trim())
           .get();
     }
-    if(_controllerClient.text.isNotEmpty && _controllerInitialDate.text.isEmpty && _controllerNumberAssembly.text.isEmpty){
+    if(_controllerClientName.text.isNotEmpty && _controllerInitialDate.text.isEmpty && _controllerNumberAssembly.text.isEmpty){
       data = await db.collection("assembly")
-          .where('cliente', isEqualTo: _controllerClient.text.trim())
+          .where('cliente', isEqualTo: _controllerClientName.text.trim())
+          .get();
+    }
+    if(_controllerWhintor.text.isNotEmpty && _controllerInitialDate.text.isEmpty && _controllerNumberAssembly.text.isEmpty){
+      data = await db.collection("assembly")
+          .where('whinthor', isEqualTo: _controllerWhintor.text.trim())
+          .get();
+    }
+    if(_controllerClientCod.text.isNotEmpty && _controllerInitialDate.text.isEmpty && _controllerNumberAssembly.text.isEmpty){
+      data = await db.collection("assembly")
+          .where('codcli', isEqualTo: _controllerClientCod.text.trim())
           .get();
     }
     if(_controllerInitialDate.text.isNotEmpty && _controllerNumberAssembly.text.isEmpty && _controllerFinalDate.text.isEmpty){
@@ -87,25 +112,62 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
   }
 
-  createList(List list){
-    listProdutos.clear();
-    for(var i=0;list.length>i;i++){
-      var splited = list[i].toString().split('#');
-      listProdutos.add(
-          ProductModel(
-              cod: splited[1], qtd: splited[5], number: '${i+1}', typeHose: splited[11], size: splited[13], type: splited[15],
-              term1: splited[21], term2: splited[27],cape: splited[33], pos: splited[39], adap1: splited[41], adap2: splited[47], anel: splited[53], mola: splited[55],
-              maquina: splited[7],aplicacao: splited[9],
-          )
-      );
+  createList(String id)async{
+    DocumentSnapshot snapshot = await db.collection('assembly').doc(id).get();
+    if(snapshot!=null){
+      setState(() {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+        List codAssembly    = data?['codAssembly']??[];
+        List qtdAssembly    = data?['qtdAssembly']??[];
+        List hoseAssembly   = data?['hoseAssembly']??[];
+        List sizeAssembly   = data?['sizeAssembly']??[];
+        List lengthAssembly = data?['lengthAssembly']??[];
+        List term1Assembly  = data?['term1Assembly']??[];
+        List term2Assembly  = data?['term2Assembly']??[];
+        List capeAssembly   = data?['capeAssembly']??[];
+        List adap1Assembly  = data?['adap1Assembly']??[];
+        List adap2Assembly  = data?['adap2Assembly']??[];
+        List ringAssembly   = data?['ringAssembly']??[];
+        List springAssembly = data?['springAssembly']??[];
+        List makerAssembly  = data?['makerAssembly']??[];
+        List apliAssembly   = data?['apliAssembly']??[];
+        List pos            = data?['pos']??[];
+
+        listProdutos.clear();
+        for(var i=0;codAssembly.length>i;i++){
+          var splitedCod    = codAssembly[i].toString().split('#');
+          var splitedQtd    = qtdAssembly[i].toString().split('#');
+          var splitedHose   = hoseAssembly[i].toString().split('#');
+          var splitedLength = lengthAssembly[i].toString().split('#');
+          var splitedSize   = sizeAssembly[i].toString().split('#');
+          var splitedTerm1  = term1Assembly[i].toString().split('#');
+          var splitedTerm2  = term2Assembly[i].toString().split('#');
+          var splitedCape   = capeAssembly[i].toString().split('#');
+          var splitedAdap1  = adap1Assembly[i].toString().split('#');
+          var splitedAdap2  = adap2Assembly[i].toString().split('#');
+          var splitedRing   = ringAssembly[i].toString().split('#');
+          var splitedSpring = springAssembly[i].toString().split('#');
+          var splitedMaker  = makerAssembly[i].toString().split('#');
+          var splitedApli   = apliAssembly[i].toString().split('#');
+          var splitedPos    = pos[i].toString().split('#');
+
+          listProdutos.add(
+              ControllersAssemblyListModel(
+                cod: splitedCod[1], qtd: splitedQtd[1], number: '${i+1}', hose: splitedHose[1], size: splitedSize[1], length: splitedLength[1],
+                term1: splitedTerm1[1], term2: splitedTerm2[1],cape: splitedCape[1], pos: splitedPos[1], adap1: splitedAdap1[1], adap2: splitedAdap2[1],
+                ring: splitedRing[1], spring: splitedSpring[1], maker: splitedMaker[1],application: splitedApli[1],
+              )
+          );
+        }
+      });
     }
-    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
     _data();
+    _getOrders();
   }
 
   @override
@@ -185,10 +247,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                   Container(
-                    width: width *0.26,
-
+                    width: width* 0.07,
                     child: TextCustom(
-                      text: 'Cliente',
+                      text: 'Cliente Código',
+                      size: 14.0,
+                      color: PaletteColors.primaryColor,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  Container(
+                    width: width *0.26,
+                    child: TextCustom(
+                      text: 'Cliente Nome',
                       size: 14.0,
                       color: PaletteColors.primaryColor,
                       fontFamily: 'Nunito',
@@ -246,9 +317,24 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
                   ),
                   Container(
+                    width: width * 0.07,
+                    child: InputRegister(
+                      controller: _controllerClientCod,
+                      hint: '000',
+                      fonts: 14.0,
+                      keyboardType: TextInputType.number,
+                      width: width * 0.06,
+                      sizeIcon: 0.01,
+                      icons: Icons.height,
+                      colorBorder: PaletteColors.inputGrey,
+                      background: PaletteColors.inputGrey,
+                      onChanged: (value){},
+                    ),
+                  ),
+                  Container(
                     width: width * 0.22,
                     child: InputRegister(
-                      controller: _controllerClient,
+                      controller: _controllerClientName,
                       hint: 'cliente',
                       fonts: 14.0,
                       keyboardType: TextInputType.text,
@@ -486,10 +572,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   hovercolor: PaletteColors.white,
                                   date: item['data'],
                                   assembly: item['order'],
-                                  client: item['cliente'],
+                                  client: item['client'],
                                   makerOrder: ErrorIntModel(item,'makerOrder').toString(),
                                   winthor: ErrorStringModel(item,'whinthor'),
-                                  status: ErrorStringModel(item,'status'),
+                                  status: ErrorStringModel(item,'status')==''?TextConst.aguardando:ErrorStringModel(item,'status'),
                                   showIcons: show[index],
                                   onTap: () {
                                     setState(() {
@@ -501,11 +587,51 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     });
                                   },
                                   onPressedShow: (){
-                                    createList(item['produtos']);
+                                    createList(item['id']);
                                   },
                                   onPressedEdit: ()=>Navigator.push(context, MaterialPageRoute(builder: (_) => AssemblyScreen(id: item['id'],)),
                                   ),
-                                  onPressedDuplicated: (){},
+                                  onPressedDuplicated: (){
+                                    AlertModel().alert('AVISO!', 'Você deseja duplicar essa montagem?', PaletteColors.grey, PaletteColors.grey, context,
+                                        [
+                                          ButtonCustom(
+                                            onPressed: ()=>Navigator.pop(context),
+                                            text: 'Não',
+                                            widthCustom: 0.1,
+                                            heightCustom: 0.05,
+                                            colorBorder: Colors.red,
+                                            colorButton: Colors.red,
+                                            colorText: PaletteColors.white,
+                                          ),
+                                          ButtonCustom(
+                                            onPressed: (){
+
+                                              var ref = db.collection('teste').doc();
+                                              String id = ref.id;
+                                              Map<String, dynamic>? data = item.data() as Map<String, dynamic>?;
+                                              db.collection('assembly').doc(id).set(data!)
+                                                  .then((value) => db.collection('assembly').doc(id).update({
+                                                    'id':id,
+                                                    'order': '${order+1}',
+                                                    'makerOrder':makerOrder+1
+                                                  }).then((value) => db.collection('order').doc('order').update({
+                                                    'order':order+1,
+                                                    'makerOrder':makerOrder+1
+                                                  }).then((value) =>Navigator.pushReplacement(context, PageTransition(
+                                                    child: NavigationScreen(index: 2),
+                                                    type: PageTransitionType.fade,
+                                                    duration: Duration.zero
+                                                  )))));
+                                            },
+                                            text: 'Sim',
+                                            widthCustom: 0.1,
+                                            heightCustom: 0.05,
+                                            colorBorder: Colors.green,
+                                            colorButton: Colors.green,
+                                            colorText: Colors.white,
+                                          ),
+                                        ]);
+                                  },
                                 );
                               }
                           );
@@ -682,19 +808,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       return  ListHosesResume(
                         hovercolor: Colors.white,
                         qtd: listProdutos[index].qtd,
-                        machine: listProdutos[index].maquina,
-                        application: listProdutos[index].aplicacao,
-                        type: listProdutos[index].typeHose,
+                        machine: listProdutos[index].maker,
+                        application: listProdutos[index].application,
+                        type: listProdutos[index].hose,
                         lenght: listProdutos[index].size,
-                        t: listProdutos[index].type,
+                        t: listProdutos[index].length,
                         term1: listProdutos[index].term1,
                         term2: listProdutos[index].term2,
                         cape: listProdutos[index].cape,
                         pos: listProdutos[index].pos,
                         adap1: listProdutos[index].adap1,
                         adap2: listProdutos[index].adap2,
-                        an: listProdutos[index].anel,
-                        mo: listProdutos[index].mola,
+                        an: listProdutos[index].ring,
+                        mo: listProdutos[index].spring,
                       );
                     }
                 ),

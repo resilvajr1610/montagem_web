@@ -73,7 +73,6 @@ class Menu extends StatelessWidget {
                   icon: Icons.pending_actions_outlined,
                   select:  this.index==3?true:false,
                 ),
-
                 Spacer(),
                 Container(
                   alignment: Alignment.centerRight,

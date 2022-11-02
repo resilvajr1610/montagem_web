@@ -1,5 +1,5 @@
 
-import 'package:montagem_web/Models/save_list_model.dart';
+import 'package:montagem_web/Models/assembly_list_model.dart';
 import 'package:montagem_web/Screens/price_screen.dart';
 import 'package:montagem_web/Screens/production_screen.dart';
 

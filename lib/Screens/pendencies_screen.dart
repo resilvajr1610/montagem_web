@@ -219,7 +219,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                         makerOrder: ErrorIntModel(item,'makerOrder')!=0?ErrorIntModel(item,'makerOrder'):0000,
                                         whintor: ErrorStringModel(item,'whinthor'),
                                         date: ErrorStringModel(item, 'data'),
-                                        client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'cliente')}',
+                                        client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'client')}',
                                         priority: ErrorStringModel(item,'priority').toUpperCase(),
                                         status: ErrorStringModel(item,'status').toUpperCase(),
                                         showButtom: listModel[index].iconShow,

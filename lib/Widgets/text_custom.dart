@@ -11,13 +11,12 @@ class TextCustom extends StatelessWidget {
 
   TextCustom({
     required this.text,
-    required this.fontFamily,
+    this.fontFamily = 'Nunito',
     this.size = 16.0,
     this.color = PaletteColors.primaryColor,
     this.fontWeight = FontWeight.normal,
     this.textAlign = TextAlign.start,
     this.maxLines = 1
-
   });
 
   @override

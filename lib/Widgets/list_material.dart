@@ -13,6 +13,7 @@ class ListMaterial extends StatefulWidget {
   final String total;
   Color hovercolor;
   final bool enable;
+  final String screenscreen;
 
   ListMaterial({
     required this.hovercolor,
@@ -24,7 +25,8 @@ class ListMaterial extends StatefulWidget {
     required this.discount,
     required this.valueUnit,
     this.total='',
-    this.enable = true
+    this.enable = true,
+    required this.screenscreen
   });
 
   @override
@@ -105,7 +107,7 @@ class _ListMaterialState extends State<ListMaterial> {
 
                     ),
                   ),
-                  Container(
+                  widget.screenscreen=='production'?Container():Container(
                     width: width*0.07,
                     child: TextFormField(
                       enabled: widget.enable,
@@ -119,7 +121,7 @@ class _ListMaterialState extends State<ListMaterial> {
                       ),
                     ),
                   ),
-                  Container(
+                  widget.screenscreen=='production'?Container():Container(
                     width: width*0.07,
                     child: TextFormField(
                       enabled: widget.enable,
@@ -133,7 +135,7 @@ class _ListMaterialState extends State<ListMaterial> {
                       ),
                     ),
                   ),
-                  Container(
+                  widget.screenscreen=='production'?Container():Container(
                     width: width*0.07,
                     child: TextCustom(
                       text: widget.total,

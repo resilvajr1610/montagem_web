@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
-import '../Models/error_int_model.dart';
-import '../Models/product_model.dart';
-import '../Models/save_list_product.dart';
+import '../Models/controllers_assembly_list_model.dart';
+import '../Models/product_list_model.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
 import '../Widgets/list_material.dart';
@@ -31,14 +30,14 @@ class _ProductionScreenState extends State<ProductionScreen> {
 
   FirebaseFirestore db = FirebaseFirestore.instance;
   var _controllerDate = TextEditingController();
-  var _controllerNumberAssembly = TextEditingController();
   var _controllerWhintor = TextEditingController();
   var _controllerOrder = TextEditingController();
   var _controllerObservation = TextEditingController();
   var _controllerObservationProd = TextEditingController();
-  List <SaveListProduct> listProdPrecos = [];
-  List <ProductModel> listProdutos = [];
+  List <ProductListModel> _listProduct = [];
+  List <ControllersAssemblyListModel> listProdutos = [];
   String cod = '';
+  int indexGlobal = 0;
 
   _data() async {
     DocumentSnapshot snapshot = await db.collection("assembly").doc(widget.id).get();
@@ -51,28 +50,93 @@ class _ProductionScreenState extends State<ProductionScreen> {
       _controllerObservation = TextEditingController(text: data?["obs"]);
       _controllerObservationProd = TextEditingController(text: data?["obsProd"]??'');
       selectedPriority = data?['priority'];
-      List prodPrecos = data?['prodPrecos'];
-      List produtos = data?['produtos'];
-      for(var i=0;prodPrecos.length>i;i++){
-        var splited = prodPrecos[i].toString().split('#');
-        var desconto =  TextEditingController(text: splited[13]);
-        var valorUnitario =  TextEditingController(text: splited[15]);
 
-        listProdPrecos.add(
-            SaveListProduct(
-                numoriginal: '', cod: splited[1], codUnico: splited[3], ref: splited[5], qtd: splited[7], fabricante: splited[9], valorTabela: splited[11],
-                desconto: desconto, valorUnitario: valorUnitario, total: splited[17],item: splited[19],input: splited[21]
+      List codAssembly    = data?['codAssembly']??[];
+      List qtdAssembly    = data?['qtdAssembly']??[];
+      List hoseAssembly   = data?['hoseAssembly']??[];
+      List sizeAssembly   = data?['sizeAssembly']??[];
+      List lengthAssembly = data?['lengthAssembly']??[];
+      List term1Assembly  = data?['term1Assembly']??[];
+      List term2Assembly  = data?['term2Assembly']??[];
+      List capeAssembly   = data?['capeAssembly']??[];
+      List adap1Assembly  = data?['adap1Assembly']??[];
+      List adap2Assembly  = data?['adap2Assembly']??[];
+      List ringAssembly   = data?['ringAssembly']??[];
+      List springAssembly = data?['springAssembly']??[];
+      List makerAssembly  = data?['makerAssembly']??[];
+      List apliAssembly   = data?['apliAssembly']??[];
+      List pos            = data?['pos']??[];
+
+      for(var i=0;codAssembly.length>i;i++){
+
+        var splitedCod    = codAssembly[i].toString().split('#');
+        var splitedQtd    = qtdAssembly[i].toString().split('#');
+        var splitedHose   = hoseAssembly[i].toString().split('#');
+        var splitedLength = lengthAssembly[i].toString().split('#');
+        var splitedSize   = sizeAssembly[i].toString().split('#');
+        var splitedTerm1  = term1Assembly[i].toString().split('#');
+        var splitedTerm2  = term2Assembly[i].toString().split('#');
+        var splitedCape   = capeAssembly[i].toString().split('#');
+        var splitedAdap1  = adap1Assembly[i].toString().split('#');
+        var splitedAdap2  = adap2Assembly[i].toString().split('#');
+        var splitedRing   = ringAssembly[i].toString().split('#');
+        var splitedSpring = springAssembly[i].toString().split('#');
+        var splitedMaker  = makerAssembly[i].toString().split('#');
+        var splitedApli   = apliAssembly[i].toString().split('#');
+        var splitedPos    = pos[i].toString().split('#');
+        listProdutos.add(
+            ControllersAssemblyListModel(
+              cod: splitedCod[1], qtd: splitedQtd[1], number: '${i+1}', hose: splitedHose[1], size: splitedSize[1], length: splitedLength[1],
+              term1: splitedTerm1[1], term2: splitedTerm2[1],cape: splitedCape[1], pos: splitedPos[1], adap1: splitedAdap1[1], adap2: splitedAdap2[1],
+              ring: splitedRing[1], spring: splitedSpring[1], maker: splitedMaker[1],application: splitedApli[1],
             )
         );
-      }
+        List codProd        = data?['codProd$i']??[];
+        List refProd        = data?['refProd$i']??[];
+        List qtdProd        = data?['qtdProd$i']??[];
+        List fabProd        = data?['fabProd$i']??[];
+        List valueTableProd = data?['valueTableProd$i']??[];
+        List totalProd      = data?['totalProd$i']??[];
+        List itemProd       = data?['itemProd$i']??[];
+        List inputProd      = data?['inputProd$i']??[];
+        List discountProd   = data?['discountProd$i']??[];
+        List valueUnitProd  = data?['valueUnitProd$i']??[];
 
-      for(var i=0;produtos.length>i;i++){
-        var splited = produtos[i].toString().split('#');
-        listProdutos.add(
-            ProductModel(
-                cod: splited[1], qtd: splited[5], number: '${i+1}', typeHose: splited[11], size: splited[13], type: splited[15],
-                term1: splited[21], term2: splited[27],cape: splited[33], pos: splited[39], adap1: splited[41], adap2: splited[47], anel: splited[53], mola: splited[55])
-        );
+        for (var index = 0; codProd.length > index; index++) {
+          var splitedCod        = codProd[index].toString().split('#');
+          var splitedUnit       = codProd[index].toString().split('#');
+          var splitedRef        = refProd[index].toString().split('#');
+          var splitedQtd        = qtdProd[index].toString().split('#');
+          var splitedFab        = fabProd[index].toString().split('#');
+          var splitedValueTable = valueTableProd[index].toString().split('#');
+          var splitedTotal      = totalProd[index].toString().split('#');
+          var splitedItem       = itemProd[index].toString().split('#');
+          var splitedInput      = inputProd[index].toString().split('#');
+          var splitedDiscount   = discountProd[index].toString().split('#');
+          var splitedValueUnit  = valueUnitProd[index].toString().split('#');
+
+
+          var controllerValueUnit = TextEditingController(text: splitedValueUnit[1]);
+          var controllerDiscount = TextEditingController(text: splitedDiscount[1]);
+
+          _listProduct.add(
+              ProductListModel(
+                  numoriginal: '',
+                  cod: splitedCod[1],
+                  codUnit: splitedUnit[1],
+                  ref: splitedRef[1],
+                  qtd: splitedQtd[1],
+                  fab: splitedFab[1],
+                  valueTable: splitedValueTable[1],
+                  controllerDiscount: controllerDiscount,
+                  controllerValueUnit: controllerValueUnit,
+                  total: splitedTotal[1],
+                  item: splitedItem[1],
+                  input: splitedInput[1],
+                  indexAssembly: i
+              )
+          );
+        }
       }
       setState(() {
         cod = listProdutos[0].cod;
@@ -83,7 +147,6 @@ class _ProductionScreenState extends State<ProductionScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.id);
     _data();
   }
 
@@ -262,12 +325,10 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorBorder: PaletteColors.primaryColor,
                             font: 'Nunito',
                             onPressed: (){
-                              if(_controllerWhintor.text.length==8){
                                 FirebaseFirestore.instance.collection('assembly').doc(widget.id).update({
                                   'status':TextConst.finalizado,
                                   'obsProd':_controllerObservationProd.text
                                 }).then((value) => Navigator.pushReplacement(context,MaterialPageRoute(builder: (_) => NavigationScreen(index: 3))));
-                              }
                             }
                           ),
                           SizedBox(width: width *0.06)
@@ -439,21 +500,22 @@ class _ProductionScreenState extends State<ProductionScreen> {
                       Container(
                         height: heigth*0.4,
                         child: ListView.builder(
-                          itemCount: listProdPrecos.length,
+                          itemCount: _listProduct.length,
                           itemBuilder: (context,index){
-                            return cod == listProdPrecos[index].codUnico
-                              ?ListMaterial(
+                            return  indexGlobal != _listProduct[index].indexAssembly?Container():
+                              ListMaterial(
+                                screenscreen: 'production',
                                 enable: false,
                                 hovercolor: Colors.white,
-                                cod: listProdPrecos[index].codUnico.toUpperCase(),
-                                ref: listProdPrecos[index].ref.toUpperCase(),
-                                qtd: listProdPrecos[index].qtd,
-                                manufacturer: listProdPrecos[index].fabricante.toUpperCase(),
+                                cod: _listProduct[index].codUnit.toUpperCase(),
+                                ref: _listProduct[index].ref.toUpperCase(),
+                                qtd: _listProduct[index].qtd,
+                                manufacturer: _listProduct[index].fab.toUpperCase(),
                                 valuetable: '',
-                                discount: listProdPrecos[index].desconto,
-                                valueUnit: listProdPrecos[index].valorUnitario,
+                                discount: _listProduct[index].controllerDiscount,
+                                valueUnit: _listProduct[index].controllerValueUnit,
                                 total:'' ,
-                              ):Container();
+                              );
                           }
                         ),
                       ),
@@ -626,22 +688,21 @@ class _ProductionScreenState extends State<ProductionScreen> {
                               cod: listProdutos[index].cod.toUpperCase(),
                               qtd: listProdutos[index].qtd.toUpperCase(),
                               number: listProdutos[index].number,
-                              type: listProdutos[index].typeHose.toUpperCase(),
+                              type: listProdutos[index].hose.toUpperCase(),
                               lenght: listProdutos[index].size.toUpperCase(),
-                              t: listProdutos[index].type.toUpperCase(),
+                              t: listProdutos[index].length.toUpperCase(),
                               term1: listProdutos[index].term1.toUpperCase(),
                               term2: listProdutos[index].term2.toUpperCase(),
                               cape: listProdutos[index].cape.toUpperCase(),
                               pos: listProdutos[index].pos.toUpperCase(),
                               adap1: listProdutos[index].adap1.toUpperCase(),
                               adap2: listProdutos[index].adap2.toUpperCase(),
-                              an: listProdutos[index].anel.toUpperCase(),
-                              mo: listProdutos[index].mola.toUpperCase(),
+                              an: listProdutos[index].ring.toUpperCase(),
+                              mo: listProdutos[index].spring.toUpperCase(),
                               onTap: (){
                                 setState(() {
                                   cod = listProdutos[index].cod;
-                                  print('cod');
-                                  print(cod);
+                                  indexGlobal = index;
                                 });
                               },
                             );

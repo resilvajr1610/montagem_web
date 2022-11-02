@@ -1,26 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Models/pdf_model.dart';
-import 'package:montagem_web/Models/save_list_model.dart';
+import 'package:montagem_web/Models/assembly_list_model.dart';
 import 'package:montagem_web/Widgets/list_client.dart';
 import 'package:montagem_web/Widgets/list_material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../Models/pdf_tabela_model.dart';
-import '../Models/save_list_product.dart';
+import '../Models/product_list_model.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
 import '../services/pdf_model.dart';
 
 class PriceScreen extends StatefulWidget {
-  final List<SaveListModel> saveListModel;
-  final List<SaveListProduct> saveListProduct;
+  final List<AssemblyListModel> saveListModel;
+  final List<ProductListModel> saveListProduct;
   final String idAssembly;
   final String client;
   final String codClient;
   final String order;
   final String data;
-  final String filial;
+  final String subsidiary;
 
-  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order,required this.data, required this.filial});
+  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order,required this.data, required this.subsidiary});
 
   @override
   State<PriceScreen> createState() => _PriceScreenState();
@@ -38,7 +39,7 @@ class _PriceScreenState extends State<PriceScreen> {
   var _controllerDiscuntOther = TextEditingController(text: '');
   var codProduct='';
   double desconto=0.0;
-  List<SaveListProduct> listGetProduct=[];
+  List<ProductListModel> listGetProduct=[];
   String valorTabela = 'R\$ 0,00';
   String descAcrescentado = 'R\$ 0,00';
   String valorFinal = 'R\$ 0,00';
@@ -53,58 +54,78 @@ class _PriceScreenState extends State<PriceScreen> {
     super.initState();
     setState(() {
       codProduct=widget.saveListModel[0].cod.text;
+      dataFirebase();
       _controllerNumberAssembly = TextEditingController(text: widget.order);
       refreshValues();
     });
   }
 
+  dataFirebase()async{
+    DocumentSnapshot snapshot = await db.collection('assembly').doc(widget.idAssembly).get();
+    if(snapshot!=null){
+      setState(() {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+          selectedPriority = data?['priority']??'1 - Cliente Balcão';
+          _controllerWhintor = TextEditingController(text: data?['whinthor']??'');
+      });
+    }
+  }
+  
   descontos(){
     double desc = double.parse(_controllerDiscount.text.replaceAll(',','.'));
-    double descTotal = (double.parse(widget.saveListModel[indexGlobal].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
-    double liquido = double.parse(widget.saveListModel[indexGlobal].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
+    double descTotal = (double.parse(widget.saveListModel[indexGlobal].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
+    double liquido = double.parse(widget.saveListModel[indexGlobal].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
     double uni = liquido/double.parse(widget.saveListProduct[indexGlobal].qtd);
 
     setState(() {
       valorFinal = 'R\$ ${liquido.toStringAsFixed(2).replaceAll('.', ',')}';
-      valorTabela = widget.saveListModel[indexGlobal].valorTabela;
+      valorTabela = widget.saveListModel[indexGlobal].valueTable;
       descAcrescentado = 'R\$ ${descTotal.toStringAsFixed(2).replaceAll('.', ',')}';
-      String unitario = 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
       listGetProduct.clear();
 
       for (var i = 0; widget.saveListProduct.length > i; i++){
 
-        double descTotalPecas = (double.parse(widget.saveListProduct[i].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
-        double liquidoPecas = double.parse(widget.saveListProduct[i].valorTabela.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
+        double descTotalPecas = (double.parse(widget.saveListProduct[i].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
+        double liquidoPecas = double.parse(widget.saveListProduct[i].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
         double uniPecas = liquido/double.parse(widget.saveListProduct[i].qtd);
 
           listGetProduct.add(
-              SaveListProduct(
-                  numoriginal: widget.saveListProduct[i].numoriginal, cod: widget.saveListProduct[i].cod, codUnico: widget.saveListProduct[i].codUnico, ref: widget.saveListProduct[i].ref,
-                  qtd: widget.saveListProduct[i].qtd, fabricante: widget.saveListProduct[i].fabricante,valorTabela: widget.saveListProduct[i].valorTabela,
-                  desconto: TextEditingController(text: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}'),valorUnitario: TextEditingController(text: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}'),
-                  total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}',item: widget.saveListProduct[i].item,input: widget.saveListProduct[i].input
+              ProductListModel(
+                  numoriginal: widget.saveListProduct[i].numoriginal, cod: widget.saveListProduct[i].cod, codUnit: widget.saveListProduct[i].codUnit, ref: widget.saveListProduct[i].ref,
+                  qtd: widget.saveListProduct[i].qtd, fab: widget.saveListProduct[i].fab,valueTable: widget.saveListProduct[i].valueTable,
+                  controllerDiscount: TextEditingController(text: 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}'),controllerValueUnit: TextEditingController(text: 'R\$ ${uniPecas.toStringAsFixed(2).replaceAll('.', ',')}'),
+                  total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}',item: widget.saveListProduct[i].item,input: widget.saveListProduct[i].input,indexAssembly: 0
               )
           );
       }
     });
-
   }
 
   refreshValues(){
-      for (var i = 0;i < widget.saveListProduct.length; i++) {
-        listGetProduct.add(widget.saveListProduct[i]);
+    listGetProduct.clear();
+    double total = 0.0;
+    for (var i = 0;i < widget.saveListProduct.length; i++) {
+      listGetProduct.add(widget.saveListProduct[i]);
+    }
+    for (var i = 0;i < listGetProduct.length; i++){
+      if(codProduct == listGetProduct[i].codUnit){
+        total =  double.parse(listGetProduct[i].valueTable.toString().replaceAll(',', '.'))+total;
       }
+    }
     setState(() {
-      valorTabela = widget.saveListModel[0].valorTabela;
-      valorFinal = widget.saveListModel[0].valorTabela;
+      valorTabela = 'R\$ ${total.toStringAsFixed(2)}';
+      valorFinal =  'R\$ ${total.toStringAsFixed(2)}';
+      widget.saveListModel[indexGlobal].valueTable = valorTabela;
+      widget.saveListModel[indexGlobal].total = valorFinal;
     });
+
 }
 
   _createPdfGeral()async{
 
     var nMontagem  = widget.order;
     var date   = widget.data;
-    var filial   = widget.filial;
+    var filial   = widget.subsidiary;
     var cliente   = '${widget.codClient} - ${widget.client}';
 
     PdfDocument document = PdfDocument();
@@ -128,7 +149,7 @@ class _PriceScreenState extends State<PriceScreen> {
       top = top+30;
       double valorQtd = double.parse(widget.saveListModel[i].qtd.text);
       double valorTotal = double.parse(widget.saveListModel[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
-      double desc = double.parse(widget.saveListModel[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
+      double desc = double.parse(widget.saveListModel[i].discount.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
       brutoGeral = brutoGeral + valorTotal;
       descGeral = desc + descGeral;
       liquidoGeral = brutoGeral-descGeral;
@@ -177,7 +198,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
     var nMontagem  = widget.order;
     var date   = widget.data;
-    var filial   = widget.filial;
+    var filial   = widget.subsidiary;
     var cliente   = '${widget.codClient} - ${widget.client}';
 
     PdfDocument document = PdfDocument();
@@ -200,10 +221,10 @@ class _PriceScreenState extends State<PriceScreen> {
 
     List<PDFTabelaModel> list=[];
     for(var i=0; widget.saveListProduct.length>i;i++){
-     if(widget.saveListProduct[i].codUnico==codProduct){
+     if(widget.saveListProduct[i].codUnit==codProduct){
        double valorQtd = double.parse(widget.saveListProduct[i].qtd);
        double valorTotal = double.parse(widget.saveListProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
-       double desc = double.parse(widget.saveListProduct[i].desconto.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
+       double desc = double.parse(widget.saveListProduct[i].controllerDiscount.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
        brutoGeral = brutoGeral + valorTotal;
        descGeral = desc + descGeral;
        liquidoGeral = brutoGeral-descGeral;
@@ -213,10 +234,10 @@ class _PriceScreenState extends State<PriceScreen> {
                cod: widget.saveListProduct[i].cod,
                ref: widget.saveListProduct[i].ref,
                qtd: widget.saveListProduct[i].qtd,
-               fab: widget.saveListProduct[i].fabricante,
-               valorTabela: widget.saveListProduct[i].valorTabela,
-               desconto: widget.saveListProduct[i].desconto.text,
-               valorUnitario: widget.saveListProduct[i].valorUnitario.text,
+               fab: widget.saveListProduct[i].fab,
+               valorTabela: widget.saveListProduct[i].valueTable,
+               desconto: widget.saveListProduct[i].controllerDiscount.text,
+               valorUnitario: widget.saveListProduct[i].controllerValueUnit.text,
                total: widget.saveListProduct[i].total
            )
        );
@@ -571,18 +592,19 @@ class _PriceScreenState extends State<PriceScreen> {
                       child: ListView.builder(
                         itemCount: listGetProduct.length,
                         itemBuilder: (context,index){
-                          return  codProduct == listGetProduct[index].codUnico
-                              ?ListMaterial(
-                                hovercolor: Colors.white,
-                                cod: listGetProduct[index].cod,
-                                ref: listGetProduct[index].ref.toUpperCase(),
-                                qtd: listGetProduct[index].qtd,
-                                manufacturer: listGetProduct[index].fabricante.toUpperCase(),
-                                valuetable: 'R\$ ${listGetProduct[index].valorTabela.replaceAll('.', ',')}',
-                                discount: listGetProduct[index].desconto,
-                                valueUnit: listGetProduct[index].valorUnitario,
-                                total:'${listGetProduct[index].total.replaceAll('.', ',')}' ,
-                              ):Container();
+                          return  indexGlobal != listGetProduct[index].indexAssembly?Container():
+                            ListMaterial(
+                              screenscreen:'seller',
+                              hovercolor: Colors.white,
+                              cod: listGetProduct[index].cod,
+                              ref: listGetProduct[index].ref.toUpperCase(),
+                              qtd: listGetProduct[index].qtd,
+                              manufacturer: listGetProduct[index].fab.toUpperCase(),
+                              valuetable: 'R\$ ${listGetProduct[index].valueTable.replaceAll('.', ',')}',
+                              discount: listGetProduct[index].controllerDiscount,
+                              valueUnit: listGetProduct[index].controllerValueUnit,
+                              total:'${listGetProduct[index].total.replaceAll('.', ',')}' ,
+                            );
                         }
                       ),
                     ),
@@ -786,7 +808,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                   'makerOrder' : makerOrder+1
                                 }).then((value) => db.collection('order').doc('order').update({
                                   'makerOrder' : makerOrder+1
-                                }));
+                                })).then((value) => Navigator.pushReplacementNamed(context, '/home'));
                               }
                             }
                           },
@@ -919,17 +941,16 @@ class _PriceScreenState extends State<PriceScreen> {
                             return ListClient(
                               hovercolor: Colors.white,
                               qtd: widget.saveListModel[index].qtd.text,
-                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].descricao} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
-                              valuetable: '${widget.saveListModel[index].valorTabela}',
-                              discount: widget.saveListModel[index].desconto,
-                              valueUnit: widget.saveListModel[index].valorUnitario,
-                              total:'${widget.saveListModel[index].total}',
+                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].diameterHose} ${widget.saveListModel[index].pressureHose} ${widget.saveListModel[index].descTerm1} / ${widget.saveListModel[index].descTerm2} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
+                              valuetable: valorTabela,
+                              discount: widget.saveListModel[index].discount,
+                              valueUnit: widget.saveListModel[index].valueUnit,
+                              total: valorFinal,
                               onTap: (){
                                 setState(() {
                                   codProduct = widget.saveListModel[index].cod.text;
                                   indexGlobal = index;
-                                    valorTabela = widget.saveListModel[index].valorTabela;
-                                    valorFinal = widget.saveListModel[index].valorTabela;
+                                  refreshValues();
                                 });
                               },
                             );
