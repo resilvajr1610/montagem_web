@@ -223,7 +223,7 @@ class _PriceScreenState extends State<PriceScreen> {
       list.add(
           PDFModel(
               qtd: widget.saveListModel[i].qtd.text,
-              descricao:  'Mang.(${widget.saveListModel[indexGlobal].cod.text}) ${widget.saveListModel[indexGlobal].diameterHose} ${widget.saveListModel[indexGlobal].pressureHose} ${widget.saveListModel[indexGlobal].descTerm1} / ${widget.saveListModel[indexGlobal].descTerm2} x ${double.parse(widget.saveListModel[indexGlobal].comp.text.isEmpty?'0':widget.saveListModel[indexGlobal].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[indexGlobal].maker.text} - ${widget.saveListModel[indexGlobal].application.text}',
+              descricao:  'Mang.(${widget.saveListModel[indexGlobal].cod.text}) ${widget.saveListModel[indexGlobal].diameterHose} ${widget.saveListModel[indexGlobal].pressureHose} ${widget.saveListModel[indexGlobal].descTerm1} / ${widget.saveListModel[indexGlobal].descTerm2} x ${double.parse(widget.saveListModel[indexGlobal].comp.text.isEmpty?'0':widget.saveListModel[indexGlobal].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[indexGlobal].maker.text} - ${widget.saveListModel[indexGlobal].application.text}'.replaceAll("Â", '').replaceAll("null", ''),
               valorTabela: valueTable,
               desconto: discount,
               valorUnitario: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}',
@@ -1014,7 +1014,7 @@ class _PriceScreenState extends State<PriceScreen> {
                             return ListClient(
                               hovercolor: Colors.white,
                               qtd: widget.saveListModel[index].qtd.text,
-                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].diameterHose} ${widget.saveListModel[index].pressureHose} ${widget.saveListModel[index].descTerm1} / ${widget.saveListModel[index].descTerm2} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
+                              description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].diameterHose} ${widget.saveListModel[index].pressureHose} ${widget.saveListModel[index].descTerm1} / ${widget.saveListModel[index].descTerm2} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}'.replaceAll("Â", '').replaceAll("null", ''),
                               valuetable: valueTable,
                               discount: widget.saveListModel[index].discount,
                               onChangedDiscount: (value){
