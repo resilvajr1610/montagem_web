@@ -514,6 +514,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                                 valuetable: '',
                                 discount: _listProduct[index].controllerDiscount,
                                 valueUnit: _listProduct[index].controllerValueUnit,
+                                onChangeDiscount: (){},
+                                onChangeValueUnit: (){},
                                 total:'' ,
                               );
                           }
@@ -580,16 +582,6 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             width: width * 0.04,
                             child: TextCustom(
                               text: 'Compri',
-                              size: 14.0,
-                              color: PaletteColors.primaryColor,
-                              fontFamily: 'Nunito',
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          Container(
-                            width: width * 0.02,
-                            child: TextCustom(
-                              text: 'T',
                               size: 14.0,
                               color: PaletteColors.primaryColor,
                               fontFamily: 'Nunito',
@@ -689,8 +681,8 @@ class _ProductionScreenState extends State<ProductionScreen> {
                               qtd: listProdutos[index].qtd.toUpperCase(),
                               number: listProdutos[index].number,
                               type: listProdutos[index].hose.toUpperCase(),
-                              lenght: listProdutos[index].size.toUpperCase(),
-                              t: listProdutos[index].length.toUpperCase(),
+                              lenght: listProdutos[index].length.toUpperCase(),
+                              // t: listProdutos[index].size.toUpperCase(),
                               term1: listProdutos[index].term1.toUpperCase(),
                               term2: listProdutos[index].term2.toUpperCase(),
                               cape: listProdutos[index].cape.toUpperCase(),

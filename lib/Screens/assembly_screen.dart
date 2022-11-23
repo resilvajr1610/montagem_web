@@ -61,8 +61,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   }
 
   _dataClient(String codcli) async {
-    DocumentSnapshot snapshot =
-        await db.collection("clientes").doc(codcli).get();
+    DocumentSnapshot snapshot = await db.collection("clientes").doc(codcli).get();
     Map<String, dynamic>? dataMap = snapshot.data() as Map<String, dynamic>?;
     setState(() {
       _controllerClientName = TextEditingController(text: dataMap?['cliente']);
@@ -258,9 +257,13 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     double totalTabela = 0;
     double uni = 0;
 
-    totalTabela = (double.parse(_listAssembly[index].hosePrice) + double.parse(_listAssembly[index].term1Price) +double.parse(_listAssembly[index].term2Price)
-        +double.parse(_listAssembly[index].capePrice) +double.parse(_listAssembly[index].adap1Price) +double.parse(_listAssembly[index].adap2Price)) *int.parse(_listAssembly[index].qtd.text);
-    uni = totalTabela / int.parse(_listAssembly[index].qtd.text);
+    for(var i=0; i<_listProduct.length;i++){
+      totalTabela = double.parse(_listProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'))+totalTabela;
+      uni = totalTabela;
+    }
+
+    totalTabela = totalTabela * int.parse(_listAssembly[index].qtd.text);
+
     setState(() {
       _listAssembly[index].valueTable ='R\$ ${totalTabela.toStringAsFixed(2).replaceAll('.', ',')}';
       _listAssembly[index].valueUnit.text ='R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}';
@@ -347,7 +350,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       _controllerAffiliation = TextEditingController(text: data?['subsidiary'] ?? '');
       selectedPriority = data?['priority']??'1 - Cliente Balcão';
       whinthor =data?['whinthor']??'0';
-      status = data?['status']??TextConst.aguardando;
+      status = data?['status']??TextConst.orcamento;
       id = data?['id'];
       order = int.parse(data?['order']);
 
@@ -605,7 +608,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
         if (numberSequence != null) {
           _listAssembly[i].letter1 = listLetter[numberSequence <= 100 ? 0 : numberSequence - 100];
           _listAssembly[i].letter2 = listLetter[(numberSequence / 100).round()];
-          _listAssembly[i].cod = TextEditingController(text: '${_listAssembly[i].letter1}${_listAssembly[i].letter2}${numberSequence < 10 ? 0 : ''}${(numberSequence+i)} - AA');
+          _listAssembly[i].cod = TextEditingController(text: '${_listAssembly[i].letter1}${_listAssembly[i].letter2}${numberSequence < 10 ? 0 : ''}${(numberSequence+i)} - A');
           db.collection('order').doc('codSequence').set({
             'letterFirst': _listAssembly[i].letter1.toUpperCase(),
             'letterSecond': _listAssembly[i].letter2.toUpperCase(),
@@ -944,9 +947,9 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                   ),
                                 ),
                                 Container(
-                                  width: width * 0.05,
+                                  width: width * 0.047,
                                   child: TextCustom(
-                                    text: 'Tipo Mang',
+                                    text: 'Compri',
                                     size: 14.0,
                                     color: PaletteColors.primaryColor,
                                     fontFamily: 'Nunito',
@@ -954,9 +957,9 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                   ),
                                 ),
                                 Container(
-                                  width: width * 0.047,
+                                  width: width * 0.05,
                                   child: TextCustom(
-                                    text: 'Compri',
+                                    text: 'Tipo Mang',
                                     size: 14.0,
                                     color: PaletteColors.primaryColor,
                                     fontFamily: 'Nunito',
@@ -1170,6 +1173,21 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                               ),
                                             ),
                                             Container(
+                                              width: width * 0.04,
+                                              child: InputRegister(
+                                                controller: _listAssembly[index].comp,
+                                                hint: '0,00',
+                                                fonts: 12.0,
+                                                keyboardType: TextInputType.number,
+                                                width: width * 0.04,
+                                                sizeIcon: 0.01,
+                                                icons: Icons.height,
+                                                colorBorder: PaletteColors.inputGrey,
+                                                background: PaletteColors.inputGrey,
+                                                onChanged: (value)=>setState(()=>indexGlobal = index),
+                                              ),
+                                            ),
+                                            Container(
                                               width: width * 0.05,
                                               child: InputRegister(
                                                 controller: _listAssembly[index].hose,
@@ -1193,21 +1211,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                     }
                                                   });
                                                 },
-                                              ),
-                                            ),
-                                            Container(
-                                              width: width * 0.04,
-                                              child: InputRegister(
-                                                controller: _listAssembly[index].comp,
-                                                hint: '0,00',
-                                                fonts: 12.0,
-                                                keyboardType: TextInputType.number,
-                                                width: width * 0.04,
-                                                sizeIcon: 0.01,
-                                                icons: Icons.height,
-                                                colorBorder: PaletteColors.inputGrey,
-                                                background: PaletteColors.inputGrey,
-                                                onChanged: (value)=>setState(()=>indexGlobal = index),
                                               ),
                                             ),
                                             Container(
@@ -1398,7 +1401,37 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                 icons: Icons.height,
                                                 colorBorder: PaletteColors.inputGrey,
                                                 background: PaletteColors.inputGrey,
-                                                onChanged: (value)=>setState(()=>indexGlobal = index),
+                                                onChanged: (value)async{
+                                                  setState(()=>indexGlobal = index);
+                                                  if(value.toString()=='X' || value.toString()=='x'){
+                                                    var data = await db.collection('produtos').where('numoriginal',isEqualTo: _listAssembly[indexGlobal].hose.text).get();
+                                                    List listFire = data.docs;
+                                                    DocumentSnapshot item = listFire[0];
+                                                    print('item[qtdmola]');
+                                                    print(item['qtdmola']);
+                                                    if(item['qtdmola']!=null && item['qtdmola']!='null' && item['qtdmola']!=''){
+                                                      if(item['codmola']!=null && item['codmola']!='null' && item['codmola']!='' ){
+                                                        _listProduct.add(
+                                                            ProductListModel(
+                                                                numoriginal:item['codmola'],
+                                                                cod: item['codmola'],
+                                                                codUnit: _listAssembly[indexGlobal].cod.text,
+                                                                ref: item['codmola'].toString(),
+                                                                qtd: '${(double.parse(item['qtdmola'].toString().replaceAll(',', '.'))*int.parse(_listAssembly[indexGlobal].qtd.text)*int.parse(_listAssembly[indexGlobal].comp.text.replaceAll(',','.'))).toString().replaceAll('.', ',')}',
+                                                                fab: 'mola',
+                                                                valueTable:'0,00',
+                                                                controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                                controllerValueUnit: TextEditingController(text: 'R\$ 0,00'),
+                                                                total:'R\$ 0,00',
+                                                                item: 'mola',
+                                                                input: 'mola',
+                                                                indexAssembly: indexGlobal
+                                                            )
+                                                        );
+                                                      }
+                                                    }
+                                                  }
+                                                }
                                               ),
                                             ),
                                           ],
@@ -1420,13 +1453,30 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                 return ListTile(
                                                   title: Text('NUMERO ORIGINAL: ${item['numoriginal']},CÓDIGO: ${item['codprod']}, MARCA: ${item['marca']}, ESTOQUE 1: ${item['estf1']}, ESTOQUE 2: ${item['estf2']}, PREÇO: ${item['preco']}'),
                                                   onTap: () => setState((){
-                                                    var name = '';
                                                     var input = '';
                                                     if (_listAssembly[indexGlobal].term1.text.isNotEmpty && valueProd ==_listAssembly[indexGlobal].term1.text) {
                                                       _listAssembly[indexGlobal].term1 = TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].term1Price = item['preco'];
                                                       _listAssembly[indexGlobal].term1Brand = item['marca'];
                                                       _listAssembly[indexGlobal].descTerm1 ='${item['tipoterminal']}';
+                                                      input = _listAssembly[indexGlobal].term1.text;
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd:_listAssembly[indexGlobal].qtd.text,
+                                                              fab: item['marca'],
+                                                              valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                              item: 'term1',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                       if(item['codoring']!='null'&& item['codoring']!=null){
                                                         setState(() {
                                                           _listAssembly[indexGlobal].ring = TextEditingController(text: 'X');
@@ -1442,10 +1492,10 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                                   ref: data['numoriginal'].toString(),
                                                                   qtd: _listAssembly[indexGlobal].qtd.text,
                                                                   fab: data['marca'],
-                                                                  valueTable:'${(double.parse(data['preco']) *(name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
+                                                                  valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
                                                                   controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
                                                                   controllerValueUnit: TextEditingController(text: 'R\$ ${data['preco'].toString().replaceAll('.', ',')}'),
-                                                                  total: 'R\$ ${(double.parse(data['preco']) * (name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
+                                                                  total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
                                                                   item: 'anel',
                                                                   input: data['informacoestecnicas'],
                                                                   indexAssembly: indexGlobal
@@ -1453,16 +1503,35 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                           );
                                                         });
                                                       }
-                                                      name = 'term1';
-                                                      input = _listAssembly[indexGlobal].term1.text;
                                                     }
                                                     if (_listAssembly[indexGlobal].term2.text.isNotEmpty && valueProd == _listAssembly[indexGlobal].term2.text) {
                                                       _listAssembly[indexGlobal].term2 =TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].term2Price = item['preco'];
                                                       _listAssembly[indexGlobal].term2Brand = item['marca'];
                                                       _listAssembly[indexGlobal].descTerm2 ='${item['tipoterminal']}';
-                                                      name = 'term2';
+                                                      if(_listAssembly[indexGlobal].term1.text == _listAssembly[indexGlobal].term2.text){
+                                                        _listProduct[_listProduct.length-1].qtd = (int.parse(_listProduct[_listProduct.length-1].qtd)*2).toString();
+                                                        _listProduct[_listProduct.length-1].valueTable = (double.parse(_listProduct[_listProduct.length-1].valueTable.replaceAll("R\$ ", ''))*2).toString();
+                                                        _listProduct[_listProduct.length-1].total = (double.parse(_listProduct[_listProduct.length-1].total.replaceAll("R\$ ", ''))*2).toString();
+                                                      }
                                                       input = _listAssembly[indexGlobal].term2.text;
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd:_listAssembly[indexGlobal].term1.text == _listAssembly[indexGlobal].term2.text?'0':_listAssembly[indexGlobal].qtd.text,
+                                                              fab: item['marca'],
+                                                              valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                              item: 'term2',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                       if(item['codoring']!='null'&& item['codoring']!=null){
                                                         setState(() {
                                                           _listAssembly[indexGlobal].ring = TextEditingController(text: 'X');
@@ -1470,75 +1539,132 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                         Future.delayed(Duration.zero,()async{
                                                           DocumentSnapshot snapshot = await db.collection('produtos').doc(item['codoring']).get();
                                                           Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-                                                          _listProduct.add(
-                                                              ProductListModel(
-                                                                  numoriginal:data!['numoriginal'],
-                                                                  cod: data['codprod'],
-                                                                  codUnit: _listAssembly[indexGlobal].cod.text,
-                                                                  ref: data['numoriginal'].toString(),
-                                                                  qtd: _listAssembly[indexGlobal].qtd.text,
-                                                                  fab: data['marca'],
-                                                                  valueTable:'${(double.parse(data['preco']) *(name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
-                                                                  controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
-                                                                  controllerValueUnit: TextEditingController(text: 'R\$ ${data['preco'].toString().replaceAll('.', ',')}'),
-                                                                  total: 'R\$ ${(double.parse(data['preco']) * (name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
-                                                                  item: 'anel',
-                                                                  input: data['informacoestecnicas'],
-                                                                  indexAssembly: indexGlobal
-                                                              )
-                                                          );
+                                                          if(_listProduct[_listProduct.length-2].item=='anel'){
+                                                            setState(() {
+                                                              _listProduct[_listProduct.length-2].qtd = '${int.parse(_listProduct[_listProduct.length-2].qtd)*2}';
+                                                              _listProduct[_listProduct.length-2].valueTable = '${double.parse(_listProduct[_listProduct.length-2].valueTable.replaceAll(',', '.').replaceAll('R\$ ', ''))*2}';
+                                                              _listProduct[_listProduct.length-2].total = '${double.parse(_listProduct[_listProduct.length-2].total.replaceAll(',', '.').replaceAll('R\$ ', ''))*2}';
+                                                            });
+                                                          }else{
+                                                            _listProduct.add(
+                                                                ProductListModel(
+                                                                    numoriginal:data!['numoriginal'],
+                                                                    cod: data['codprod'],
+                                                                    codUnit: _listAssembly[indexGlobal].cod.text,
+                                                                    ref: data['numoriginal'].toString(),
+                                                                    qtd: _listAssembly[indexGlobal].qtd.text,
+                                                                    fab: data['marca'],
+                                                                    valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
+                                                                    controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                                    controllerValueUnit: TextEditingController(text: 'R\$ ${data['preco'].toString().replaceAll('.', ',')}'),
+                                                                    total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                                    item: 'anel',
+                                                                    input: data['informacoestecnicas'],
+                                                                    indexAssembly: indexGlobal
+                                                                )
+                                                            );
+                                                          }
                                                         });
+                                                      }
+                                                      if(_listAssembly[indexGlobal].term1.text == _listAssembly[indexGlobal].term2.text){
+                                                        _listProduct[_listProduct.length-1].qtd = '0';
                                                       }
                                                     }
                                                     if (_listAssembly[indexGlobal].cape.text.isNotEmpty && valueProd == _listAssembly[indexGlobal].cape.text) {
                                                       _listAssembly[indexGlobal].cape =TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].capePrice = item['preco'];
                                                       _listAssembly[indexGlobal].capeBrand = item['marca'];
-                                                      name = 'case1';
                                                       input = _listAssembly[indexGlobal].cape.text;
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd: (double.parse(_listAssembly[indexGlobal].qtd.text)*2.0).toString(),
+                                                              fab: item['marca'],
+                                                              valueTable:'${(double.parse(item['preco']) *(int.parse(_listAssembly[indexGlobal].qtd.text)*2)).toStringAsFixed(2).replaceAll('.', ',')}',
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${(double.parse(item['preco']) * (int.parse(_listAssembly[indexGlobal].qtd.text)*2)).toStringAsFixed(2).replaceAll('.', ',')}',
+                                                              item: 'case1',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                     }
                                                     if (_listAssembly[indexGlobal].adap1.text.isNotEmpty && valueProd ==_listAssembly[indexGlobal].adap1.text) {
                                                       _listAssembly[indexGlobal].adap1 = TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].adap1Price = item['preco'];
                                                       _listAssembly[indexGlobal].adap1Brand = item['marca'];
-                                                      name = 'adap1';
                                                       input = _listAssembly[indexGlobal].adap1.text;
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd:_listAssembly[indexGlobal].qtd.text,
+                                                              fab: item['marca'],
+                                                              valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                              item: 'adap1',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                     }
-                                                    if (_listAssembly[indexGlobal].adap2.text.isNotEmpty &&
-                                                        valueProd ==_listAssembly[indexGlobal].adap2.text) {
+                                                    if (_listAssembly[indexGlobal].adap2.text.isNotEmpty && valueProd ==_listAssembly[indexGlobal].adap2.text) {
                                                       _listAssembly[indexGlobal].adap2 = TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].adap2Price = item['preco'];
                                                       _listAssembly[indexGlobal].adap2Brand = item['marca'];
-                                                      name = 'adap2';
                                                       input = _listAssembly[indexGlobal].adap2.text;
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd:_listAssembly[indexGlobal].qtd.text,
+                                                              fab: item['marca'],
+                                                              valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                              item: 'adap2',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                     }
                                                     if (_listAssembly[indexGlobal].hose.text.isNotEmpty && valueProd == _listAssembly[indexGlobal].hose.text) {
                                                       _listAssembly[indexGlobal].hose = TextEditingController(text: item['numoriginal']);
                                                       _listAssembly[indexGlobal].hosePrice = item['preco'];
                                                       _listAssembly[indexGlobal].hoseBrand = item['marca'];
-                                                      name = 'hose';
                                                       input = _listAssembly[indexGlobal].hose.text;
                                                       _listAssembly[indexGlobal].pressureHose ='${item['diametro']}';
                                                       _listAssembly[indexGlobal].pressureHose ='${item['pressao']}';
+                                                      _listProduct.add(
+                                                          ProductListModel(
+                                                              numoriginal:item['numoriginal'],
+                                                              cod: item['codprod'],
+                                                              codUnit: _listAssembly[indexGlobal].cod.text,
+                                                              ref: item['numoriginal'].toString(),
+                                                              qtd: (double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text)).toString(),
+                                                              fab: item['marca'],
+                                                              valueTable:item['preco'],
+                                                              controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
+                                                              controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])*double.parse(_listAssembly[indexGlobal].comp.text)}',
+                                                              item: 'hose',
+                                                              input: input,
+                                                              indexAssembly: indexGlobal
+                                                          )
+                                                      );
                                                     }
                                                     valueProd = '';
-                                                    _listProduct.add(
-                                                      ProductListModel(
-                                                        numoriginal:item['numoriginal'],
-                                                        cod: item['codprod'],
-                                                        codUnit: _listAssembly[indexGlobal].cod.text,
-                                                        ref: item['numoriginal'].toString(),
-                                                        qtd: name == 'case1'? (double.parse(_listAssembly[indexGlobal].qtd.text) *2.0).toString(): _listAssembly[indexGlobal].qtd.text,
-                                                        fab: item['marca'],
-                                                        valueTable:'${(double.parse(item['preco']) *(name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
-                                                        controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
-                                                        controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
-                                                        total: 'R\$ ${(double.parse(item['preco']) * (name == 'case1'?int.parse(_listAssembly[indexGlobal].qtd.text)*2:int.parse(_listAssembly[indexGlobal].qtd.text))).toStringAsFixed(2).replaceAll('.', ',')}',
-                                                        item: name,
-                                                        input: input,
-                                                       indexAssembly: indexGlobal
-                                                      )
-                                                    );
                                                   }),
                                                 );
                                               });
@@ -1552,19 +1678,52 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                           itemCount: _resultsCodUnico.length,
                                           itemBuilder: (contect,index){
                                             DocumentSnapshot item = _resultsCodUnico[index];
+                                            List list = item['input'];
+                                            var hose = ['1#'];
+                                            var term1 = ['1#'];
+                                            var term2 = ['1#'];
+                                            var cape = ['1#'];
+                                            var pos = ['1#'];
+                                            if(list.length>=1){
+                                              hose  = item['input'][0].toString().split('#');
+                                            }
+                                            if(list.length>=2){
+                                              hose  = item['input'][0].toString().split('#');
+                                              term1 = item['input'][1].toString().split('#');
+                                            }
+                                            if(list.length>=3){
+                                              hose  = item['input'][0].toString().split('#');
+                                              term1 = item['input'][1].toString().split('#');
+                                              term2 = item['input'][2].toString().split('#');
+                                            }
+                                            if(list.length>=4){
+                                              hose  = item['input'][0].toString().split('#');
+                                              term1 = item['input'][1].toString().split('#');
+                                              term2 = item['input'][2].toString().split('#');
+                                              cape  = item['input'][3].toString().split('#');
+                                            }
+
+                                            if(list.length>=5){
+                                              hose  = item['input'][0].toString().split('#');
+                                              term1 = item['input'][1].toString().split('#');
+                                              term2 = item['input'][2].toString().split('#');
+                                              cape  = item['input'][3].toString().split('#');
+                                              pos  = item['input'][4].toString().split('#');
+                                            }
 
                                             return   ErrorIntModel(item,'rep')==0?Container():ListTile(
-                                                title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${item['input'][0].toString().toUpperCase()}, Term1: ${item['input'][1].toString().toUpperCase()}, Term2: ${item['input'][2].toString().toUpperCase()}, Capa: ${item['input'][3].toString().toUpperCase()}, POS: ${item['input'][4].toString().toUpperCase()}'),
+                                                title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${hose[1].toUpperCase()}, Term1: ${term1[1].toUpperCase()}, Term2: ${term2[1].toUpperCase()}, Capa: ${cape[1].toUpperCase()}, POS: ${pos[1].toUpperCase()}'),
                                                 onTap: (){
                                                   setState(() {
                                                     valuecodProd='';
                                                     _listAssembly[indexGlobal].codRep = true;
                                                     _listAssembly[indexGlobal].cod = TextEditingController(text:item['codUnico']);
                                                     _listAssembly[indexGlobal].ref = TextEditingController(text:item['ref']);
-                                                    _listAssembly[indexGlobal].hose = TextEditingController(text:item['input'][0].toString().toUpperCase());
-                                                    _listAssembly[indexGlobal].term1 = TextEditingController(text:item['input'][1].toString().toUpperCase());
-                                                    _listAssembly[indexGlobal].term2 = TextEditingController(text:item['input'][2].toString().toUpperCase());
-                                                    _listAssembly[indexGlobal].cape = TextEditingController(text:item['input'][3].toString().toUpperCase());
+                                                    _listAssembly[indexGlobal].hose = TextEditingController(text:hose[1].toUpperCase());
+                                                    _listAssembly[indexGlobal].term1 = TextEditingController(text:term1[1].toUpperCase());
+                                                    _listAssembly[indexGlobal].term2 = TextEditingController(text:term2[1].toUpperCase());
+                                                    _listAssembly[indexGlobal].cape = TextEditingController(text:cape[1].toUpperCase());
+                                                    _listAssembly[indexGlobal].pos = TextEditingController(text:pos[1].toUpperCase());
                                                   });
                                                   sequenceUpdate(_listAssembly[indexGlobal].cod.text,true,indexGlobal);
                                                 }
@@ -1809,7 +1968,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                 'client':_controllerClientName !=null? _controllerClientName.text: '',
                                                 'subsidiary':_controllerAffiliation != null? _controllerAffiliation.text: '',
                                                 'dateOrder': DateTime.now(),
-                                                'status':status==''?TextConst.aguardando:status,
+                                                'status':status==''?TextConst.orcamento:status,
                                                 'order': order.toString(),
                                                 'priority':selectedPriority,
                                                 'whinthor':whinthor

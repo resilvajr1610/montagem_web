@@ -1,6 +1,7 @@
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Utils/text_const.dart';
 import 'package:montagem_web/Widgets/list_hoses_resume.dart';
@@ -575,7 +576,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   client: item['client'],
                                   makerOrder: ErrorIntModel(item,'makerOrder').toString(),
                                   winthor: ErrorStringModel(item,'whinthor'),
-                                  status: ErrorStringModel(item,'status')==''?TextConst.aguardando:ErrorStringModel(item,'status'),
+                                  status: ErrorStringModel(item,'status')==''?TextConst.orcamento:ErrorStringModel(item,'status'),
                                   showIcons: show[index],
                                   onTap: () {
                                     setState(() {
@@ -606,17 +607,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                           ButtonCustom(
                                             onPressed: (){
 
-                                              var ref = db.collection('teste').doc();
+                                              var ref = db.collection('assembly').doc();
                                               String id = ref.id;
                                               Map<String, dynamic>? data = item.data() as Map<String, dynamic>?;
                                               db.collection('assembly').doc(id).set(data!)
                                                   .then((value) => db.collection('assembly').doc(id).update({
                                                     'id':id,
                                                     'order': '${order+1}',
-                                                    'makerOrder':makerOrder+1
+                                                    'data' : DateFormat('dd/MM/yyyy').format(DateTime.now()),
+                                                    'dateOrder':DateTime.now(),
+                                                    'status' : TextConst.orcamento,
+                                                    'makerOrder':0,
+                                                    'whinthor':""
                                                   }).then((value) => db.collection('order').doc('order').update({
                                                     'order':order+1,
-                                                    'makerOrder':makerOrder+1
                                                   }).then((value) =>Navigator.pushReplacement(context, PageTransition(
                                                     child: NavigationScreen(index: 2),
                                                     type: PageTransitionType.fade,

@@ -105,7 +105,7 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                   Container(
                     width: width * 0.10,
                     child: TextCustom(
-                      text: 'Orçamento Whintor',
+                      text: 'Orçamento Whinthor',
                       maxLines: 4,
                       size: 14.0,
                       color: PaletteColors.primaryColor,
@@ -213,11 +213,11 @@ class _PendenciesScreenState extends State<PendenciesScreen> {
                                       )
                                   );
 
-                                  return TextConst.cancelado == ErrorStringModel(item,'status') ||  TextConst.finalizado ==ErrorStringModel(item,'status')
+                                  return TextConst.cancelado == ErrorStringModel(item,'status') ||  TextConst.finalizado ==ErrorStringModel(item,'status') ||  TextConst.orcamento ==ErrorStringModel(item,'status')
                                       ?Container()
                                       :ListTileButtom(
                                         makerOrder: ErrorIntModel(item,'makerOrder')!=0?ErrorIntModel(item,'makerOrder'):0000,
-                                        whintor: ErrorStringModel(item,'whinthor'),
+                                        whinthor: ErrorStringModel(item,'whinthor'),
                                         date: ErrorStringModel(item, 'data'),
                                         client: '${ErrorStringModel(item, 'codcli')} - ${ErrorStringModel(item, 'client')}',
                                         priority: ErrorStringModel(item,'priority').toUpperCase(),

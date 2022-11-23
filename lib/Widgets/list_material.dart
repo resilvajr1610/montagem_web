@@ -14,6 +14,8 @@ class ListMaterial extends StatefulWidget {
   Color hovercolor;
   final bool enable;
   final String screenscreen;
+  var onChangeDiscount;
+  var onChangeValueUnit;
 
   ListMaterial({
     required this.hovercolor,
@@ -26,7 +28,9 @@ class ListMaterial extends StatefulWidget {
     required this.valueUnit,
     this.total='',
     this.enable = true,
-    required this.screenscreen
+    required this.screenscreen,
+    required this.onChangeDiscount,
+    required this.onChangeValueUnit
   });
 
   @override
@@ -112,6 +116,7 @@ class _ListMaterialState extends State<ListMaterial> {
                     child: TextFormField(
                       enabled: widget.enable,
                       controller: widget.discount,
+                      onChanged: widget.onChangeDiscount,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'R\$ 00,00',
@@ -126,6 +131,7 @@ class _ListMaterialState extends State<ListMaterial> {
                     child: TextFormField(
                       enabled: widget.enable,
                       controller: widget.valueUnit,
+                      onChanged: widget.onChangeValueUnit,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'R\$ 00,00',

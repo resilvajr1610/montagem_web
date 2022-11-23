@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:montagem_web/Models/error_string_model.dart';
 import 'package:montagem_web/Models/pdf_model.dart';
 import 'package:montagem_web/Models/assembly_list_model.dart';
 import 'package:montagem_web/Widgets/list_client.dart';
@@ -40,9 +39,10 @@ class _PriceScreenState extends State<PriceScreen> {
   var codProduct='';
   double desconto=0.0;
   List<ProductListModel> listGetProduct=[];
-  String valorTabela = 'R\$ 0,00';
+  String valueTable = 'R\$ 0,00';
+  String discount = 'R\$ 0,00';
   String descAcrescentado = 'R\$ 0,00';
-  String valorFinal = 'R\$ 0,00';
+  String valueFinal = 'R\$ 0,00';
   double brutoGeral = 0.00;
   double descGeral = 0.00;
   double liquidoGeral = 0.00;
@@ -71,15 +71,15 @@ class _PriceScreenState extends State<PriceScreen> {
     }
   }
   
-  descontos(){
+  descontosGeral(){
     double desc = double.parse(_controllerDiscount.text.replaceAll(',','.'));
     double descTotal = (double.parse(widget.saveListModel[indexGlobal].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
     double liquido = double.parse(widget.saveListModel[indexGlobal].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
     double uni = liquido/double.parse(widget.saveListProduct[indexGlobal].qtd);
 
     setState(() {
-      valorFinal = 'R\$ ${liquido.toStringAsFixed(2).replaceAll('.', ',')}';
-      valorTabela = widget.saveListModel[indexGlobal].valueTable;
+      valueFinal = 'R\$ ${liquido.toStringAsFixed(2).replaceAll('.', ',')}';
+      valueTable = widget.saveListModel[indexGlobal].valueTable;
       descAcrescentado = 'R\$ ${descTotal.toStringAsFixed(2).replaceAll('.', ',')}';
       listGetProduct.clear();
 
@@ -88,6 +88,7 @@ class _PriceScreenState extends State<PriceScreen> {
         double descTotalPecas = (double.parse(widget.saveListProduct[i].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))*desc)/100;
         double liquidoPecas = double.parse(widget.saveListProduct[i].valueTable.replaceAll('R\$ ', '').replaceAll(',', '.'))-descTotal;
         double uniPecas = liquido/double.parse(widget.saveListProduct[i].qtd);
+        discount = 'R\$ ${descTotalPecas.toStringAsFixed(2).replaceAll('.', ',')}';
 
           listGetProduct.add(
               ProductListModel(
@@ -97,6 +98,7 @@ class _PriceScreenState extends State<PriceScreen> {
                   total: 'R\$ ${liquidoPecas.toStringAsFixed(2).replaceAll('.', ',')}',item: widget.saveListProduct[i].item,input: widget.saveListProduct[i].input,indexAssembly: 0
               )
           );
+
       }
     });
   }
@@ -108,20 +110,84 @@ class _PriceScreenState extends State<PriceScreen> {
       listGetProduct.add(widget.saveListProduct[i]);
     }
     for (var i = 0;i < listGetProduct.length; i++){
-      if(codProduct == listGetProduct[i].codUnit){
-        total =  double.parse(listGetProduct[i].valueTable.toString().replaceAll(',', '.'))+total;
+      if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
+        total =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+total;
       }
     }
     setState(() {
-      valorTabela = 'R\$ ${total.toStringAsFixed(2)}';
-      valorFinal =  'R\$ ${total.toStringAsFixed(2)}';
-      widget.saveListModel[indexGlobal].valueTable = valorTabela;
-      widget.saveListModel[indexGlobal].total = valorFinal;
+      var uni = total/int.parse(widget.saveListModel[indexGlobal].qtd.text);
+      valueTable = 'R\$ ${total.toStringAsFixed(2)}';
+      valueFinal =  'R\$ ${total.toStringAsFixed(2)}';
+      widget.saveListModel[indexGlobal].valueTable = total.toString();
+      widget.saveListModel[indexGlobal].valueUnit = TextEditingController(text: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}');
+      widget.saveListModel[indexGlobal].total = total.toString();
     });
-
 }
+  discountUnit(int index,String field){
+    listGetProduct.clear();
+    double total = 0.0;
+    double totalDesc = 0.0;
+    double totalValueTable = 0.0;
+    for (var i = 0;i < widget.saveListProduct.length; i++) {
+      listGetProduct.add(widget.saveListProduct[i]);
+    }
+    for (var i = 0;i < listGetProduct.length; i++){
+      if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
+        if(i!=index){
+          total =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+total;
+          print('total');
+          print(total);
+        }
+      }
+    }
+    double valueUnit = double.parse(listGetProduct[index].controllerValueUnit.text.replaceAll('R\$ ','').replaceAll(',', '.'));
+    int quantProd = int.parse(listGetProduct[index].qtd);
+    setState(() {
+      if(field == 'discount'){
+        total = total - double.parse(listGetProduct[index].controllerDiscount.text.replaceAll('R\$ ','').replaceAll(',', '.'));
+        listGetProduct[index].total = 'R\$ ' + ((quantProd*valueUnit)-double.parse(listGetProduct[index].controllerDiscount.text.replaceAll('R\$ ','').replaceAll(',', '.'))).toStringAsFixed(2).replaceAll('.', ',');
+      }else{
+        listGetProduct[index].total = 'R\$ '+ (valueUnit*quantProd).toStringAsFixed(2).replaceAll('.', ',');
+        listGetProduct[index].total = 'R\$ ' + (double.parse(listGetProduct[index].total.replaceAll('R\$ ','').replaceAll(',', '.'))-double.parse(listGetProduct[index].controllerDiscount.text.replaceAll('R\$ ','').replaceAll(',', '.'))).toStringAsFixed(2).replaceAll('.', ',');
+      }
+      for (var i = 0;i < listGetProduct.length; i++){
+            totalDesc =  double.parse(listGetProduct[i].controllerDiscount.text.replaceAll('R\$ ','').replaceAll(',', '.'))+totalDesc;
+            descAcrescentado = 'R\$ '+ totalDesc.toStringAsFixed(2).replaceAll(".", ",");
+      }
+      for (var i = 0;i < listGetProduct.length; i++){
+        if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
+          totalValueTable =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+totalValueTable;
+          valueTable = 'R\$ '+ (totalValueTable+totalDesc).toStringAsFixed(2).replaceAll(".", ",");
+          valueFinal = 'R\$ '+ totalValueTable.toStringAsFixed(2).replaceAll(".", ",");
+        }
+      }
+      var uni = totalValueTable/int.parse(widget.saveListModel[indexGlobal].qtd.text);
+      widget.saveListModel[indexGlobal].valueTable = listGetProduct[index].total;
+      widget.saveListModel[indexGlobal].discount = TextEditingController(text: 'R\$ ${totalDesc.toStringAsFixed(2).replaceAll('.', ',')}');
+      widget.saveListModel[indexGlobal].valueUnit = TextEditingController(text: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}');
+      widget.saveListModel[indexGlobal].total = listGetProduct[index].total;
+      discount = 'R\$ ${totalDesc.toStringAsFixed(2).replaceAll('.', ',')}';
+    });
+  }
+  discountUnitClient(int index,String field){
+    double discountClient = double.parse(widget.saveListModel[indexGlobal].discount.text.replaceAll('R\$ ','').replaceAll(',', '.'));
+    double valueUnit = double.parse(widget.saveListModel[indexGlobal].valueUnit.text.replaceAll('R\$ ','').replaceAll(',', '.'));
+    double total = double.parse(widget.saveListModel[indexGlobal].total.replaceAll('R\$ ','').replaceAll(',', '.'));
+    int quant = int.parse(widget.saveListModel[indexGlobal].qtd.text);
 
-  _createPdfGeral()async{
+    setState(() {
+      if(field=='discount'){
+        valueFinal = 'R\$ '+ (total-discountClient).toStringAsFixed(2).replaceAll('.', ',');
+      }else{
+        double newTotal = valueUnit*quant;
+        valueFinal = 'R\$ '+ newTotal.toStringAsFixed(2).replaceAll('.', ',');
+        widget.saveListModel[indexGlobal].discount = TextEditingController(text: 'R\$ '+ (total-newTotal).toStringAsFixed(2).replaceAll('.', ','));
+        discount = widget.saveListModel[indexGlobal].discount.text;
+      }
+    });
+  }
+
+  _createPdfClient()async{
 
     var nMontagem  = widget.order;
     var date   = widget.data;
@@ -157,19 +223,19 @@ class _PriceScreenState extends State<PriceScreen> {
       list.add(
           PDFModel(
               qtd: widget.saveListModel[i].qtd.text,
-              descricao: widget.saveListModel[i].application.text,
-              valorTabela: valorTabela.toString(),
-              desconto: desconto.toString(),
+              descricao:  'Mang.(${widget.saveListModel[indexGlobal].cod.text}) ${widget.saveListModel[indexGlobal].diameterHose} ${widget.saveListModel[indexGlobal].pressureHose} ${widget.saveListModel[indexGlobal].descTerm1} / ${widget.saveListModel[indexGlobal].descTerm2} x ${double.parse(widget.saveListModel[indexGlobal].comp.text.isEmpty?'0':widget.saveListModel[indexGlobal].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[indexGlobal].maker.text} - ${widget.saveListModel[indexGlobal].application.text}',
+              valorTabela: valueTable,
+              desconto: discount,
               valorUnitario: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}',
-              total: valorFinal.toString()
+              total: valueFinal
           )
       );
-      page.graphics.drawString('${list[i].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top,50,50));
-      page.graphics.drawString('${list[i].descricao}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(50,top,100,50));
-      page.graphics.drawString('${list[i].valorTabela}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,top,150,50));
-      page.graphics.drawString('${list[i].desconto} %',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(300,top,150,50));
-      page.graphics.drawString('${list[i].valorUnitario}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top,150,50));
-      page.graphics.drawString('${list[i].total}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top,100,50));
+      page.graphics.drawString('${list[i].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(0,top,50,50));
+      page.graphics.drawString('${list[i].descricao}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(50,top,150,50));
+      page.graphics.drawString('${list[i].valorTabela}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(220,top,150,50));
+      page.graphics.drawString('${list[i].desconto}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(300,top,150,50));
+      page.graphics.drawString('${list[i].valorUnitario}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(360,top,150,50));
+      page.graphics.drawString('${list[i].total}',PdfStandardFont(PdfFontFamily.helvetica, 10),bounds: Rect.fromLTWH(440,top,100,50));
     }
 
 
@@ -177,7 +243,7 @@ class _PriceScreenState extends State<PriceScreen> {
     page.graphics.drawString('R\$ ${brutoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+90,150,50));
 
     page.graphics.drawString('Desconto',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+120,150,50));
-    page.graphics.drawString('R\$ ${descGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+120,150,50));
+    page.graphics.drawString(discount,PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+120,150,50));
 
     page.graphics.drawString('Valor Líquido',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(360,top+150,150,50));
     page.graphics.drawString('R\$ ${liquidoGeral.toStringAsFixed(2).replaceAll('.', ',')}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(440,top+150,150,50));
@@ -481,7 +547,7 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorBorder: PaletteColors.primaryColor,
                           onPressed: () {
                             if(_controllerDiscount.text.isNotEmpty){
-                              descontos();
+                              descontosGeral();
                             }
                           },
                           font: 'Nunito',
@@ -592,7 +658,8 @@ class _PriceScreenState extends State<PriceScreen> {
                       child: ListView.builder(
                         itemCount: listGetProduct.length,
                         itemBuilder: (context,index){
-                          return  indexGlobal != listGetProduct[index].indexAssembly?Container():
+                          return  indexGlobal != listGetProduct[index].indexAssembly || listGetProduct[index].qtd=='0'?
+                          Container():
                             ListMaterial(
                               screenscreen:'seller',
                               hovercolor: Colors.white,
@@ -603,6 +670,12 @@ class _PriceScreenState extends State<PriceScreen> {
                               valuetable: 'R\$ ${listGetProduct[index].valueTable.replaceAll('.', ',')}',
                               discount: listGetProduct[index].controllerDiscount,
                               valueUnit: listGetProduct[index].controllerValueUnit,
+                              onChangeDiscount: (value){
+                                discountUnit(index,'discount');
+                              },
+                              onChangeValueUnit:(value){
+                                discountUnit(index,'valueUnit');
+                              },
                               total:'${listGetProduct[index].total.replaceAll('.', ',')}' ,
                             );
                         }
@@ -698,7 +771,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                     child: Column(
                                       children: [
                                         TextCustom(
-                                          text: valorTabela,
+                                          text: valueTable,
                                           size: 14.0,
                                           color: PaletteColors.grey,
                                           fontFamily: 'Nunito',
@@ -729,7 +802,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                           ),
                                         ),
                                         TextCustom(
-                                          text: valorFinal,
+                                          text: valueFinal,
                                           size: 14.0,
                                           color: PaletteColors.grey,
                                           fontFamily: 'Nunito',
@@ -770,7 +843,6 @@ class _PriceScreenState extends State<PriceScreen> {
                           colorButton: PaletteColors.primaryColor,
                           colorBorder: PaletteColors.primaryColor,
                           onPressed: () {
-                              if(_controllerWhintor.text.length==8){
                                 db.collection('assembly').doc(widget.idAssembly).update({
                                   'obs' : _controllerObservation.text.isNotEmpty?_controllerObservation.text:'',
                                   'order' : _controllerNumberAssembly.text,
@@ -778,10 +850,9 @@ class _PriceScreenState extends State<PriceScreen> {
                                   'priority' : selectedPriority,
                                   'discountPercent' : _controllerDiscount.text.isNotEmpty?_controllerDiscount.text:'0',
                                   'discountTotal': descAcrescentado,
-                                  'totalFinal': valorFinal,
-                                  'status' : TextConst.aguardando
+                                  'totalFinal': valueFinal,
+                                  'status' : TextConst.orcamento
                                 }).then((value) => Navigator.pushReplacementNamed(context, '/home'));
-                              }
                           },
                           font: 'Nunito',
                         ),
@@ -804,8 +875,10 @@ class _PriceScreenState extends State<PriceScreen> {
 
                               if(makerOrder!=0){
                                 db.collection('assembly').doc(widget.idAssembly).update({
-                                  'status' : TextConst.producao,
-                                  'makerOrder' : makerOrder+1
+                                  'status' : TextConst.aguardando,
+                                  'whinthor': _controllerWhintor.text,
+                                  'makerOrder' : makerOrder+1,
+                                  'priority' : selectedPriority,
                                 }).then((value) => db.collection('order').doc('order').update({
                                   'makerOrder' : makerOrder+1
                                 })).then((value) => Navigator.pushReplacementNamed(context, '/home'));
@@ -942,10 +1015,16 @@ class _PriceScreenState extends State<PriceScreen> {
                               hovercolor: Colors.white,
                               qtd: widget.saveListModel[index].qtd.text,
                               description: 'Mang.(${widget.saveListModel[index].cod.text}) ${widget.saveListModel[index].diameterHose} ${widget.saveListModel[index].pressureHose} ${widget.saveListModel[index].descTerm1} / ${widget.saveListModel[index].descTerm2} x ${double.parse(widget.saveListModel[index].comp.text.isEmpty?'0':widget.saveListModel[index].comp.text.replaceAll(',','.'))*1000}mm\nAplic: ${widget.saveListModel[index].maker.text} - ${widget.saveListModel[index].application.text}',
-                              valuetable: valorTabela,
+                              valuetable: valueTable,
                               discount: widget.saveListModel[index].discount,
+                              onChangedDiscount: (value){
+                                discountUnitClient(index,'discount');
+                              },
                               valueUnit: widget.saveListModel[index].valueUnit,
-                              total: valorFinal,
+                              onChangedValueUnit:(value){
+                                discountUnitClient(index,'valueUnit');
+                              },
+                              total: valueFinal,
                               onTap: (){
                                 setState(() {
                                   codProduct = widget.saveListModel[index].cod.text;
@@ -1012,28 +1091,25 @@ class _PriceScreenState extends State<PriceScreen> {
                                       child: Column(
                                         children: [
                                           TextCustom(
-                                            text: 'R\$ 000,00',
+                                            text: valueTable,
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
                                             fontWeight: FontWeight.normal,
-
                                           ),
                                           TextCustom(
-                                            text: 'R\$ 000,00',
+                                            text: discount,
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
                                             fontWeight: FontWeight.normal,
-
                                           ),
                                           TextCustom(
-                                            text: 'R\$ 000,00',
+                                            text: valueFinal,
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
                                             fontWeight: FontWeight.bold,
-
                                           ),
                                         ],
                                       ),
@@ -1054,7 +1130,7 @@ class _PriceScreenState extends State<PriceScreen> {
                             colorBorder: PaletteColors.primaryColor,
                             onPressed: (){
                               if(widget.saveListModel.length!=0){
-                                _createPdfGeral();
+                                _createPdfClient();
                               }else{
                                 print('erro');
                               }

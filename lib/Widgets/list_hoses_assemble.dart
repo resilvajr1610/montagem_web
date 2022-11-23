@@ -7,7 +7,7 @@ class ListHosesAssemble extends StatefulWidget {
   final number;
   final type;
   final lenght;
-  final t;
+  // final t;
   final term1;
   final term2;
   final cape;
@@ -26,7 +26,7 @@ class ListHosesAssemble extends StatefulWidget {
     this.qtd,
     this.type,
     this.lenght,
-    this.t,
+    // this.t,
     this.term1,
     this.term2,
     this.cape,
@@ -118,17 +118,17 @@ class _ListHosesAssembleState extends State<ListHosesAssemble> {
 
                     ),
                   ),
-                  Container(
-                    width: width*0.02,
-                    child: TextCustom(
-                      text: widget.t,
-                      size: 14.0,
-                      color: PaletteColors.grey,
-                      fontFamily: 'Nunito',
-                      fontWeight: FontWeight.normal,
-
-                    ),
-                  ),
+                  // Container(
+                  //   width: width*0.02,
+                  //   child: TextCustom(
+                  //     text: widget.t,
+                  //     size: 14.0,
+                  //     color: PaletteColors.grey,
+                  //     fontFamily: 'Nunito',
+                  //     fontWeight: FontWeight.normal,
+                  //
+                  //   ),
+                  // ),
                   Container(
                     width: width*0.055,
                     child: TextCustom(

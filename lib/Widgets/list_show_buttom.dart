@@ -9,7 +9,7 @@ class ListTileButtom extends StatefulWidget {
   final onTap;
   bool showButtom;
   int makerOrder;
-  final whintor;
+  final whinthor;
   final date;
   final client;
   final priority;
@@ -19,7 +19,7 @@ class ListTileButtom extends StatefulWidget {
 
   ListTileButtom({
     required this.makerOrder,
-    required this.whintor,
+    required this.whinthor,
     required this.date,
     required this.client,
     required this.priority,
@@ -108,7 +108,7 @@ class _ListTileButtomState extends State<ListTileButtom> {
                           width: width * 0.10,
                           child: TextCustom(
                             text:
-                            widget.whintor,
+                            widget.whinthor,
                             maxLines: 4,
                             size: 14.0,
                             color: PaletteColors.grey,

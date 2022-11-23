@@ -10,6 +10,8 @@ class ListClient extends StatefulWidget {
   final total;
   final onTap;
   Color hovercolor;
+  var onChangedDiscount;
+  var onChangedValueUnit;
 
   ListClient({
     required this.hovercolor,
@@ -19,7 +21,9 @@ class ListClient extends StatefulWidget {
     required this.discount,
     required this.valueUnit,
     this.total,
-    this.onTap
+    this.onTap,
+    required this.onChangedDiscount,
+    required this.onChangedValueUnit
   });
 
   @override
@@ -82,6 +86,7 @@ class _ListClientState extends State<ListClient> {
                     width: width*0.07,
                     child: TextFormField(
                       controller: widget.discount,
+                      onChanged: widget.onChangedDiscount,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'R\$ 00,00',
@@ -95,6 +100,7 @@ class _ListClientState extends State<ListClient> {
                     width: width*0.07,
                     child: TextFormField(
                       controller: widget.valueUnit,
+                      onChanged: widget.onChangedValueUnit,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: 'R\$ 00,00',
