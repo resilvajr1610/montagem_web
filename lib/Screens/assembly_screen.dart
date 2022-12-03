@@ -50,6 +50,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   String selectedPriority='1 - Cliente Balcão';
   String whinthor = '';
   String status = '';
+  String obs = '';
 
   _getOrder() async {
     DocumentSnapshot snapshot = await db.collection('order').doc('order').get();
@@ -353,6 +354,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       status = data?['status']??TextConst.orcamento;
       id = data?['id'];
       order = int.parse(data?['order']);
+      obs = data?['obs']??'';
 
       List codAssembly          = data?['codAssembly']??[];
       List refAssembly          = data?['refAssembly']??[];
@@ -1971,7 +1973,8 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                 'status':status==''?TextConst.orcamento:status,
                                                 'order': order.toString(),
                                                 'priority':selectedPriority,
-                                                'whinthor':whinthor
+                                                'whinthor':whinthor,
+                                                'obs' : obs
                                               },SetOptions(merge: true)).then((value) {
                                                 db.collection('order').doc('order').update({
                                                   'order': int.parse(order.toString())
@@ -1986,6 +1989,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                       order:order.toString(),
                                                       data:_controllerDate.text,
                                                       subsidiary:_controllerAffiliation.text,
+                                                      obs: obs,
                                                     )
                                                     ))
                                                 );

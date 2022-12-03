@@ -19,8 +19,19 @@ class PriceScreen extends StatefulWidget {
   final String order;
   final String data;
   final String subsidiary;
+  final String obs;
 
-  PriceScreen({required this.saveListModel,required this.saveListProduct,required this.idAssembly,required this.client,required this.codClient,required this.order,required this.data, required this.subsidiary});
+  PriceScreen({
+    required this.saveListModel,
+    required this.saveListProduct,
+    required this.idAssembly,
+    required this.client,
+    required this.codClient,
+    required this.order,
+    required this.data,
+    required this.subsidiary,
+    required this.obs
+  });
 
   @override
   State<PriceScreen> createState() => _PriceScreenState();
@@ -56,6 +67,7 @@ class _PriceScreenState extends State<PriceScreen> {
       codProduct=widget.saveListModel[0].cod.text;
       dataFirebase();
       _controllerNumberAssembly = TextEditingController(text: widget.order);
+      widget.obs!=''?_controllerObservation = TextEditingController(text: widget.obs):'';
       refreshValues();
     });
   }

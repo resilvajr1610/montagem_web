@@ -148,8 +148,8 @@ class _ListTileCustomState extends State<ListTileCustom> {
                               ),
                             ),
                           ),
-                          widget.status != TextConst.producao? SizedBox(width: width*0.01):Container(),
-                          widget.status != TextConst.producao?Material(
+                          widget.status != TextConst.producao && widget.status != TextConst.finalizado? SizedBox(width: width*0.01):Container(),
+                          widget.status != TextConst.producao && widget.status != TextConst.finalizado?Material(
                             color: Colors.transparent,
                             child: Ink(
                               decoration: ShapeDecoration(
