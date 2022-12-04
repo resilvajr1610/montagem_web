@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:montagem_web/Models/pdf_maker_model.dart';
 import 'package:montagem_web/Widgets/list_hoses_assemble.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../Models/controllers_assembly_list_model.dart';
 import '../Models/product_list_model.dart';
 import '../Utils/exports.dart';
 import '../Utils/text_const.dart';
 import '../Widgets/list_material.dart';
+import '../services/pdf_model.dart';
 
 class ProductionScreen extends StatefulWidget {
 
@@ -30,7 +33,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
 
   FirebaseFirestore db = FirebaseFirestore.instance;
   var _controllerDate = TextEditingController();
-  var _controllerWhintor = TextEditingController();
+  var _controllerWhinthor = TextEditingController();
   var _controllerOrder = TextEditingController();
   var _controllerObservation = TextEditingController();
   var _controllerObservationProd = TextEditingController();
@@ -45,7 +48,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
 
     setState(() {
       _controllerDate = TextEditingController(text: data?["data"]);
-      _controllerWhintor = TextEditingController(text: data?["whinthor"]);
+      _controllerWhinthor = TextEditingController(text: data?["whinthor"]);
       _controllerOrder = TextEditingController(text: data?["makerOrder"].toString());
       _controllerObservation = TextEditingController(text: data?["obs"]);
       _controllerObservationProd = TextEditingController(text: data?["obsProd"]??'');
@@ -144,6 +147,94 @@ class _ProductionScreenState extends State<ProductionScreen> {
     });
   }
 
+  _createPdfTabela()async{
+
+    var date      = _controllerDate.text;
+    var whinthor  = _controllerWhinthor.text;
+    var order     = _controllerOrder.text;
+    var priority  = selectedPriority;
+
+    PdfDocument document = PdfDocument();
+    final page = document.pages.add();
+
+    page.graphics.drawString('Data: $date',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,0,500,50));
+    page.graphics.drawString('Whinthor: $whinthor',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(110,0,500,50));
+    page.graphics.drawString('Ordem de produção : $order',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(230,0,600,50));
+    page.graphics.drawString('Prioridade : $priority',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(380,0,800,50));
+
+    page.graphics.drawString('Observação Vendedor :',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,30,800,50));
+    page.graphics.drawString('${_controllerObservation.text==""?'Sem observações':_controllerObservation.text}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,50,1000,50));
+
+    page.graphics.drawString('Observação sobre a produção :',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,80,800,50));
+    page.graphics.drawString('${_controllerObservationProd.text==""?'Sem observações':_controllerObservationProd.text}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,100,1000,50));
+
+    page.graphics.drawString('Código',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,140,50,50));
+    page.graphics.drawString('Referência',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,140,110,50));
+    page.graphics.drawString('Quantidade',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(130,140,150,50));
+    page.graphics.drawString('Fabricante',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,140,150,50));
+
+    List<PDFMakerModel> list=[];
+    for(var i=0; _listProduct.length>i;i++){
+        list.add(
+            PDFMakerModel(
+                cod: _listProduct[i].cod,
+                ref: _listProduct[i].ref,
+                qtd: _listProduct[i].qtd,
+                fab: _listProduct[i].fab,
+            )
+        );
+    }
+    double top = 140;
+    for(var ind=0; list.length>ind;ind++){
+      top = top+30;
+      page.graphics.drawString('${list[ind].cod}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top,50,50));
+      page.graphics.drawString('${list[ind].ref}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,top,75,50));
+      page.graphics.drawString('${list[ind].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(160,top,100,50));
+      page.graphics.drawString('${list[ind].fab}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,top,100,50));
+    }
+
+    page.graphics.drawString('Mangueiras a montar',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top+90,400,50));
+
+    page.graphics.drawString('N°',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,top+120,150,50));
+    page.graphics.drawString('Cod. Único',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(30,top+120,150,50));
+    page.graphics.drawString('Qtd',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(100,top+120,150,50));
+    page.graphics.drawString('Tipo Mang',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(125,top+120,200,50));
+    page.graphics.drawString('Compri',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(190,top+120,200,50));
+    page.graphics.drawString('Term.1',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(230,top+120,200,50));
+    page.graphics.drawString('Term.2',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(270,top+120,200,50));
+    page.graphics.drawString('Capa',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(315,top+120,200,50));
+    page.graphics.drawString('Pos.',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(360,top+120,200,50));
+    page.graphics.drawString('Adap.1',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(385,top+120,200,50));
+    page.graphics.drawString('Adap.2',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(430,top+120,200,50));
+    page.graphics.drawString('AN',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(470,top+120,200,50));
+    page.graphics.drawString('MO',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(490,top+120,200,50));
+
+    page.graphics.drawString('${listProdutos[0].number}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(0,top+150,150,50));
+    page.graphics.drawString('${listProdutos[0].cod}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(30,top+150,150,50));
+    page.graphics.drawString('${listProdutos[0].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(100,top+150,150,50));
+    page.graphics.drawString('${listProdutos[0].hose}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(125,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].length}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(190,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].term1}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(230,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].term2}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(270,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].cape}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(315,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].pos}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(360,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].adap1}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(385,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].adap2}',PdfStandardFont(PdfFontFamily.helvetica, 9),bounds: Rect.fromLTWH(430,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].ring}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(470,top+150,200,50));
+    page.graphics.drawString('${listProdutos[0].spring}',PdfStandardFont(PdfFontFamily.helvetica, 11),bounds: Rect.fromLTWH(490,top+150,200,50));
+
+    bool time = false;
+    List<int> bytes = await document.save().whenComplete((){
+      document.dispose();
+      setState(() {
+        time=true;
+      });
+    });
+    if(time){
+      saveAndLaunhFile(bytes, 'ordem_$order.pdf');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -218,7 +309,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                           Container(
                             width: width * 0.12,
                             child: TextCustom(
-                              text: 'Orçamento Whintor',
+                              text: 'Orçamento Whinthor',
                               size: 14.0,
                               color: PaletteColors.primaryColor,
                               fontFamily: 'Nunito',
@@ -271,7 +362,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             width: width * 0.12,
                             child: InputRegister(
                               enable: false,
-                              controller: _controllerWhintor,
+                              controller: _controllerWhinthor,
                               hint: '00000000000000',
                               fonts: 14.0,
                               keyboardType: TextInputType.number,
@@ -378,8 +469,7 @@ class _ProductionScreenState extends State<ProductionScreen> {
                             colorText: PaletteColors.white,
                             colorButton: PaletteColors.primaryColor,
                             colorBorder: PaletteColors.primaryColor,
-                            onPressed: () =>
-                                Navigator.popAndPushNamed(context, '/home'),
+                            onPressed: () =>_createPdfTabela(),
                             font: 'Nunito',
                           ),
                           SizedBox(width: width *0.06)

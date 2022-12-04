@@ -289,7 +289,7 @@ class _PriceScreenState extends State<PriceScreen> {
     page.graphics.drawString('Cliente : $cliente',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,60,800,50));
 
     page.graphics.drawString('Código',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,100,50,50));
-    page.graphics.drawString('Referência',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,100,100,50));
+    page.graphics.drawString('Referência',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,100,110,50));
     page.graphics.drawString('Quantidade',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(130,100,150,50));
     page.graphics.drawString('Fabricante',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,100,150,50));
     page.graphics.drawString('Valor\nTabela',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(280,100,100,50));
@@ -325,8 +325,8 @@ class _PriceScreenState extends State<PriceScreen> {
     for(var ind=0; list.length>ind;ind++){
       top = top+30;
       page.graphics.drawString('${list[ind].cod}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(0,top,50,50));
-      page.graphics.drawString('${list[ind].ref}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,top,70,50));
-      page.graphics.drawString('${list[ind].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(130,top,100,50));
+      page.graphics.drawString('${list[ind].ref}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(60,top,75,50));
+      page.graphics.drawString('${list[ind].qtd}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(160,top,100,50));
       page.graphics.drawString('${list[ind].fab}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(220,top,100,50));
       page.graphics.drawString('${list[ind].valorTabela}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(280,top,150,50));
       page.graphics.drawString('${list[ind].desconto}',PdfStandardFont(PdfFontFamily.helvetica, 12),bounds: Rect.fromLTWH(330,top,150,50));
