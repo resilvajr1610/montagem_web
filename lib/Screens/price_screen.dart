@@ -891,6 +891,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                   'whinthor': _controllerWhintor.text,
                                   'makerOrder' : makerOrder+1,
                                   'priority' : selectedPriority,
+                                  'obs' : _controllerObservation.text.isEmpty?"":_controllerObservation.text
                                 }).then((value) => db.collection('order').doc('order').update({
                                   'makerOrder' : makerOrder+1
                                 })).then((value) => Navigator.pushReplacementNamed(context, '/home'));

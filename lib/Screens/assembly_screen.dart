@@ -430,7 +430,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
         var _controllerMaker      = TextEditingController(text: splitedMaker[1]);
         var _controllerAplication = TextEditingController(text: splitedApli[1]);
         var _controllerSize       = TextEditingController(text: splitedSize[1]);
-        var _controllerComp       = TextEditingController(text: splitedLength[1]);
+        var _controllerComp       = TextEditingController(text: splitedLength[1].replaceAll(",", "."));
         var _controllerHose       = TextEditingController(text: splitedHose[1]);
         var hosePrice             = splitedHosePrice[1];
         var hoseBrand             = splitedHoseBrand[1];
@@ -590,36 +590,32 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     if (update) {
       var splited = cod.split(" ");
       cod = '${splited[0]} - ${splited[2]}';
-      DocumentSnapshot snapshot = await db.collection('codUnico').doc(cod).get();
+      DocumentSnapshot snapshot = await db.collection('codUnico').doc(splited[0]).get();
       Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
       int rep = data?['rep'] ?? 0;
-      String letter1 = listLetter[rep <= 25 ? 0 : rep - 25];
-      String letter2 = listLetter[(rep / 25).round()];
+      String letter1 = listLetter[rep <= 25 ? rep : rep - 25];
+      String letter2 = rep>=25?listLetter[(rep / 25).round()]:'';
 
-      db.collection('codUnico').doc(cod).update({'rep': rep+1+i}).then((value) => setState(() {
-        _listAssembly[i].cod = TextEditingController(text: cod);
-      }));
-      FirebaseFirestore.instance.collection('assembly').doc(id).set({
+      setState(() {
+        _listAssembly[i].cod = TextEditingController(text: '${splited[0]} - ${letter1}${letter2}');
+      });
+      FirebaseFirestore.instance.collection('assembly').doc(id).update({
         'codUnit'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
         'codAssembly'     : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
-      }, SetOptions(merge: true));
+      });
     } else {
-      DocumentSnapshot snapshot = await db.collection('order').doc('codSequence').get();
-      Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-      int numberSequence = data?['numberSequence'];
-        if (numberSequence != null) {
-          _listAssembly[i].letter1 = listLetter[numberSequence <= 100 ? 0 : numberSequence - 100];
-          _listAssembly[i].letter2 = listLetter[(numberSequence / 100).round()];
-          _listAssembly[i].cod = TextEditingController(text: '${_listAssembly[i].letter1}${_listAssembly[i].letter2}${numberSequence < 10 ? 0 : ''}${(numberSequence+i)} - A');
-          db.collection('order').doc('codSequence').set({
-            'letterFirst': _listAssembly[i].letter1.toUpperCase(),
-            'letterSecond': _listAssembly[i].letter2.toUpperCase(),
-            'numberSequence': numberSequence+1+i
-          }).then((value) => setState(() {
+
+        if (order != 0) {
+          _listAssembly[i].letter1 = listLetter[order <= 100 ? 0 : order - 100];
+          _listAssembly[i].letter2 = listLetter[(order / 100).round()];
+          _listAssembly[i].cod = TextEditingController(text: '${_listAssembly[i].letter1}${_listAssembly[i].letter2}${order < 10 ? 0 : ''}${(order+i)} - A');
+          var codFire = '${_listAssembly[i].letter1}${_listAssembly[i].letter2}${order < 10 ? 0 : ''}${(order+i)}';
+
+       setState(() {
                 _listAssembly[i].codRep = true;
 
                 for (int index = 0; index < _listProduct.length; index++) {
-                  db.collection('codUnico').doc(_listAssembly[i].cod.text.toUpperCase()).set({
+                  db.collection('codUnico').doc(codFire.toUpperCase()).set({
                         'items': FieldValue.arrayUnion(['$index#${_listProduct[index].item}']),
                         'cod': FieldValue.arrayUnion(['$index#${_listProduct[index].cod}']),
                         'fabricante': FieldValue.arrayUnion([_listProduct[index].fab              == ''? '$index#vazio' : '$index#${_listProduct[index].fab}']),
@@ -635,12 +631,12 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                   }, SetOptions(merge: true));
                 }
                 setState(() {});
-                db.collection('codUnico').doc(_listAssembly[i].cod.text.toUpperCase()).set({
+                db.collection('codUnico').doc(codFire.toUpperCase()).set({
                   'codUnico': _listAssembly[i].cod.text,
                   'ref': _listAssembly[i].ref.text,
                   'rep': 1
                 }, SetOptions(merge: true));
-              }));
+              });
         }
     }
   }
@@ -1406,6 +1402,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                 onChanged: (value)async{
                                                   setState(()=>indexGlobal = index);
                                                   if(value.toString()=='X' || value.toString()=='x'){
+                                                    print('teste');
                                                     var data = await db.collection('produtos').where('numoriginal',isEqualTo: _listAssembly[indexGlobal].hose.text).get();
                                                     List listFire = data.docs;
                                                     DocumentSnapshot item = listFire[0];
@@ -1413,13 +1410,14 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                     print(item['qtdmola']);
                                                     if(item['qtdmola']!=null && item['qtdmola']!='null' && item['qtdmola']!=''){
                                                       if(item['codmola']!=null && item['codmola']!='null' && item['codmola']!='' ){
+
                                                         _listProduct.add(
                                                             ProductListModel(
                                                                 numoriginal:item['codmola'],
                                                                 cod: item['codmola'],
                                                                 codUnit: _listAssembly[indexGlobal].cod.text,
                                                                 ref: item['codmola'].toString(),
-                                                                qtd: '${(double.parse(item['qtdmola'].toString().replaceAll(',', '.'))*int.parse(_listAssembly[indexGlobal].qtd.text)*int.parse(_listAssembly[indexGlobal].comp.text.replaceAll(',','.'))).toString().replaceAll('.', ',')}',
+                                                                qtd: '${(double.parse(item['qtdmola'].toString().replaceAll(',', '.'))*int.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text.replaceAll(',','.')))}',
                                                                 fab: 'mola',
                                                                 valueTable:'0,00',
                                                                 controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
@@ -1541,7 +1539,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                         Future.delayed(Duration.zero,()async{
                                                           DocumentSnapshot snapshot = await db.collection('produtos').doc(item['codoring']).get();
                                                           Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
-                                                          if(_listProduct[_listProduct.length-2].item=='anel'){
+                                                          if(_listProduct[_listProduct.length-2].item=='anel' && _listAssembly[indexGlobal].term1.text == _listAssembly[indexGlobal].term2.text){
                                                             setState(() {
                                                               _listProduct[_listProduct.length-2].qtd = '${int.parse(_listProduct[_listProduct.length-2].qtd)*2}';
                                                               _listProduct[_listProduct.length-2].valueTable = '${double.parse(_listProduct[_listProduct.length-2].valueTable.replaceAll(',', '.').replaceAll('R\$ ', ''))*2}';
@@ -1654,12 +1652,12 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                               cod: item['codprod'],
                                                               codUnit: _listAssembly[indexGlobal].cod.text,
                                                               ref: item['numoriginal'].toString(),
-                                                              qtd: (double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text)).toString(),
+                                                              qtd: (double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text.replaceAll(",", "."))).toString(),
                                                               fab: item['marca'],
-                                                              valueTable:item['preco'],
+                                                              valueTable:item['preco'].toString().replaceAll(",", "."),
                                                               controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
                                                               controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
-                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])*double.parse(_listAssembly[indexGlobal].comp.text)}',
+                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'].toString().replaceAll(",", "."))*double.parse(_listAssembly[indexGlobal].comp.text.replaceAll(",", "."))}',
                                                               item: 'hose',
                                                               input: input,
                                                               indexAssembly: indexGlobal
@@ -1681,28 +1679,40 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                           itemBuilder: (contect,index){
                                             DocumentSnapshot item = _resultsCodUnico[index];
                                             List list = item['input'];
-                                            var hose = ['1#'];
-                                            var term1 = ['1#'];
-                                            var term2 = ['1#'];
-                                            var cape = ['1#'];
-                                            var pos = ['1#'];
+                                            var hose = [];
+                                            var term1 = [];
+                                            var term2 = [];
+                                            var cape = [];
+                                            var pos = [];
+                                            String text = '1#_';
+
                                             if(list.length>=1){
                                               hose  = item['input'][0].toString().split('#');
+                                              term1 = text.split('#');
+                                              term2 = text.split('#');
+                                              cape  = text.split('#');
+                                              pos   = text.split('#');
                                             }
                                             if(list.length>=2){
                                               hose  = item['input'][0].toString().split('#');
                                               term1 = item['input'][1].toString().split('#');
+                                              term2 = text.split('#');
+                                              cape  = text.split('#');
+                                              pos   = text.split('#');
                                             }
                                             if(list.length>=3){
                                               hose  = item['input'][0].toString().split('#');
                                               term1 = item['input'][1].toString().split('#');
                                               term2 = item['input'][2].toString().split('#');
+                                              cape  = text.split('#');
+                                              pos   = text.split('#');
                                             }
                                             if(list.length>=4){
                                               hose  = item['input'][0].toString().split('#');
                                               term1 = item['input'][1].toString().split('#');
                                               term2 = item['input'][2].toString().split('#');
                                               cape  = item['input'][3].toString().split('#');
+                                              pos   = text.split('#');
                                             }
 
                                             if(list.length>=5){
@@ -1714,18 +1724,18 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                             }
 
                                             return   ErrorIntModel(item,'rep')==0?Container():ListTile(
-                                                title: Text('Cód. Unico: ${item['codUnico']}, Referência: ${item['ref']}, Mangueira: ${hose[1].toUpperCase()}, Term1: ${term1[1].toUpperCase()}, Term2: ${term2[1].toUpperCase()}, Capa: ${cape[1].toUpperCase()}, POS: ${pos[1].toUpperCase()}'),
+                                                title: Text('Cód. Unico: ${item['codUnico']??''}, Referência: ${item['ref']??''}, Mangueira: ${hose[1].toUpperCase()}, Term1: ${term1[1].toUpperCase()}, Term2: ${term2[1].toUpperCase()}, Capa: ${cape[1].toUpperCase()}, POS: ${pos[1].toUpperCase()}'),
                                                 onTap: (){
                                                   setState(() {
                                                     valuecodProd='';
                                                     _listAssembly[indexGlobal].codRep = true;
                                                     _listAssembly[indexGlobal].cod = TextEditingController(text:item['codUnico']);
                                                     _listAssembly[indexGlobal].ref = TextEditingController(text:item['ref']);
-                                                    _listAssembly[indexGlobal].hose = TextEditingController(text:hose[1].toUpperCase());
-                                                    _listAssembly[indexGlobal].term1 = TextEditingController(text:term1[1].toUpperCase());
-                                                    _listAssembly[indexGlobal].term2 = TextEditingController(text:term2[1].toUpperCase());
-                                                    _listAssembly[indexGlobal].cape = TextEditingController(text:cape[1].toUpperCase());
-                                                    _listAssembly[indexGlobal].pos = TextEditingController(text:pos[1].toUpperCase());
+                                                    hose[1]!='_'?_listAssembly[indexGlobal].hose = TextEditingController(text:hose[1].toUpperCase()):_listAssembly[indexGlobal].hose.clear();
+                                                    term1[1]!='_'?_listAssembly[indexGlobal].term1 = TextEditingController(text:term1[1].toUpperCase()):_listAssembly[indexGlobal].term1.clear();
+                                                    term2[1]!='_'?_listAssembly[indexGlobal].term2 = TextEditingController(text:term2[1].toUpperCase()):_listAssembly[indexGlobal].term2.clear();
+                                                    cape[1]!='_'?_listAssembly[indexGlobal].cape = TextEditingController(text:cape[1].toUpperCase()):_listAssembly[indexGlobal].cape.clear();
+                                                    pos[1]!='_'?_listAssembly[indexGlobal].pos = TextEditingController(text:pos[1].toUpperCase()):_listAssembly[indexGlobal].pos.clear();
                                                   });
                                                   sequenceUpdate(_listAssembly[indexGlobal].cod.text,true,indexGlobal);
                                                 }
