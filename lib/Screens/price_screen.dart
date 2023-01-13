@@ -496,7 +496,7 @@ class _PriceScreenState extends State<PriceScreen> {
                           ),
                         ),
                         Container(
-                          width: width * 0.10,
+                          width: width * width>1450?0.10:0.20,
                           height: 40,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
@@ -523,7 +523,7 @@ class _PriceScreenState extends State<PriceScreen> {
                           ),
                         ),
                         Container(
-                          width: width* 0.13,
+                          width: width>1450?width* 0.13:0.05,
                           child: TextCustom(
                             text: '',
                             size: 14.0,
@@ -833,7 +833,7 @@ class _PriceScreenState extends State<PriceScreen> {
                     SizedBox(height: 10),
                     Row(
                       children: [
-                        SizedBox(width: 240),
+                        SizedBox(width:  width>1450?240:50),
                         ButtonCustom(
                           widthCustom: 0.08,
                           heightCustom: 0.06,

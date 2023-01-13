@@ -38,7 +38,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   _data() async {
     var data = await db.collection("assembly")
-        .orderBy('order',descending: true)
+        .orderBy('dateOrder',descending: true)
         .get();
     setState(() {
       _allResults = data.docs;
@@ -177,7 +177,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final height = MediaQuery.of(context).size.height;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 80.0),
+      padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: width>1450? 80.0:10.0),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),

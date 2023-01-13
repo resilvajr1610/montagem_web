@@ -352,7 +352,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       selectedPriority = data?['priority']??'1 - Cliente Balcão';
       whinthor =data?['whinthor']??'0';
       status = data?['status']??TextConst.orcamento;
-      id = data?['id'];
       order = int.parse(data?['order']);
       obs = data?['obs']??'';
 
@@ -567,6 +566,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
   }
 
   init() {
+    _getOrder();
     _addList();
     createId();
     _dataSearchClient();
@@ -583,7 +583,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
       _listAssembly[0].adap2.addListener(_searchProd);
       _listAssembly[0].hose.addListener(_searchProd);
     }
-    _getOrder();
   }
 
   Future sequenceUpdate(String cod, bool update, int i) async {
@@ -604,7 +603,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
         'codAssembly'     : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
       });
     } else {
-
         if (order != 0) {
           _listAssembly[i].letter1 = listLetter[order <= 100 ? 0 : order - 100];
           _listAssembly[i].letter2 = listLetter[(order / 100).round()];
@@ -624,18 +622,21 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                         'valorUnitario': FieldValue.arrayUnion([_listProduct[index].controllerValueUnit.text   == ''? '$index#0.00'  : '$index#${_listProduct[index].controllerValueUnit.text}']),
                         'total': FieldValue.arrayUnion([_listProduct[index].total                        == ''? '$index#0.00'  : '$index#${_listProduct[index].total}']),
                         'input': FieldValue.arrayUnion([_listProduct[index].input                        == ''? '$index#000'   : '$index#${_listProduct[index].input}']),
-                      }, SetOptions(merge: true));
-                  FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                    'codUnit'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
-                    'codAssembly'     : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
-                  }, SetOptions(merge: true));
+                      }, SetOptions(merge: true)).then((value){
+                    print('then cod $index');
+                    FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                      'codUnit'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
+                      'codAssembly'     : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
+                    }, SetOptions(merge: true)).then((value){
+                      print('then codAssembly $index');
+                      db.collection('codUnico').doc(codFire.toUpperCase()).set({
+                        'codUnico': _listAssembly[i].cod.text,
+                        'ref': _listAssembly[i].ref.text,
+                        'rep': 1
+                      }, SetOptions(merge: true)).then((value) => print('then codUnico $index'));
+                    });
+                  });
                 }
-                setState(() {});
-                db.collection('codUnico').doc(codFire.toUpperCase()).set({
-                  'codUnico': _listAssembly[i].cod.text,
-                  'ref': _listAssembly[i].ref.text,
-                  'rep': 1
-                }, SetOptions(merge: true));
               });
         }
     }
@@ -647,6 +648,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
     if (widget.id == '') {
       init();
     } else {
+      id = widget.id;
       dataEdit();
     }
   }
@@ -1058,7 +1060,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                             ),
                             Container(
                               height: _listAssembly.length * 60,
-                              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                              padding: EdgeInsets.symmetric(horizontal: width>1450?30.0:5.0),
                               child: ListView.builder(
                                   itemCount: _listAssembly.length,
                                   itemBuilder: (context, index) {
@@ -1916,97 +1918,104 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                     font: 'Nunito',
                                     onPressed: () {
                                       setState(() =>loadingData = true);
-                                      FirebaseFirestore.instance.collection('assembly').doc(id).delete();
-                                      for (var i = 0; _listAssembly.length > i; i++) {
-                                        insertList(i);
-                                        sequenceUpdate(_listAssembly[i].cod.text != ''? _listAssembly[i].cod.text: '',_listAssembly[i].cod.text != ''? true : false,i).then((value) =>
-                                          setState(() {
-                                            FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                                              'refAssembly'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].ref.text}']),
-                                              'qtdAssembly'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].qtd.text}']),
-                                              'makerAssembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].maker.text}']),
-                                              'apliAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].application.text}']),
-                                              'hoseAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].hose.text}']),
-                                              'hosePriceAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].hosePrice}']),
-                                              'hoseBrandAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].hoseBrand}']),
-                                              'term1Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1.text}']),
-                                              'term1PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1Price}']),
-                                              'term1BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1Brand}']),
-                                              'descTerm1Assembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].descTerm1}']),
-                                              'term2Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2.text}']),
-                                              'term2PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2Price}']),
-                                              'term2BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2Brand}']),
-                                              'descTer21Assembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].descTerm2}']),
-                                              'capeAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].cape.text}']),
-                                              'capePriceAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].capePrice}']),
-                                              'capeBrandAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].capeBrand}']),
-                                              'adap1Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1.text}']),
-                                              'adap1PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1Price}']),
-                                              'adap1BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1Brand}']),
-                                              'adap2Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2.text}']),
-                                              'adap2PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2Price}']),
-                                              'adap2BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2Brand}']),
-                                              'ringAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].ring.text}']),
-                                              'springAssembly'      : FieldValue.arrayUnion(['$i#${_listAssembly[i].spring.text}']),
-                                              'diameterHoseAssembly': FieldValue.arrayUnion(['$i#${_listAssembly[i].diameterHose}']),
-                                              'pressureHoseAssembly': FieldValue.arrayUnion(['$i#${_listAssembly[i].pressureHose}']),
-                                              'pos'                 : FieldValue.arrayUnion(['$i#${_listAssembly[i].pos.text}']),
-                                              'lengthAssembly'      : FieldValue.arrayUnion(['$i#${_listAssembly[i].comp.text}']),
-                                              'sizeAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].size.text}']),
-                                            },SetOptions(merge: true));
+                                      FirebaseFirestore.instance.collection('assembly').doc(id).delete().then((value){
+                                        for (var i = 0; _listAssembly.length > i; i++) {
+                                          Future.delayed(Duration(seconds: 2),(){
+                                          sequenceUpdate(_listAssembly[i].cod.text != ''? _listAssembly[i].cod.text: '',_listAssembly[i].cod.text != ''? true : false,i);
+                                          insertList(i);
 
-                                            for (var ip = 0;_listProduct.length > ip;ip++) {
-                                              if(_listProduct[ip].indexAssembly == i){
-                                                FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                                                  'codProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].cod}']),
-                                                  'refProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].ref}']),
-                                                  'qtdProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].qtd}']),
-                                                  'fabProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].fab}']),
-                                                  'valueTableProd$i'  : FieldValue.arrayUnion(['$ip#${_listProduct[ip].valueTable}']),
-                                                  'discountProd$i'    : FieldValue.arrayUnion(['$ip#${_listProduct[ip].controllerDiscount.text}']),
-                                                  'valueUnitProd$i'   : FieldValue.arrayUnion(['$ip#${_listProduct[ip].controllerValueUnit.text}']),
-                                                  'totalProd$i'       : FieldValue.arrayUnion(['$ip#${_listProduct[ip].total}']),
-                                                  'itemProd$i'        : FieldValue.arrayUnion(['$ip#${_listProduct[ip].item}']),
-                                                  'inputProd$i'       : FieldValue.arrayUnion(['$ip#${_listProduct[ip].input}']),
-                                                },SetOptions(merge: true));
-                                              }
-                                              _listProduct[ip].codUnit =_listAssembly[i].cod.text;
-                                            }
-
+                                            setState(() {
                                               FirebaseFirestore.instance.collection('assembly').doc(id).set({
-                                                'id': id,
-                                                'data':_controllerDate != null ? _controllerDate.text: '',
-                                                'codcli':_controllerClientCod !=null? _controllerClientCod.text: '',
-                                                'client':_controllerClientName !=null? _controllerClientName.text: '',
-                                                'subsidiary':_controllerAffiliation != null? _controllerAffiliation.text: '',
-                                                'dateOrder': DateTime.now(),
-                                                'status':status==''?TextConst.orcamento:status,
-                                                'order': order.toString(),
-                                                'priority':selectedPriority,
-                                                'whinthor':whinthor,
-                                                'obs' : obs
-                                              },SetOptions(merge: true)).then((value) {
-                                                db.collection('order').doc('order').update({
-                                                  'order': int.parse(order.toString())
-                                                }).then((value) =>
-                                                    Navigator.push(context,new MaterialPageRoute(builder:(context) =>
-                                                    new PriceScreen(
-                                                      saveListModel:_listAssembly,
-                                                      saveListProduct:_listProduct,
-                                                      idAssembly:id,
-                                                      client:_controllerClientName.text,
-                                                      codClient:_controllerClientCod.text,
-                                                      order:order.toString(),
-                                                      data:_controllerDate.text,
-                                                      subsidiary:_controllerAffiliation.text,
-                                                      obs: obs,
-                                                    )
-                                                    ))
-                                                );
+                                                'refAssembly'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].ref.text}']),
+                                                'qtdAssembly'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].qtd.text}']),
+                                                'makerAssembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].maker.text}']),
+                                                'apliAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].application.text}']),
+                                                'hoseAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].hose.text}']),
+                                                'hosePriceAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].hosePrice}']),
+                                                'hoseBrandAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].hoseBrand}']),
+                                                'term1Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1.text}']),
+                                                'term1PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1Price}']),
+                                                'term1BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term1Brand}']),
+                                                'descTerm1Assembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].descTerm1}']),
+                                                'term2Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2.text}']),
+                                                'term2PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2Price}']),
+                                                'term2BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].term2Brand}']),
+                                                'descTer21Assembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].descTerm2}']),
+                                                'capeAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].cape.text}']),
+                                                'capePriceAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].capePrice}']),
+                                                'capeBrandAssembly'   : FieldValue.arrayUnion(['$i#${_listAssembly[i].capeBrand}']),
+                                                'adap1Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1.text}']),
+                                                'adap1PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1Price}']),
+                                                'adap1BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap1Brand}']),
+                                                'adap2Assembly'       : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2.text}']),
+                                                'adap2PriceAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2Price}']),
+                                                'adap2BrandAssembly'  : FieldValue.arrayUnion(['$i#${_listAssembly[i].adap2Brand}']),
+                                                'ringAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].ring.text}']),
+                                                'springAssembly'      : FieldValue.arrayUnion(['$i#${_listAssembly[i].spring.text}']),
+                                                'diameterHoseAssembly': FieldValue.arrayUnion(['$i#${_listAssembly[i].diameterHose}']),
+                                                'pressureHoseAssembly': FieldValue.arrayUnion(['$i#${_listAssembly[i].pressureHose}']),
+                                                'pos'                 : FieldValue.arrayUnion(['$i#${_listAssembly[i].pos.text}']),
+                                                'lengthAssembly'      : FieldValue.arrayUnion(['$i#${_listAssembly[i].comp.text}']),
+                                                'sizeAssembly'        : FieldValue.arrayUnion(['$i#${_listAssembly[i].size.text}']),
+                                              },SetOptions(merge: true));
+
+
+                                              for (var ip = 0;_listProduct.length > ip;ip++) {
+                                                if(_listProduct[ip].indexAssembly == i){
+                                                  FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                                                    'codProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].cod}']),
+                                                    'refProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].ref}']),
+                                                    'qtdProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].qtd}']),
+                                                    'fabProd$i'         : FieldValue.arrayUnion(['$ip#${_listProduct[ip].fab}']),
+                                                    'valueTableProd$i'  : FieldValue.arrayUnion(['$ip#${_listProduct[ip].valueTable}']),
+                                                    'discountProd$i'    : FieldValue.arrayUnion(['$ip#${_listProduct[ip].controllerDiscount.text}']),
+                                                    'valueUnitProd$i'   : FieldValue.arrayUnion(['$ip#${_listProduct[ip].controllerValueUnit.text}']),
+                                                    'totalProd$i'       : FieldValue.arrayUnion(['$ip#${_listProduct[ip].total}']),
+                                                    'itemProd$i'        : FieldValue.arrayUnion(['$ip#${_listProduct[ip].item}']),
+                                                    'inputProd$i'       : FieldValue.arrayUnion(['$ip#${_listProduct[ip].input}']),
+                                                  },SetOptions(merge: true));
+                                                }
+                                                _listProduct[ip].codUnit =_listAssembly[i].cod.text;
+                                              }
+
+                                              Future.delayed(Duration(seconds: 2),(){
+                                                FirebaseFirestore.instance.collection('assembly').doc(id).set({
+                                                  'id': id,
+                                                  'data':_controllerDate != null ? _controllerDate.text: '',
+                                                  'codcli':_controllerClientCod !=null? _controllerClientCod.text: '',
+                                                  'client':_controllerClientName !=null? _controllerClientName.text: '',
+                                                  'subsidiary':_controllerAffiliation != null? _controllerAffiliation.text: '',
+                                                  'dateOrder': DateTime.now(),
+                                                  'status':status==''?TextConst.orcamento:status,
+                                                  'order': order.toString(),
+                                                  'priority':selectedPriority,
+                                                  'whinthor':whinthor,
+                                                  'obs' : obs
+                                                },SetOptions(merge: true)).then((value) {
+                                                  db.collection('order').doc('order').update({
+                                                    'order': int.parse(order.toString())
+                                                  }).then((value) =>
+                                                      Navigator.push(context,new MaterialPageRoute(builder:(context) =>
+                                                      new PriceScreen(
+                                                        saveListModel:_listAssembly,
+                                                        saveListProduct:_listProduct,
+                                                        idAssembly:id,
+                                                        client:_controllerClientName.text,
+                                                        codClient:_controllerClientCod.text,
+                                                        order:order.toString(),
+                                                        data:_controllerDate.text,
+                                                        subsidiary:_controllerAffiliation.text,
+                                                        obs: obs,
+                                                      )
+                                                      ))
+                                                  );
+                                                });
                                               });
                                               setState(()=>  loadingData = false);
-                                          }));
-                                      }
+                                            });
+                                          });
+                                        }
+                                      });
                                     },
                                   ),
                                 ),

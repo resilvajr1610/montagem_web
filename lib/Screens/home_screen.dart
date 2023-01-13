@@ -157,9 +157,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(70.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15.0,horizontal: 25),
       child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 25.0,horizontal: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: PaletteColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(2, 2), // changes position of shadow
+            ),
+          ],
+        ),
         alignment: Alignment.topLeft,
           child: Column(
             children: [
