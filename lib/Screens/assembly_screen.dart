@@ -623,12 +623,10 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                         'total': FieldValue.arrayUnion([_listProduct[index].total                        == ''? '$index#0.00'  : '$index#${_listProduct[index].total}']),
                         'input': FieldValue.arrayUnion([_listProduct[index].input                        == ''? '$index#000'   : '$index#${_listProduct[index].input}']),
                       }, SetOptions(merge: true)).then((value){
-                    print('then cod $index');
                     FirebaseFirestore.instance.collection('assembly').doc(id).set({
                       'codUnit'         : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
                       'codAssembly'     : FieldValue.arrayUnion(['$i#${_listAssembly[i].cod.text}']),
                     }, SetOptions(merge: true)).then((value){
-                      print('then codAssembly $index');
                       db.collection('codUnico').doc(codFire.toUpperCase()).set({
                         'codUnico': _listAssembly[i].cod.text,
                         'ref': _listAssembly[i].ref.text,
@@ -1408,8 +1406,6 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                     var data = await db.collection('produtos').where('numoriginal',isEqualTo: _listAssembly[indexGlobal].hose.text).get();
                                                     List listFire = data.docs;
                                                     DocumentSnapshot item = listFire[0];
-                                                    print('item[qtdmola]');
-                                                    print(item['qtdmola']);
                                                     if(item['qtdmola']!=null && item['qtdmola']!='null' && item['qtdmola']!=''){
                                                       if(item['codmola']!=null && item['codmola']!='null' && item['codmola']!='' ){
 
@@ -1419,7 +1415,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                                 cod: item['codmola'],
                                                                 codUnit: _listAssembly[indexGlobal].cod.text,
                                                                 ref: item['codmola'].toString(),
-                                                                qtd: '${(double.parse(item['qtdmola'].toString().replaceAll(',', '.'))*int.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text.replaceAll(',','.')))}',
+                                                                qtd: '${(double.parse(item['qtdmola'].toString().replaceAll(',', '.'))*int.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(_listAssembly[indexGlobal].comp.text.replaceAll(',','.'))).toStringAsFixed(1)}',
                                                                 fab: 'mola',
                                                                 valueTable:'0,00',
                                                                 controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
@@ -1473,7 +1469,7 @@ class _AssemblyScreenState extends State<AssemblyScreen> {
                                                               valueTable:(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toString(),
                                                               controllerDiscount:TextEditingController(text: 'R\$ 0,00'),
                                                               controllerValueUnit: TextEditingController(text: 'R\$ ${item['preco'].toString().replaceAll('.', ',')}'),
-                                                              total: 'R\$ ${double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])}',
+                                                              total: 'R\$ ${(double.parse(_listAssembly[indexGlobal].qtd.text)*double.parse(item['preco'])).toStringAsFixed(2)}',
                                                               item: 'term1',
                                                               input: input,
                                                               indexAssembly: indexGlobal

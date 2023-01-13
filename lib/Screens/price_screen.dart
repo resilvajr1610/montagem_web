@@ -1,4 +1,6 @@
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:montagem_web/Models/pdf_model.dart';
 import 'package:montagem_web/Models/assembly_list_model.dart';
 import 'package:montagem_web/Widgets/list_client.dart';
@@ -49,11 +51,14 @@ class _PriceScreenState extends State<PriceScreen> {
   var _controllerDiscuntOther = TextEditingController(text: '');
   var codProduct='';
   double desconto=0.0;
+  double descontoGeral=0.0;
   List<ProductListModel> listGetProduct=[];
   String valueTable = 'R\$ 0,00';
+  double valueFinalGet = 0;
   String discount = 'R\$ 0,00';
   String descAcrescentado = 'R\$ 0,00';
   String valueFinal = 'R\$ 0,00';
+  String valueFinalClient = 'R\$ 0,00';
   double brutoGeral = 0.00;
   double descGeral = 0.00;
   double liquidoGeral = 0.00;
@@ -92,6 +97,7 @@ class _PriceScreenState extends State<PriceScreen> {
     setState(() {
       valueFinal = 'R\$ ${liquido.toStringAsFixed(2).replaceAll('.', ',')}';
       valueTable = widget.saveListModel[indexGlobal].valueTable;
+      valueFinalGet = double.parse(liquido.toStringAsFixed(2).replaceAll(',', '.'));
       descAcrescentado = 'R\$ ${descTotal.toStringAsFixed(2).replaceAll('.', ',')}';
       listGetProduct.clear();
 
@@ -122,17 +128,19 @@ class _PriceScreenState extends State<PriceScreen> {
       listGetProduct.add(widget.saveListProduct[i]);
     }
     for (var i = 0;i < listGetProduct.length; i++){
-      if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
+      if(listGetProduct[i].qtd != '0'){
         total =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+total;
       }
     }
     setState(() {
       var uni = total/int.parse(widget.saveListModel[indexGlobal].qtd.text);
+      valueFinalGet = total;
       valueTable = 'R\$ ${total.toStringAsFixed(2)}';
       valueFinal =  'R\$ ${total.toStringAsFixed(2)}';
+      brutoGeral = total;
       widget.saveListModel[indexGlobal].valueTable = total.toString();
       widget.saveListModel[indexGlobal].valueUnit = TextEditingController(text: 'R\$ ${uni.toStringAsFixed(2).replaceAll('.', ',')}');
-      widget.saveListModel[indexGlobal].total = total.toString();
+      widget.saveListModel[indexGlobal].total = total.toStringAsFixed(2);
     });
 }
   discountUnit(int index,String field){
@@ -147,8 +155,6 @@ class _PriceScreenState extends State<PriceScreen> {
       if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
         if(i!=index){
           total =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+total;
-          print('total');
-          print(total);
         }
       }
     }
@@ -169,6 +175,7 @@ class _PriceScreenState extends State<PriceScreen> {
       for (var i = 0;i < listGetProduct.length; i++){
         if(codProduct == listGetProduct[i].codUnit && listGetProduct[i].qtd != '0'){
           totalValueTable =  double.parse(listGetProduct[i].total.toString().replaceAll('R\$ ','').replaceAll(',', '.'))+totalValueTable;
+          valueFinalGet = totalValueTable;
           valueTable = 'R\$ '+ (totalValueTable+totalDesc).toStringAsFixed(2).replaceAll(".", ",");
           valueFinal = 'R\$ '+ totalValueTable.toStringAsFixed(2).replaceAll(".", ",");
         }
@@ -186,10 +193,18 @@ class _PriceScreenState extends State<PriceScreen> {
     double valueUnit = double.parse(widget.saveListModel[indexGlobal].valueUnit.text.replaceAll('R\$ ','').replaceAll(',', '.'));
     double total = double.parse(widget.saveListModel[indexGlobal].total.replaceAll('R\$ ','').replaceAll(',', '.'));
     int quant = int.parse(widget.saveListModel[indexGlobal].qtd.text);
-
+    double disc = 0;
     setState(() {
       if(field=='discount'){
-        valueFinal = 'R\$ '+ (total-discountClient).toStringAsFixed(2).replaceAll('.', ',');
+        for(int i =0; widget.saveListModel.length>i;i++ ){
+          disc = disc + double.parse(widget.saveListModel[i].discount.text.isNotEmpty
+              ?widget.saveListModel[i].discount.text.replaceAll('R\$ ','').replaceAll(',', '.'):'0');
+        }
+        descGeral = disc;
+        brutoGeral = total-discountClient;
+        double novoValor = double.parse(widget.saveListModel[index].total.replaceAll('R\$ ','').replaceAll(',', '.')) - discountClient;
+        widget.saveListModel[index].total = 'R\$ '+ (novoValor).toStringAsFixed(2).replaceAll('.', ',');
+        liquidoGeral = brutoGeral-descGeral;
       }else{
         double newTotal = valueUnit*quant;
         valueFinal = 'R\$ '+ newTotal.toStringAsFixed(2).replaceAll('.', ',');
@@ -299,7 +314,6 @@ class _PriceScreenState extends State<PriceScreen> {
 
     List<PDFTabelaModel> list=[];
     for(var i=0; widget.saveListProduct.length>i;i++){
-     if(widget.saveListProduct[i].codUnit==codProduct){
        double valorQtd = double.parse(widget.saveListProduct[i].qtd);
        double valorTotal = double.parse(widget.saveListProduct[i].total.replaceAll('R\$ ', '').replaceAll(',', '.'));
        double desc = double.parse(widget.saveListProduct[i].controllerDiscount.text.replaceAll('R\$ ', '').replaceAll(',', '.'));
@@ -319,7 +333,6 @@ class _PriceScreenState extends State<PriceScreen> {
                total: widget.saveListProduct[i].total
            )
        );
-     }
     }
     double top = 100;
     for(var ind=0; list.length>ind;ind++){
@@ -461,110 +474,110 @@ class _PriceScreenState extends State<PriceScreen> {
                       ],
                     ),
                     SizedBox(height: 4),//Textos
-                    Row(
-                      children: [
-                        SizedBox(width: 20),
-                        Container(
-                          width: width * 0.12,
-                          child: InputRegister(
-                            enable: false,
-                            controller: _controllerNumberAssembly,
-                            hint: '0000000',
-                            fonts: 14.0,
-                            keyboardType: TextInputType.number,
-                            width: width * 0.08,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (v){},
+                    Container(
+                      width: width*0.7,
+                      child: Row(
+                        children: [
+                          SizedBox(width: 20),
+                          Container(
+                            width: width * 0.12,
+                            child: InputRegister(
+                              enable: false,
+                              controller: _controllerNumberAssembly,
+                              hint: '0000000',
+                              fonts: 14.0,
+                              keyboardType: TextInputType.number,
+                              width: width * 0.08,
+                              sizeIcon: 0.01,
+                              icons: Icons.height,
+                              colorBorder: PaletteColors.inputGrey,
+                              background: PaletteColors.inputGrey,
+                              onChanged: (v){},
+                            ),
                           ),
-                        ),
-                        Container(
-                          width: width * 0.13,
-                          child: InputRegister(
-                            controller: _controllerWhintor,
-                            hint: '00000000',
-                            fonts: 14.0,
-                            keyboardType: TextInputType.number,
-                            width: width * 0.08,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (v){},
+                          Container(
+                            width: width * 0.13,
+                            child: InputRegister(
+                              controller: _controllerWhintor,
+                              hint: '00000000',
+                              fonts: 14.0,
+                              keyboardType: TextInputType.number,
+                              width: width * 0.08,
+                              sizeIcon: 0.01,
+                              icons: Icons.height,
+                              colorBorder: PaletteColors.inputGrey,
+                              background: PaletteColors.inputGrey,
+                              onChanged: (v){},
+                            ),
                           ),
-                        ),
-                        Container(
-                          width: width * width>1450?0.10:0.20,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: PaletteColors.inputGrey),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                iconSize: 30.0,
-                                items: priority
-                                    .map((priority) => DropdownMenuItem<String>(
-                                        value: priority,
-                                        child: TextCustom(
-                                          text: priority,
-                                          color: PaletteColors.grey,
-                                          fontFamily: 'Nunito',
-                                        )))
-                                    .toList(),
-                                value: selectedPriority,
-                                onChanged: (priority) =>
-                                    setState(() => selectedPriority = priority),
+                          Container(
+                            width: width>1450?width * 0.07:width*0.15,
+                            height: 40,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: PaletteColors.inputGrey),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  iconSize: 30.0,
+                                  items: priority.map((priority) => DropdownMenuItem<String>(
+                                          value: priority,
+                                          child: TextCustom(
+                                            text: priority,
+                                            color: PaletteColors.grey,
+                                            fontFamily: 'Nunito',
+                                          ))).toList(),
+                                  value: selectedPriority,
+                                  onChanged: (priority) =>setState(() => selectedPriority = priority),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          width: width>1450?width* 0.13:0.05,
-                          child: TextCustom(
-                            text: '',
+                          Container(
+                            width: width>1450?width* 0.13:width*0.05,
+                            child: TextCustom(
+                              text: '',
+                              size: 14.0,
+                              color: PaletteColors.primaryColor,
+                              fontFamily: 'Nunito',
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          Container(
+                            width: width * 0.07,
+                            child: InputRegister(
+                              controller: _controllerDiscount,
+                              hint: '00%',
+                              fonts: 14.0,
+                              keyboardType: TextInputType.text,
+                              width: width * 0.04,
+                              sizeIcon: 0.01,
+                              icons: Icons.height,
+                              colorBorder: PaletteColors.inputGrey,
+                              background: PaletteColors.inputGrey,
+                              onChanged: (v){
+                                desconto = double.parse(v.toString().replaceAll(',', '.'));
+                              },
+                            ),
+                          ),
+                          ButtonCustom(
+                            widthCustom: 0.07,
+                            heightCustom: 0.065,
+                            text: "Aplicar",
                             size: 14.0,
-                            color: PaletteColors.primaryColor,
-                            fontFamily: 'Nunito',
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        Container(
-                          width: width * 0.07,
-                          child: InputRegister(
-                            controller: _controllerDiscount,
-                            hint: '00%',
-                            fonts: 14.0,
-                            keyboardType: TextInputType.text,
-                            width: width * 0.04,
-                            sizeIcon: 0.01,
-                            icons: Icons.height,
-                            colorBorder: PaletteColors.inputGrey,
-                            background: PaletteColors.inputGrey,
-                            onChanged: (v){
-                              desconto = double.parse(v.toString().replaceAll(',', '.'));
+                            colorText: PaletteColors.white,
+                            colorButton: PaletteColors.primaryColor,
+                            colorBorder: PaletteColors.primaryColor,
+                            onPressed: () {
+                              if(_controllerDiscount.text.isNotEmpty){
+                                descontosGeral();
+                              }
                             },
+                            font: 'Nunito',
                           ),
-                        ),
-                        ButtonCustom(
-                          widthCustom: 0.07,
-                          heightCustom: 0.065,
-                          text: "Aplicar",
-                          size: 14.0,
-                          colorText: PaletteColors.white,
-                          colorButton: PaletteColors.primaryColor,
-                          colorBorder: PaletteColors.primaryColor,
-                          onPressed: () {
-                            if(_controllerDiscount.text.isNotEmpty){
-                              descontosGeral();
-                            }
-                          },
-                          font: 'Nunito',
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     SizedBox(height: 6),
                     Row(
@@ -670,7 +683,7 @@ class _PriceScreenState extends State<PriceScreen> {
                       child: ListView.builder(
                         itemCount: listGetProduct.length,
                         itemBuilder: (context,index){
-                          return  indexGlobal != listGetProduct[index].indexAssembly || listGetProduct[index].qtd=='0'?
+                          return  listGetProduct[index].qtd=='0'?
                           Container():
                             ListMaterial(
                               screenscreen:'seller',
@@ -802,6 +815,19 @@ class _PriceScreenState extends State<PriceScreen> {
                                           height: 25,
                                           alignment: Alignment.centerRight,
                                           child: TextFormField(
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                              CentavosInputFormatter(),
+                                            ],
+                                            onChanged: (value){
+                                              double valor = 0.0;
+                                              if(_controllerDiscuntOther.text.isNotEmpty){
+                                                setState(() {
+                                                  valor = double.parse(_controllerDiscuntOther.text.replaceAll(".","").replaceAll(',', '.'));
+                                                });
+                                                valueFinal = '${(valueFinalGet + valor).toStringAsFixed(2).replaceAll('.', ',')}';
+                                              }
+                                            },
                                             controller: _controllerDiscuntOther,
                                             decoration: InputDecoration(
                                               border: InputBorder.none,
@@ -936,7 +962,6 @@ class _PriceScreenState extends State<PriceScreen> {
                           color: PaletteColors.primaryColor,
                           fontFamily: 'Nunito',
                           fontWeight: FontWeight.bold,
-
                         ),
                         SizedBox(width: 20),
                         TextCustom(
@@ -961,7 +986,6 @@ class _PriceScreenState extends State<PriceScreen> {
                             color: PaletteColors.primaryColor,
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.normal,
-
                           ),
                         ),
                         Container(
@@ -1038,13 +1062,7 @@ class _PriceScreenState extends State<PriceScreen> {
                                 discountUnitClient(index,'valueUnit');
                               },
                               total: valueFinal,
-                              onTap: (){
-                                setState(() {
-                                  codProduct = widget.saveListModel[index].cod.text;
-                                  indexGlobal = index;
-                                  refreshValues();
-                                });
-                              },
+                              onTap: (){},
                             );
                           }
                       ),
@@ -1104,21 +1122,21 @@ class _PriceScreenState extends State<PriceScreen> {
                                       child: Column(
                                         children: [
                                           TextCustom(
-                                            text: valueTable,
+                                            text: 'R\$ ${brutoGeral.toStringAsFixed(2).replaceAll('.', ',')}',
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
                                             fontWeight: FontWeight.normal,
                                           ),
                                           TextCustom(
-                                            text: discount,
+                                            text: 'R\$ ${descGeral.toStringAsFixed(2).replaceAll('.', ',')}',
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
                                             fontWeight: FontWeight.normal,
                                           ),
                                           TextCustom(
-                                            text: valueFinal,
+                                            text: 'R\$ ${liquidoGeral.toStringAsFixed(2).replaceAll('.', ',')}',
                                             size: 14.0,
                                             color: PaletteColors.grey,
                                             fontFamily: 'Nunito',
